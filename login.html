@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrar — Salve Comida</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <a href="index.html"><div class="logo-icon">🌱</div> Salve Comida</a>
+    </div>
+
+    <h2 class="auth-title">Bem-vindo de volta!</h2>
+    <p class="auth-subtitle">Entre com seu e-mail e senha para continuar.</p>
+
+    <div id="login-alert"></div>
+
+    <form id="login-form" novalidate>
+      <div class="form-group">
+        <label for="email">E-mail <span class="required">*</span></label>
+        <input type="email" id="email" name="email" class="form-control"
+               placeholder="seu@email.com" required autocomplete="email">
+        <span class="error-msg">Informe um e-mail válido.</span>
+      </div>
+      <div class="form-group">
+        <label for="password">Senha <span class="required">*</span></label>
+        <div class="input-icon-right">
+          <input type="password" id="password" name="password" class="form-control"
+                 placeholder="Sua senha" required autocomplete="current-password">
+          <button type="button" class="toggle-pw" id="toggle-pw" title="Mostrar/ocultar senha">👁️</button>
+        </div>
+        <span class="error-msg">Informe a senha.</span>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-full" style="justify-content:center;margin-top:0.5rem">
+        🔑 Entrar
+      </button>
+    </form>
+
+    <div class="auth-divider">ou</div>
+
+    <div style="background:var(--grey-pale);border-radius:var(--radius-sm);padding:1rem;font-size:0.85rem;color:var(--grey-mid)">
+      <strong style="color:var(--grey-dark)">🧪 Conta de demonstração:</strong><br>
+      E-mail: <code>admin@salvecomida.com</code><br>
+      Senha: <code>admin123</code>
+    </div>
+
+    <div class="auth-footer">
+      Não tem conta? <a href="cadastro.html">Criar conta gratuita</a>
+    </div>
+    <div class="auth-footer" style="margin-top:0.5rem">
+      <a href="index.html" style="color:var(--grey-mid)">← Voltar ao início</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  Storage.seedIfEmpty();
+
+  // Toggle senha
+  document.getElementById('toggle-pw').addEventListener('click', () => {
+    const pw = document.getElementById('password');
+    pw.type = pw.type === 'password' ? 'text' : 'password';
+  });
+
+  const form = document.getElementById('login-form');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const email = form.email.value.trim();
+    const password = form.password.value;
+
+    if (!email || !password) {
+      showAlert('E-mail e senha são obrigatórios.', 'error'); return;
+    }
+
+    const result = Storage.loginUser(email, password);
+    if (!result.ok) {
+      showAlert(result.msg, 'error'); return;
+    }
+
+    showAlert('✅ Login realizado! Redirecionando...', 'success');
+
+    setTimeout(() => {
+      const dest = sessionStorage.getItem('sc_after_login') || 'index.html';
+      sessionStorage.removeItem('sc_after_login');
+      location.replace(dest);
+    }, 1200);
+  });
+
+  function showAlert(msg, type) {
+    const el = document.getElementById('login-alert');
+    const icons = { success:'✅', error:'❌' };
+    el.innerHTML = `<div class="alert alert-${type}">${icons[type]||''} ${msg}</div>`;
+    if (type === 'success') return;
+    setTimeout(() => { el.innerHTML = ''; }, 5000);
+  }
+});
+</script>
+</body>
+</html>

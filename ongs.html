@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ONGs Parceiras — Salve Comida</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <style>
+    .ong-card { background:white; border-radius:var(--radius); box-shadow:var(--shadow-sm); border:1px solid var(--grey-light); overflow:hidden; transition:var(--transition); }
+    .ong-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); }
+    .ong-card-header { background:linear-gradient(135deg,var(--green-dark),var(--green-main)); padding:1.5rem; display:flex; align-items:flex-start; gap:1rem; }
+    .ong-logo { width:52px; height:52px; border-radius:14px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0; }
+    .ong-card-body { padding:1.25rem 1.5rem; }
+    .ong-stat-row { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:0.75rem; }
+    .ong-stat { text-align:center; padding:0.6rem 0.9rem; border-radius:var(--radius-sm); flex:1; min-width:80px; }
+    .ong-card-footer { padding:0.85rem 1.5rem; background:var(--grey-pale); border-top:1px solid var(--grey-light); display:flex; align-items:center; justify-content:space-between; gap:0.5rem; flex-wrap:wrap; }
+    .ong-join-card { background:linear-gradient(135deg,var(--orange-main),var(--orange-light)); border-radius:var(--radius); padding:2.5rem; text-align:center; color:white; margin-bottom:2.5rem; }
+    .ong-join-card h2 { color:white; margin-bottom:0.5rem; }
+    .ong-join-card p { color:rgba(255,255,255,0.85); margin-bottom:1.5rem; }
+    .panel-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+    @media(max-width:768px){ .panel-grid{grid-template-columns:1fr;} }
+    .req-form-card { background:white; border-radius:var(--radius); box-shadow:var(--shadow-sm); border:1px solid var(--grey-light); padding:2rem; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo"><div class="logo-icon">🌱</div> Salve Comida</a>
+    <div class="nav-links">
+      <a href="index.html">Início</a>
+      <a href="doar.html">Doar</a>
+      <a href="receber.html">Receber</a>
+      <a href="mapa.html">🗺️ Mapa</a>
+      <a href="dashboard.html">📊 Impacto</a>
+      <a href="ongs.html">🏢 ONGs</a>
+      <a href="sobre.html">Sobre</a>
+    </div>
+    <button class="nav-hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="tag">Rede solidária</div>
+    <h1>ONGs Parceiras</h1>
+    <p>Organizações que fazem parte da rede Salve Comida, distribuindo alimentos a quem mais precisa.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+
+    <!-- CTA cadastro ONG -->
+    <div class="ong-join-card">
+      <h2>Sua ONG quer fazer parte?</h2>
+      <p>Junte-se à rede e tenha acesso prioritário a doações, dashboard exclusivo e ferramentas de gestão.</p>
+      <button class="btn btn-white btn-lg" id="open-join-form">🤝 Cadastrar minha ONG</button>
+    </div>
+
+    <!-- Stats rede -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:2.5rem" id="ong-network-stats">
+      <!-- JS -->
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-bar" style="margin-bottom:1.5rem">
+      <div class="filter-item" style="flex:2;min-width:180px">
+        <label>🔍 Buscar ONG</label>
+        <input type="text" id="ong-search" class="form-control" placeholder="Nome da ONG...">
+      </div>
+      <div class="filter-item">
+        <label>📊 Status</label>
+        <select id="ong-filter-status" class="form-control">
+          <option value="">Todas</option>
+          <option value="active">Ativas</option>
+          <option value="pending">Aguardando aprovação</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Lista de ONGs -->
+    <div id="ong-alert" class="mb-2"></div>
+    <div class="cards-grid" id="ongs-grid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">
+      <!-- JS -->
+    </div>
+
+    <!-- Formulário de cadastro (painel oculto) -->
+    <div id="join-panel" style="display:none;margin-top:2.5rem">
+      <div class="req-form-card">
+        <h2 style="color:var(--green-dark);margin-bottom:0.5rem">📋 Cadastro de ONG</h2>
+        <p style="color:var(--grey-mid);margin-bottom:1.75rem">Preencha o formulário abaixo. Sua solicitação será analisada em até 2 dias úteis.</p>
+
+        <div id="ong-form-alert"></div>
+
+        <form id="ong-form" novalidate>
+          <div class="panel-grid">
+            <div class="form-group">
+              <label>Nome da ONG <span class="required">*</span></label>
+              <input type="text" id="ong-name" name="name" class="form-control" required>
+              <span class="error-msg">Campo obrigatório.</span>
+            </div>
+            <div class="form-group">
+              <label>CNPJ <span class="required">*</span></label>
+              <input type="text" id="ong-cnpj" name="cnpj" class="form-control" placeholder="00.000.000/0001-00" required>
+              <span class="error-msg">Campo obrigatório.</span>
+            </div>
+            <div class="form-group">
+              <label>E-mail <span class="required">*</span></label>
+              <input type="email" id="ong-email" name="email" class="form-control" required>
+              <span class="error-msg">Campo obrigatório.</span>
+            </div>
+            <div class="form-group">
+              <label>Telefone <span class="required">*</span></label>
+              <input type="tel" id="ong-phone" name="phone" class="form-control" required>
+              <span class="error-msg">Campo obrigatório.</span>
+            </div>
+            <div class="form-group" style="grid-column:1/-1">
+              <label>Endereço completo <span class="required">*</span></label>
+              <input type="text" id="ong-address" name="address" class="form-control" required>
+              <span class="error-msg">Campo obrigatório.</span>
+            </div>
+            <div class="form-group">
+              <label>Área de atuação <span class="required">*</span></label>
+              <input type="text" id="ong-focus" name="focus" class="form-control" placeholder="Ex: Segurança alimentar" required>
+              <span class="error-msg">Campo obrigatório.</span>
+            </div>
+            <div class="form-group">
+              <label>Capacidade de atendimento</label>
+              <input type="text" id="ong-capacity" name="capacity" class="form-control" placeholder="Ex: 100 famílias/mês">
+            </div>
+            <div class="form-group" style="grid-column:1/-1">
+              <label>Descrição da organização <span class="required">*</span></label>
+              <textarea id="ong-desc" name="description" class="form-control" rows="4" required placeholder="Conte sobre a missão, história e trabalho da ONG..."></textarea>
+              <span class="error-msg">Campo obrigatório.</span>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-ghost" id="cancel-join">Cancelar</button>
+            <button type="submit" class="btn btn-primary btn-lg">📨 Enviar solicitação</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Modal de detalhes da ONG -->
+<div class="modal-overlay" id="ong-detail-modal">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <h3 id="ong-modal-title">Detalhes da ONG</h3>
+      <button class="modal-close" onclick="closeOngModal()">✕</button>
+    </div>
+    <div class="modal-body" id="ong-modal-body"><!-- JS --></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOngModal()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2025 Salve Comida</span>
+      <a href="index.html" style="color:rgba(255,255,255,0.6)">← Início</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  Storage.seedIfEmpty();
+
+  renderOngs();
+  renderNetworkStats();
+
+  ['ong-search','ong-filter-status'].forEach(id => {
+    document.getElementById(id).addEventListener('input', renderOngs);
+    document.getElementById(id).addEventListener('change', renderOngs);
+  });
+
+  // Toggle formulário
+  document.getElementById('open-join-form').addEventListener('click', () => {
+    const panel = document.getElementById('join-panel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    if (panel.style.display === 'block') panel.scrollIntoView({ behavior:'smooth' });
+  });
+  document.getElementById('cancel-join').addEventListener('click', () => {
+    document.getElementById('join-panel').style.display = 'none';
+  });
+
+  // Formulário de cadastro ONG
+  const form = document.getElementById('ong-form');
+  App.clearErrorOnInput(form);
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    if (!App.validateRequired(form)) {
+      App.showAlert('ong-form-alert','error','Preencha todos os campos obrigatórios.'); return;
+    }
+    const ong = {
+      name:        document.getElementById('ong-name').value.trim(),
+      cnpj:        document.getElementById('ong-cnpj').value.trim(),
+      email:       document.getElementById('ong-email').value.trim(),
+      phone:       document.getElementById('ong-phone').value.trim(),
+      address:     document.getElementById('ong-address').value.trim(),
+      focus:       document.getElementById('ong-focus').value.trim(),
+      capacity:    document.getElementById('ong-capacity').value.trim(),
+      description: document.getElementById('ong-desc').value.trim(),
+      logo:        '🏢',
+      lat: -23.5505 + (Math.random()-0.5)*0.05,
+      lng: -46.6333 + (Math.random()-0.5)*0.05,
+    };
+    Storage.addOng(ong);
+    App.showAlert('ong-form-alert','success','✅ Solicitação enviada! Nossa equipe analisará em até 2 dias úteis.');
+    form.reset();
+    setTimeout(() => {
+      document.getElementById('join-panel').style.display = 'none';
+      renderOngs();
+      renderNetworkStats();
+    }, 2500);
+  });
+});
+
+function renderNetworkStats() {
+  const ongs     = Storage.getOngs();
+  const active   = ongs.filter(o => o.status === 'active');
+  const totRec   = active.reduce((a,o) => a + (o.totalReceived||0), 0);
+  const totKg    = active.reduce((a,o) => a + (o.totalKg||0), 0);
+  document.getElementById('ong-network-stats').innerHTML = [
+    { num: active.length, label:'ONGs ativas',           icon:'🏢', bg:'var(--green-pale)', color:'var(--green-dark)' },
+    { num: totRec,         label:'Doações recebidas',    icon:'🥗', bg:'var(--orange-pale)', color:'var(--orange-main)' },
+    { num: totKg + 'kg',   label:'Alimentos distribuídos',icon:'⚖️', bg:'#ede9fe',          color:'#5b21b6'           },
+  ].map(s => `
+    <div style="background:${s.bg};border-radius:var(--radius);padding:1.5rem;text-align:center;border:1px solid var(--grey-light)">
+      <div style="font-size:1.5rem;margin-bottom:0.25rem">${s.icon}</div>
+      <div style="font-family:var(--font-display);font-size:2rem;font-weight:800;color:${s.color}">${s.num}</div>
+      <div style="font-size:0.82rem;color:var(--grey-mid)">${s.label}</div>
+    </div>`).join('');
+}
+
+function renderOngs() {
+  const search = (document.getElementById('ong-search').value || '').toLowerCase();
+  const status = document.getElementById('ong-filter-status').value;
+  let ongs = Storage.getOngs().filter(o => {
+    if (search && !o.name.toLowerCase().includes(search) && !o.focus.toLowerCase().includes(search)) return false;
+    if (status && o.status !== status) return false;
+    return true;
+  });
+
+  const grid = document.getElementById('ongs-grid');
+  if (ongs.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🏢</div><p>Nenhuma ONG encontrada.</p></div>`;
+    return;
+  }
+  grid.innerHTML = ongs.map(o => buildOngCard(o)).join('');
+}
+
+function buildOngCard(o) {
+  const statusBadge = o.status === 'active'
+    ? '<span class="badge badge-available">Ativa</span>'
+    : '<span class="badge badge-pending">Aguardando aprovação</span>';
+
+  return `
+    <div class="ong-card fade-in">
+      <div class="ong-card-header">
+        <div class="ong-logo">${o.logo||'🏢'}</div>
+        <div style="flex:1">
+          <div style="font-family:var(--font-display);font-size:1.05rem;color:white;font-weight:700">${App.escHtml(o.name)}</div>
+          <div style="font-size:0.8rem;color:rgba(255,255,255,0.75);margin-top:0.2rem">${App.escHtml(o.focus)}</div>
+          <div style="margin-top:0.4rem">${statusBadge}</div>
+        </div>
+      </div>
+      <div class="ong-card-body">
+        <p style="font-size:0.85rem;color:var(--grey-mid);margin-bottom:1rem;line-height:1.6">${App.escHtml(o.description)}</p>
+        ${o.status === 'active' ? `
+        <div class="ong-stat-row">
+          <div class="ong-stat" style="background:#d1fae5;color:#065f46">
+            <div style="font-family:var(--font-display);font-size:1.3rem;font-weight:800">${o.totalReceived||0}</div>
+            <div style="font-size:0.72rem">doações</div>
+          </div>
+          <div class="ong-stat" style="background:var(--orange-pale);color:var(--orange-main)">
+            <div style="font-family:var(--font-display);font-size:1.3rem;font-weight:800">${o.totalKg||0}kg</div>
+            <div style="font-size:0.72rem">alimentos</div>
+          </div>
+          <div class="ong-stat" style="background:#ede9fe;color:#5b21b6">
+            <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:800">${App.escHtml(o.capacity||'—')}</div>
+            <div style="font-size:0.72rem">capacidade</div>
+          </div>
+        </div>` : ''}
+        <div style="font-size:0.82rem;color:var(--grey-mid);display:flex;flex-direction:column;gap:0.3rem">
+          <span>📍 ${App.escHtml(o.address)}</span>
+          <span>📧 ${App.escHtml(o.email)}</span>
+          <span>📞 ${App.escHtml(o.phone)}</span>
+        </div>
+      </div>
+      <div class="ong-card-footer">
+        <span style="font-size:0.78rem;color:var(--grey-mid)">Desde ${App.formatDate(o.joinedAt||o.createdAt ? (o.joinedAt || o.createdAt.split('T')[0]) : '')}</span>
+        <div style="display:flex;gap:0.5rem">
+          <button class="btn btn-outline btn-sm" onclick="showOngDetail('${o.id}')">Ver mais</button>
+          ${o.status === 'active' ? `<a href="receber.html" class="btn btn-secondary btn-sm">Ver doações</a>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
+
+window.showOngDetail = function(id) {
+  const o = Storage.getOngById(id);
+  if (!o) return;
+  document.getElementById('ong-modal-title').textContent = o.name;
+  document.getElementById('ong-modal-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+      <div style="width:60px;height:60px;border-radius:16px;background:var(--green-main);display:flex;align-items:center;justify-content:center;font-size:1.8rem">${o.logo||'🏢'}</div>
+      <div>
+        <h3 style="color:var(--green-dark)">${App.escHtml(o.name)}</h3>
+        <div style="font-size:0.85rem;color:var(--grey-mid)">${App.escHtml(o.focus)}</div>
+      </div>
+    </div>
+    <p style="color:var(--grey-mid);font-size:0.9rem;line-height:1.7;margin-bottom:1.25rem">${App.escHtml(o.description)}</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;font-size:0.88rem">
+      <div><strong>CNPJ:</strong><br>${App.escHtml(o.cnpj||'—')}</div>
+      <div><strong>Capacidade:</strong><br>${App.escHtml(o.capacity||'—')}</div>
+      <div><strong>E-mail:</strong><br>${App.escHtml(o.email)}</div>
+      <div><strong>Telefone:</strong><br>${App.escHtml(o.phone)}</div>
+      <div style="grid-column:1/-1"><strong>Endereço:</strong><br>${App.escHtml(o.address)}</div>
+    </div>
+    ${o.status === 'active' ? `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:1.25rem">
+      <div style="background:var(--green-pale);border-radius:var(--radius-sm);padding:1rem;text-align:center">
+        <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:800;color:var(--green-main)">${o.totalReceived||0}</div>
+        <div style="font-size:0.75rem;color:var(--grey-mid)">Doações recebidas</div>
+      </div>
+      <div style="background:var(--orange-pale);border-radius:var(--radius-sm);padding:1rem;text-align:center">
+        <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:800;color:var(--orange-main)">${o.totalKg||0}kg</div>
+        <div style="font-size:0.75rem;color:var(--grey-mid)">Alimentos</div>
+      </div>
+      <div style="background:#ede9fe;border-radius:var(--radius-sm);padding:1rem;text-align:center">
+        <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:800;color:#5b21b6">${App.escHtml(o.capacity||'—')}</div>
+        <div style="font-size:0.75rem;color:var(--grey-mid)">Capacidade</div>
+      </div>
+    </div>` : ''}`;
+  document.getElementById('ong-detail-modal').classList.add('open');
+};
+
+window.closeOngModal = function() {
+  document.getElementById('ong-detail-modal').classList.remove('open');
+};
+
+document.getElementById('ong-detail-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeOngModal();
+});
+</script>
+</body>
+</html>

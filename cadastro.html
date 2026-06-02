@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar Conta — Salve Comida</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+<div class="auth-page" style="align-items:flex-start;padding:2rem 1rem">
+  <div class="auth-card" style="max-width:520px;margin:auto">
+    <div class="auth-logo">
+      <a href="index.html"><div class="logo-icon">🌱</div> Salve Comida</a>
+    </div>
+
+    <h2 class="auth-title">Criar conta gratuita</h2>
+    <p class="auth-subtitle">Junte-se à comunidade que combate o desperdício.</p>
+
+    <div id="register-alert"></div>
+
+    <form id="register-form" novalidate>
+
+      <!-- Tipo de perfil -->
+      <div class="form-group">
+        <label style="margin-bottom:0.6rem;display:block">Qual é o seu perfil? <span class="required">*</span></label>
+        <div class="role-grid">
+          <div>
+            <input type="radio" name="role" id="role-user" value="user" class="role-option" checked>
+            <label for="role-user"><span>🙋</span>Quero receber</label>
+          </div>
+          <div>
+            <input type="radio" name="role" id="role-donor" value="donor" class="role-option">
+            <label for="role-donor"><span>🤝</span>Quero doar</label>
+          </div>
+          <div>
+            <input type="radio" name="role" id="role-ong" value="ong" class="role-option">
+            <label for="role-ong"><span>🏢</span>Sou uma ONG</label>
+          </div>
+          <div>
+            <input type="radio" name="role" id="role-company" value="donor" class="role-option">
+            <label for="role-company"><span>🏪</span>Empresa doadora</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="name">Nome completo <span class="required">*</span></label>
+        <input type="text" id="name" name="name" class="form-control"
+               placeholder="Seu nome ou razão social" required>
+        <span class="error-msg">Campo obrigatório.</span>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-email">E-mail <span class="required">*</span></label>
+        <input type="email" id="reg-email" name="email" class="form-control"
+               placeholder="seu@email.com" required>
+        <span class="error-msg">Informe um e-mail válido.</span>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Telefone / WhatsApp</label>
+        <input type="tel" id="phone" name="phone" class="form-control"
+               placeholder="(11) 99999-0000">
+      </div>
+
+      <div class="form-group">
+        <label for="reg-password">Senha <span class="required">*</span></label>
+        <div class="input-icon-right">
+          <input type="password" id="reg-password" name="password" class="form-control"
+                 placeholder="Mínimo 6 caracteres" required minlength="6">
+          <button type="button" class="toggle-pw" id="toggle-pw2">👁️</button>
+        </div>
+        <span class="error-msg">Mínimo 6 caracteres.</span>
+      </div>
+
+      <div class="form-group">
+        <label for="confirm-password">Confirmar senha <span class="required">*</span></label>
+        <div class="input-icon-right">
+          <input type="password" id="confirm-password" name="confirmPassword" class="form-control"
+                 placeholder="Repita a senha" required>
+          <button type="button" class="toggle-pw" id="toggle-pw3">👁️</button>
+        </div>
+        <span class="error-msg">As senhas não coincidem.</span>
+      </div>
+
+      <div style="font-size:0.82rem;color:var(--grey-mid);margin-bottom:1.25rem">
+        Ao criar sua conta você concorda com os <a href="sobre.html" style="color:var(--green-main)">termos de uso</a> e a política de privacidade do projeto.
+      </div>
+
+      <button type="submit" class="btn btn-primary w-full" style="justify-content:center">
+        🚀 Criar minha conta
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      Já tem conta? <a href="login.html">Entrar</a>
+    </div>
+    <div class="auth-footer" style="margin-top:0.5rem">
+      <a href="index.html" style="color:var(--grey-mid)">← Voltar ao início</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  Storage.seedIfEmpty();
+
+  // Toggle senhas
+  [['toggle-pw2','reg-password'],['toggle-pw3','confirm-password']].forEach(([btnId,inputId]) => {
+    document.getElementById(btnId).addEventListener('click', () => {
+      const el = document.getElementById(inputId);
+      el.type = el.type === 'password' ? 'text' : 'password';
+    });
+  });
+
+  const form = document.getElementById('register-form');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const name     = form.name.value.trim();
+    const email    = form['reg-email'] ? form['reg-email'].value.trim() : form.email.value.trim();
+    const emailEl  = document.getElementById('reg-email');
+    const password = form.password.value;
+    const confirm  = form.confirmPassword.value;
+    const phone    = form.phone.value.trim();
+    const role     = form.role.value;
+
+    if (!name || !emailEl.value.trim() || !password) {
+      showAlert('Preencha todos os campos obrigatórios.', 'error'); return;
+    }
+    if (password.length < 6) {
+      showAlert('A senha deve ter pelo menos 6 caracteres.', 'error'); return;
+    }
+    if (password !== confirm) {
+      showAlert('As senhas não coincidem.', 'error'); return;
+    }
+
+    const result = Storage.registerUser({ name, email: emailEl.value.trim(), password, phone, role });
+    if (!result.ok) {
+      showAlert(result.msg, 'error'); return;
+    }
+
+    // Login automático
+    Storage.loginUser(emailEl.value.trim(), password);
+    showAlert('🎉 Conta criada! Redirecionando...', 'success');
+
+    setTimeout(() => location.replace('perfil.html'), 1500);
+  });
+
+  function showAlert(msg, type) {
+    const el = document.getElementById('register-alert');
+    const icons = { success:'✅', error:'❌' };
+    el.innerHTML = `<div class="alert alert-${type}">${icons[type]||''} ${msg}</div>`;
+    if (type !== 'success') setTimeout(() => { el.innerHTML = ''; }, 6000);
+  }
+});
+</script>
+</body>
+</html>

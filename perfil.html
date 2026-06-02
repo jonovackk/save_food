@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Perfil — Salve Comida</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo"><div class="logo-icon">🌱</div> Salve Comida</a>
+    <div class="nav-links">
+      <a href="index.html">Início</a>
+      <a href="doar.html">Doar</a>
+      <a href="receber.html">Receber</a>
+      <a href="minhas-doacoes.html">Minhas Doações</a>
+      <a href="minhas-solicitacoes.html">Solicitações</a>
+      <a href="sobre.html">Sobre</a>
+      <a href="contato.html">Contato</a>
+    </div>
+    <button class="nav-hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <div id="profile-hero-content">
+      <!-- preenchido por JS -->
+    </div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container" style="max-width:860px">
+
+    <!-- TABS -->
+    <div class="profile-tabs">
+      <button class="profile-tab active" data-tab="overview">👤 Perfil</button>
+      <button class="profile-tab" data-tab="notifs" id="tab-notifs-btn">🔔 Notificações</button>
+      <button class="profile-tab" data-tab="whatsapp">💬 WhatsApp</button>
+      <button class="profile-tab" data-tab="security">🔒 Segurança</button>
+    </div>
+
+    <!-- TAB: PERFIL -->
+    <div class="tab-panel active" id="tab-overview">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+
+        <!-- Dados pessoais -->
+        <div class="form-card" style="grid-column:1/-1">
+          <div class="form-section-title">✏️ Editar Perfil</div>
+          <div id="profile-alert"></div>
+          <form id="profile-form" novalidate>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Nome <span class="required">*</span></label>
+                <input type="text" id="pf-name" name="name" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label>E-mail</label>
+                <input type="email" id="pf-email" class="form-control" disabled
+                       style="background:var(--grey-pale);color:var(--grey-mid)">
+                <span style="font-size:0.78rem;color:var(--grey-mid);margin-top:0.3rem;display:block">O e-mail não pode ser alterado.</span>
+              </div>
+              <div class="form-group">
+                <label>Telefone / WhatsApp</label>
+                <input type="tel" id="pf-phone" name="phone" class="form-control" placeholder="(11) 99999-0000">
+              </div>
+              <div class="form-group">
+                <label>Perfil</label>
+                <input type="text" id="pf-role" class="form-control" disabled
+                       style="background:var(--grey-pale);color:var(--grey-mid)">
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">💾 Salvar alterações</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Status de verificação -->
+        <div class="tip-card">
+          <h4>📧 Verificação de e-mail</h4>
+          <div id="verify-status"></div>
+        </div>
+
+        <!-- Resumo de atividade -->
+        <div class="tip-card">
+          <h4>📊 Sua atividade</h4>
+          <div id="user-activity"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB: NOTIFICAÇÕES -->
+    <div class="tab-panel" id="tab-notifs">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.5rem">
+        <h3 style="color:var(--green-dark);font-size:1.1rem">Central de Notificações</h3>
+        <button class="btn btn-ghost btn-sm" id="mark-all-read">✅ Marcar todas como lidas</button>
+      </div>
+      <div class="notif-panel">
+        <div class="notif-list" id="notif-list">
+          <!-- preenchido por JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: WHATSAPP -->
+    <div class="tab-panel" id="tab-whatsapp">
+      <div style="display:grid;grid-template-columns:1fr 380px;gap:2rem;align-items:start" id="wa-grid">
+
+        <!-- Configurações -->
+        <div>
+          <div class="wa-settings">
+            <h4>💬 Notificações via WhatsApp</h4>
+            <p style="font-size:0.88rem;color:var(--grey-mid);margin-bottom:1rem">Configure quais eventos geram mensagens no seu WhatsApp. Você receberá alertas em tempo real sobre doações e solicitações.</p>
+
+            <div id="wa-alert" style="margin-bottom:0.75rem"></div>
+
+            <div class="form-group" style="margin-bottom:1rem">
+              <label>Número do WhatsApp</label>
+              <div style="display:flex;gap:0.5rem">
+                <input type="tel" id="wa-phone" class="form-control" placeholder="(11) 99999-0000" style="flex:1">
+                <button class="btn btn-primary btn-sm" id="wa-save-phone">Salvar</button>
+              </div>
+            </div>
+
+            <div id="wa-toggles">
+              <!-- Toggles gerados por JS -->
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-section-title">📨 Enviar mensagem de teste</div>
+            <p style="font-size:0.88rem;color:var(--grey-mid);margin-bottom:1rem">Simule o envio de uma notificação WhatsApp para verificar o formato das mensagens.</p>
+            <div class="form-group">
+              <label>Tipo de notificação</label>
+              <select id="wa-test-type" class="form-control">
+                <option value="new_food">Nova doação disponível</option>
+                <option value="request_received">Solicitação recebida</option>
+                <option value="request_accepted">Solicitação aceita</option>
+                <option value="expiry_reminder">Lembrete de validade</option>
+              </select>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="wa-test-btn">📲 Simular envio</button>
+          </div>
+        </div>
+
+        <!-- Preview do WhatsApp -->
+        <div>
+          <h4 style="color:var(--green-dark);margin-bottom:0.75rem;font-size:0.95rem">📱 Preview da mensagem</h4>
+          <div class="wa-sim">
+            <div class="wa-header">
+              <div class="wa-avatar">🌱</div>
+              <div>
+                <div style="font-weight:600;font-size:0.9rem">Salve Comida</div>
+                <div style="font-size:0.72rem;opacity:0.8">Notificações</div>
+              </div>
+            </div>
+            <div class="wa-chat" id="wa-preview-chat">
+              <div class="wa-bubble received">
+                Olá! 👋 Bem-vindo ao <b>Salve Comida</b>. Ative as notificações para receber alertas sobre doações próximas a você!
+                <div class="wa-time">agora</div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:0.78rem;color:var(--grey-mid);margin-top:0.75rem;text-align:center">
+            ⚠️ Simulação. Em produção, as mensagens seriam enviadas via WhatsApp Business API.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: SEGURANÇA -->
+    <div class="tab-panel" id="tab-security">
+      <div style="max-width:480px">
+        <div class="form-card">
+          <div class="form-section-title">🔑 Alterar senha</div>
+          <div id="security-alert"></div>
+          <form id="security-form" novalidate>
+            <div class="form-group">
+              <label>Senha atual <span class="required">*</span></label>
+              <div class="input-icon-right">
+                <input type="password" id="sec-current" name="current" class="form-control" required>
+                <button type="button" class="toggle-pw" onclick="togglePw('sec-current')">👁️</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Nova senha <span class="required">*</span></label>
+              <div class="input-icon-right">
+                <input type="password" id="sec-new" name="newPw" class="form-control" required minlength="6">
+                <button type="button" class="toggle-pw" onclick="togglePw('sec-new')">👁️</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Confirmar nova senha <span class="required">*</span></label>
+              <div class="input-icon-right">
+                <input type="password" id="sec-confirm" name="confirm" class="form-control" required>
+                <button type="button" class="toggle-pw" onclick="togglePw('sec-confirm')">👁️</button>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">🔒 Alterar senha</button>
+          </form>
+        </div>
+
+        <div class="form-card" style="margin-top:1.25rem;border-top:3px solid #dc2626">
+          <div class="form-section-title" style="color:#dc2626">⚠️ Zona de perigo</div>
+          <p style="font-size:0.88rem;color:var(--grey-mid);margin-bottom:1rem">Ações irreversíveis. Cuidado!</p>
+          <button class="btn btn-danger btn-sm" id="logout-btn">🚪 Encerrar sessão</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2025 Salve Comida</span>
+      <a href="index.html" style="color:rgba(255,255,255,0.6)">← Voltar ao início</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  Auth.requireLogin('login.html');
+  const user = Auth.current();
+
+  // ── Hero ──
+  const roleLabels = { user:'Receptor', donor:'Doador', ong:'ONG Parceira', admin:'Administrador' };
+  document.getElementById('profile-hero-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;justify-content:center;text-align:center">
+      <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;color:white;flex-shrink:0;font-family:var(--font-display)">
+        ${user.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase()}
+      </div>
+      <div>
+        <h1 style="color:white;font-size:1.8rem">${App.escHtml(user.name)}</h1>
+        <p style="color:rgba(255,255,255,0.8)">${App.escHtml(user.email)} · ${roleLabels[user.role]||user.role}</p>
+        ${user.verified ? '<span class="verified-badge" style="margin-top:0.35rem;display:inline-flex">✓ E-mail verificado</span>' : ''}
+      </div>
+    </div>`;
+
+  // ── Tabs ──
+  document.querySelectorAll('.profile-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.profile-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'notifs') renderNotifs();
+    });
+  });
+
+  // Deep-link a aba por hash
+  if (location.hash === '#notificacoes') {
+    document.querySelector('[data-tab="notifs"]').click();
+  }
+
+  // ── Perfil form ──
+  document.getElementById('pf-name').value  = user.name;
+  document.getElementById('pf-email').value = user.email;
+  document.getElementById('pf-phone').value = user.phone || '';
+  const roleLabel = { user:'Receptor', donor:'Doador', ong:'ONG Parceira', admin:'Administrador' };
+  document.getElementById('pf-role').value  = roleLabel[user.role] || user.role;
+
+  document.getElementById('profile-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const name  = document.getElementById('pf-name').value.trim();
+    const phone = document.getElementById('pf-phone').value.trim();
+    if (!name) { App.showAlert('profile-alert','error','O nome é obrigatório.'); return; }
+    Storage.updateUser(user.id, { name, phone });
+    App.showAlert('profile-alert','success','Perfil atualizado com sucesso!');
+    Auth.updateNavAuth();
+  });
+
+  // ── Verificação e-mail ──
+  const verifyEl = document.getElementById('verify-status');
+  if (user.verified) {
+    verifyEl.innerHTML = `<div class="verified-badge">✓ E-mail verificado</div>
+      <p style="font-size:0.82rem;color:var(--grey-mid);margin-top:0.5rem">Sua conta está ativa e verificada.</p>`;
+  } else {
+    verifyEl.innerHTML = `
+      <div class="alert alert-info" style="margin-bottom:0.75rem">⚠️ E-mail ainda não verificado.</div>
+      <button class="btn btn-outline btn-sm" id="verify-btn">📧 Verificar e-mail</button>`;
+    document.getElementById('verify-btn').addEventListener('click', () => {
+      Storage.updateUser(user.id, { verified: true });
+      Storage.addNotification({ userId: user.id, type:'system', title:'E-mail verificado! ✅', body:'Sua conta está completamente ativa. Bem-vindo ao Salve Comida!', link:'' });
+      verifyEl.innerHTML = `<div class="verified-badge">✓ E-mail verificado</div>`;
+    });
+  }
+
+  // ── Atividade ──
+  const myFoods = Storage.getFoods().filter(f => f.userId === user.id);
+  const myReqs  = Storage.getRequestsByUser ? Storage.getRequests().filter(r => r.userId === user.id) : [];
+  document.getElementById('user-activity').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.88rem">
+      <div style="display:flex;justify-content:space-between"><span>Doações cadastradas</span><strong>${myFoods.length}</strong></div>
+      <div style="display:flex;justify-content:space-between"><span>Solicitações feitas</span><strong>${myReqs.length}</strong></div>
+      <div style="display:flex;justify-content:space-between"><span>Membro desde</span><strong>${App.formatDate(user.createdAt ? user.createdAt.split('T')[0] : '')}</strong></div>
+    </div>`;
+
+  // ── Notificações ──
+  renderNotifs();
+
+  document.getElementById('mark-all-read').addEventListener('click', () => {
+    Storage.markAllNotifsRead(user.id);
+    renderNotifs();
+    Auth.updateNavAuth();
+    document.getElementById('tab-notifs-btn').textContent = '🔔 Notificações';
+  });
+
+  function renderNotifs() {
+    const notifs = Storage.getNotifications(user.id);
+    const list   = document.getElementById('notif-list');
+    const unread = notifs.filter(n => !n.read).length;
+
+    const btn = document.getElementById('tab-notifs-btn');
+    btn.textContent = `🔔 Notificações${unread > 0 ? ` (${unread})` : ''}`;
+
+    if (notifs.length === 0) {
+      list.innerHTML = `<div class="empty-state" style="padding:3rem"><div class="empty-icon">🔔</div><p>Nenhuma notificação ainda.</p></div>`;
+      return;
+    }
+    const typeIcon = { system:'⚙️', food:'🥗', request:'📩', whatsapp:'💬' };
+    const typeClass= { system:'',   food:'',    request:'orange', whatsapp:'blue' };
+    list.innerHTML = notifs.map(n => `
+      <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markRead('${n.id}')">
+        <div class="notif-icon ${typeClass[n.type]||''}">${typeIcon[n.type]||'📢'}</div>
+        <div class="notif-content">
+          <div class="notif-title">${App.escHtml(n.title)}</div>
+          <div class="notif-body">${App.escHtml(n.body)}</div>
+          <div class="notif-time">${App.formatDatetime(n.createdAt)}</div>
+        </div>
+        ${!n.read ? '<div style="width:8px;height:8px;border-radius:50%;background:#3b82f6;flex-shrink:0;margin-top:6px"></div>' : ''}
+      </div>`).join('');
+  }
+
+  window.markRead = function(id) {
+    Storage.markNotifRead(id);
+    renderNotifs();
+    Auth.updateNavAuth();
+  };
+
+  // ── WhatsApp ──
+  const waTypes = [
+    { key:'wa_new_food',         label:'Nova doação disponível perto de mim' },
+    { key:'wa_request_received', label:'Recebi uma nova solicitação'          },
+    { key:'wa_request_accepted', label:'Minha solicitação foi aceita'         },
+    { key:'wa_expiry_reminder',  label:'Lembrete: doação próxima do vencimento' },
+    { key:'wa_weekly_digest',    label:'Resumo semanal de atividade'          },
+  ];
+
+  const savedPhone = localStorage.getItem('sc_wa_phone_' + user.id) || user.phone || '';
+  document.getElementById('wa-phone').value = savedPhone;
+
+  document.getElementById('wa-save-phone').addEventListener('click', () => {
+    const ph = document.getElementById('wa-phone').value.trim();
+    localStorage.setItem('sc_wa_phone_' + user.id, ph);
+    showWaAlert('Número salvo! ' + (ph ? ph : '(sem número)'), 'success');
+  });
+
+  const waTogglesEl = document.getElementById('wa-toggles');
+  waTogglesEl.innerHTML = waTypes.map(t => {
+    const enabled = localStorage.getItem('sc_' + t.key + '_' + user.id) !== 'false';
+    return `<div class="wa-notif-row">
+      <span>${t.label}</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="${t.key}" ${enabled ? 'checked' : ''} onchange="toggleWa('${t.key}')">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>`;
+  }).join('');
+
+  window.toggleWa = function(key) {
+    const el = document.getElementById(key);
+    localStorage.setItem('sc_' + key + '_' + user.id, el.checked ? 'true' : 'false');
+    showWaAlert(el.checked ? '✅ Notificação ativada!' : '🔕 Notificação desativada.', 'info');
+  };
+
+  const waMsgs = {
+    new_food:          `🌱 *Salve Comida*\nNova doação disponível!\n\n🍞 *Pães variados* — Padaria Pão Bom\n📍 Centro · 20 unidades\n📅 Disponível até hoje\n\nAcesse: salvecomida.com/receber`,
+    request_received:  `🌱 *Salve Comida*\nVocê recebeu uma solicitação!\n\n📩 Maria Silva quer receber seus *Pães variados*\n📞 (11) 99999-1234\n\nResponda em: salvecomida.com/minhas-doacoes`,
+    request_accepted:  `🌱 *Salve Comida*\nSua solicitação foi aceita! 🎉\n\n✅ *Marmitas prontas* — Restaurante Sabor Caseiro\nentrará em contato para combinar a retirada.`,
+    expiry_reminder:   `🌱 *Salve Comida*\n⏰ Lembrete de validade!\n\n🍱 Sua doação *Marmitas prontas* vence HOJE.\nAtualize o status em: salvecomida.com/minhas-doacoes`,
+  };
+
+  document.getElementById('wa-test-btn').addEventListener('click', () => {
+    const type = document.getElementById('wa-test-type').value;
+    const msg  = waMsgs[type] || 'Notificação de teste.';
+    const time = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const chat = document.getElementById('wa-preview-chat');
+    chat.innerHTML = `
+      <div class="wa-bubble received">
+        ${msg.replace(/\n/g,'<br>').replace(/\*(.*?)\*/g,'<strong>$1</strong>')}
+        <div class="wa-time">${time}</div>
+      </div>
+      <div class="wa-bubble sent">Ok, entendido! Obrigado. 👍<div class="wa-time">${time}</div></div>`;
+    showWaAlert('Mensagem simulada com sucesso! Veja o preview ao lado.', 'success');
+
+    Storage.addNotification({ userId: user.id, type:'whatsapp', title:'📲 Teste de WhatsApp enviado', body:`Mensagem do tipo "${document.getElementById('wa-test-type').options[document.getElementById('wa-test-type').selectedIndex].text}" simulada com sucesso.`, link:'' });
+    Auth.updateNavAuth();
+  });
+
+  function showWaAlert(msg, type) {
+    const el = document.getElementById('wa-alert');
+    el.innerHTML = `<div class="alert alert-${type} fade-in" style="padding:0.6rem 0.9rem;font-size:0.85rem">${msg}</div>`;
+    setTimeout(() => { el.innerHTML = ''; }, 4000);
+  }
+
+  // ── Segurança ──
+  document.getElementById('security-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const current = document.getElementById('sec-current').value;
+    const newPw   = document.getElementById('sec-new').value;
+    const confirm = document.getElementById('sec-confirm').value;
+    const freshUser = Storage.getUserById(user.id);
+
+    if (newPw.length < 6) { App.showAlert('security-alert','error','Nova senha deve ter mínimo 6 caracteres.'); return; }
+    if (newPw !== confirm)  { App.showAlert('security-alert','error','As senhas não coincidem.'); return; }
+
+    const hashFn = pw => { let h=0; for(let i=0;i<pw.length;i++) h=(Math.imul(31,h)+pw.charCodeAt(i))|0; return 'h'+Math.abs(h).toString(16); };
+    if (freshUser.password !== hashFn(current)) { App.showAlert('security-alert','error','Senha atual incorreta.'); return; }
+
+    Storage.updateUser(user.id, { password: hashFn(newPw) });
+    App.showAlert('security-alert','success','Senha alterada com sucesso!');
+    document.getElementById('security-form').reset();
+  });
+
+  document.getElementById('logout-btn').addEventListener('click', () => {
+    if (confirm('Deseja encerrar sua sessão?')) Auth.logout();
+  });
+
+  function togglePw(id) {
+    const el = document.getElementById(id);
+    el.type = el.type === 'password' ? 'text' : 'password';
+  }
+  window.togglePw = togglePw;
+});
+</script>
+</body>
+</html>

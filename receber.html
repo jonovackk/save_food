@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alimentos Disponíveis — Salve Comida</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">🌱</div>
+      Salve Comida
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Início</a>
+      <a href="doar.html">Doar</a>
+      <a href="receber.html">Receber</a>
+      <a href="mapa.html">🗺️ Mapa</a>
+      <a href="dashboard.html">📊 Impacto</a>
+      <a href="ongs.html">🏢 ONGs</a>
+      <a href="minhas-doacoes.html">Minhas Doações</a>
+      <a href="minhas-solicitacoes.html">Solicitações</a>
+      <a href="sobre.html">Sobre</a>
+      <a href="contato.html">Contato</a>
+      <a href="login.html" class="btn btn-sm btn-outline" style="margin-left:0.25rem">Entrar</a>
+    </div>
+    <button class="nav-hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="tag">Disponível agora</div>
+    <h1>Alimentos para você</h1>
+    <p>Encontre alimentos disponíveis perto de você. Todos os itens são doados por pessoas e empresas da sua comunidade.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div id="receive-alert"></div>
+
+    <!-- FILTROS -->
+    <div class="filters-bar">
+      <div class="filter-item" style="flex:2;min-width:200px">
+        <label>🔍 Buscar</label>
+        <input type="text" id="search-input" class="form-control" placeholder="Nome do alimento...">
+      </div>
+      <div class="filter-item">
+        <label>🏷️ Categoria</label>
+        <select id="filter-category" class="form-control">
+          <option value="">Todas</option>
+          <option value="fruits">Frutas e verduras</option>
+          <option value="breads">Pães e massas</option>
+          <option value="meals">Refeições prontas</option>
+          <option value="canned">Enlatados</option>
+          <option value="dairy">Laticínios</option>
+          <option value="beverages">Bebidas</option>
+          <option value="other">Outros</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label>📍 Localização</label>
+        <input type="text" id="filter-location" class="form-control" placeholder="Bairro ou cidade...">
+      </div>
+      <div class="filter-item">
+        <label>📊 Status</label>
+        <select id="filter-status" class="form-control">
+          <option value="">Todos</option>
+          <option value="available">Disponível</option>
+          <option value="reserved">Reservado</option>
+          <option value="closed">Encerrado</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label>↕️ Ordenar</label>
+        <select id="sort-by" class="form-control">
+          <option value="newest">Mais recentes</option>
+          <option value="expiry">Validade próxima</option>
+          <option value="name">Nome A-Z</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between mb-2" style="flex-wrap:wrap;gap:0.5rem">
+      <span id="results-count" style="font-size:0.88rem;color:var(--grey-mid)"></span>
+      <a href="doar.html" class="btn btn-outline btn-sm">+ Cadastrar doação</a>
+    </div>
+
+    <div class="cards-grid" id="foods-grid">
+      <!-- Preenchido via JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ======== MODAL DE SOLICITAÇÃO ======== -->
+<div class="modal-overlay" id="request-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>📩 Solicitar Alimento</h3>
+      <button class="modal-close" onclick="closeModalR('request-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Info do alimento -->
+      <div style="background:var(--green-pale);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1.5rem">
+        <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--green-dark);margin-bottom:0.5rem" id="req-food-name">—</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem;font-size:0.82rem;color:var(--grey-mid)">
+          <span>📦 Qtd disponível: <strong id="req-food-qty">—</strong></span>
+          <span>👤 Doador: <strong id="req-food-donor">—</strong></span>
+          <span>📍 Local: <strong id="req-food-local">—</strong></span>
+          <span>📅 Limite: <strong id="req-food-expiry">—</strong></span>
+        </div>
+      </div>
+
+      <div id="req-alert"></div>
+
+      <form id="request-form" novalidate>
+        <div class="form-group">
+          <label for="req-name">Seu nome <span class="required">*</span></label>
+          <input type="text" id="req-name" name="req-name" class="form-control" placeholder="Seu nome completo" required>
+          <span class="error-msg">Campo obrigatório.</span>
+        </div>
+        <div class="form-group">
+          <label for="req-contact">Telefone ou e-mail <span class="required">*</span></label>
+          <input type="text" id="req-contact" name="req-contact" class="form-control" placeholder="Como o doador pode entrar em contato?" required>
+          <span class="error-msg">Campo obrigatório.</span>
+        </div>
+        <div class="form-group">
+          <label for="req-qty">Quantidade desejada <span class="required">*</span></label>
+          <input type="text" id="req-qty" name="req-qty" class="form-control" placeholder="Ex: 3 unidades" required>
+          <span class="error-msg">Campo obrigatório.</span>
+        </div>
+        <div class="form-group" id="req-delivery-row">
+          <label for="req-mode">Modalidade de recebimento <span class="required">*</span></label>
+          <select id="req-mode" name="req-mode" class="form-control" required>
+            <option value="pickup">Retirada no local</option>
+            <option value="delivery">Entrega (se disponível)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="req-message">Mensagem para o doador <em style="font-weight:400;color:var(--grey-mid)">(opcional)</em></label>
+          <textarea id="req-message" name="req-message" class="form-control" placeholder="Conte um pouco sobre você ou deixe um agradecimento..." rows="3"></textarea>
+        </div>
+        <div style="background:var(--orange-pale);border-radius:var(--radius-sm);padding:0.85rem;font-size:0.85rem;color:#92400e">
+          ℹ️ Após enviar, aguarde o doador entrar em contato pelo canal informado. A retirada/entrega será combinada diretamente.
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModalR('request-modal')">Cancelar</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('request-form').dispatchEvent(new Event('submit', {bubbles:true,cancelable:true}))">📩 Enviar Solicitação</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2025 Salve Comida — Projeto acadêmico / protótipo funcional</span>
+      <span>Feito com 💚 para a comunidade</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/requests.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    initReceiveFood();
+  });
+</script>
+</body>
+</html>

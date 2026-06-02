@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minhas Solicitações — Salve Comida</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">🌱</div>
+      Salve Comida
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Início</a>
+      <a href="doar.html">Doar</a>
+      <a href="receber.html">Receber</a>
+      <a href="mapa.html">🗺️ Mapa</a>
+      <a href="dashboard.html">📊 Impacto</a>
+      <a href="ongs.html">🏢 ONGs</a>
+      <a href="minhas-doacoes.html">Minhas Doações</a>
+      <a href="minhas-solicitacoes.html">Solicitações</a>
+      <a href="sobre.html">Sobre</a>
+      <a href="contato.html">Contato</a>
+      <a href="login.html" class="btn btn-sm btn-outline" style="margin-left:0.25rem">Entrar</a>
+    </div>
+    <button class="nav-hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="tag">Gerenciar pedidos</div>
+    <h1>Minhas Solicitações</h1>
+    <p>Acompanhe o status de todos os pedidos feitos na plataforma. Aceite, recuse ou finalize solicitações conforme necessário.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+
+    <!-- Estatísticas rápidas -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2.5rem" id="req-stats">
+      <!-- Preenchido via JS -->
+    </div>
+
+    <div id="my-requests-alert" class="mb-2"></div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.5rem">
+      <h2 style="font-size:1.2rem;color:var(--green-dark)">Todas as solicitações</h2>
+      <a href="receber.html" class="btn btn-outline btn-sm">Ver alimentos disponíveis</a>
+    </div>
+
+    <div id="my-requests-list" style="display:flex;flex-direction:column;gap:1.25rem">
+      <!-- Preenchido via JS -->
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2025 Salve Comida — Projeto acadêmico / protótipo funcional</span>
+      <span>Feito com 💚 para a comunidade</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/requests.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Stats
+    const reqs = Storage.getRequests();
+    const statsEl = document.getElementById('req-stats');
+    const counts = {
+      total:    reqs.length,
+      pending:  reqs.filter(r => r.status === 'pending').length,
+      accepted: reqs.filter(r => r.status === 'accepted').length,
+      done:     reqs.filter(r => r.status === 'done').length,
+    };
+    const statsConfig = [
+      { label: 'Total',       num: counts.total,    bg: 'var(--grey-pale)',   color: 'var(--grey-dark)'   },
+      { label: 'Pendentes',   num: counts.pending,  bg: '#dbeafe',            color: '#1e40af'             },
+      { label: 'Aceitos',     num: counts.accepted, bg: 'var(--green-pale)',  color: 'var(--green-dark)'  },
+      { label: 'Finalizados', num: counts.done,     bg: '#ede9fe',            color: '#5b21b6'             },
+    ];
+    statsEl.innerHTML = statsConfig.map(s => `
+      <div style="background:${s.bg};border-radius:var(--radius);padding:1.25rem;text-align:center;border:1px solid var(--grey-light)">
+        <div style="font-family:var(--font-display);font-size:2rem;font-weight:800;color:${s.color}">${s.num}</div>
+        <div style="font-size:0.82rem;color:var(--grey-mid)">${s.label}</div>
+      </div>`).join('');
+
+    initMyRequests();
+  });
+</script>
+</body>
+</html>

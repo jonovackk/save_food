@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salve Comida — Compartilhe mais, desperdice menos</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+<!-- ======== NAVBAR ======== -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">🌱</div>
+      Salve Comida
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="active">Início</a>
+      <a href="doar.html" class="nav-link-cta">🤝 Doar</a>
+      <a href="receber.html">🥗 Receber</a>
+      <a href="mapa.html">🗺️ Mapa</a>
+
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" aria-expanded="false">
+          Explorar <span class="nav-chevron">▾</span>
+        </button>
+        <div class="nav-dropdown-menu">
+          <a href="dashboard.html">📊 Impacto</a>
+          <a href="ongs.html">🏢 ONGs</a>
+          <a href="sobre.html">ℹ️ Sobre</a>
+          <a href="contato.html">✉️ Contato</a>
+        </div>
+      </div>
+
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" aria-expanded="false">
+          Minha Conta <span class="nav-chevron">▾</span>
+        </button>
+        <div class="nav-dropdown-menu">
+          <a href="minhas-doacoes.html">📦 Minhas Doações</a>
+          <a href="minhas-solicitacoes.html">📋 Solicitações</a>
+          <a href="perfil.html">👤 Perfil</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-auth">
+      <a href="login.html" class="btn btn-sm btn-outline">Entrar</a>
+      <a href="cadastro.html" class="btn btn-sm btn-primary">Criar conta</a>
+    </div>
+
+    <button class="nav-hamburger" aria-label="Menu" id="nav-hamburger-btn">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div class="nav-mobile" id="nav-mobile">
+    <a href="index.html">Início</a>
+    <a href="doar.html">🤝 Doar</a>
+    <a href="receber.html">🥗 Receber</a>
+    <a href="mapa.html">🗺️ Mapa</a>
+    <a href="dashboard.html">📊 Impacto</a>
+    <a href="ongs.html">🏢 ONGs</a>
+    <a href="minhas-doacoes.html">📦 Minhas Doações</a>
+    <a href="minhas-solicitacoes.html">📋 Solicitações</a>
+    <a href="sobre.html">ℹ️ Sobre</a>
+    <a href="contato.html">✉️ Contato</a>
+    <div class="nav-mobile-auth">
+      <a href="login.html" class="btn btn-outline">Entrar</a>
+      <a href="cadastro.html" class="btn btn-primary">Criar conta</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ======== HERO ======== -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="tag">🌍 Plataforma de Doação de Alimentos</div>
+        <h1>Compartilhe mais,<br>desperdice menos.</h1>
+        <p>Conectamos doadores de alimentos a pessoas que precisam. Padarias, restaurantes, mercados e cidadãos — juntos, construindo uma comunidade mais solidária.</p>
+        <div class="hero-buttons">
+          <a href="doar.html" class="btn btn-white btn-lg">🤝 Quero Doar</a>
+          <a href="receber.html" class="btn btn-outline-white btn-lg">🥗 Ver Alimentos</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-card-float">
+          <div style="font-size:2rem;margin-bottom:0.75rem">🥦🍞🥛🍱</div>
+          <h3 style="color:white;margin-bottom:0.5rem;font-size:1.1rem">Alimentos disponíveis agora</h3>
+          <p style="color:rgba(255,255,255,0.7);font-size:0.88rem;margin-bottom:1rem">Itens sendo doados na sua comunidade hoje.</p>
+          <div class="hero-stats" id="hero-stats">
+            <div class="hero-stat">
+              <div class="hero-stat-num" id="stat-foods">0</div>
+              <div class="hero-stat-label">Doações ativas</div>
+            </div>
+            <div class="hero-stat">
+              <div class="hero-stat-num" id="stat-requests">0</div>
+              <div class="hero-stat-label">Solicitações</div>
+            </div>
+            <div class="hero-stat">
+              <div class="hero-stat-num">0%</div>
+              <div class="hero-stat-label">Desperdício evitado</div>
+            </div>
+            <div class="hero-stat">
+              <div class="hero-stat-num">💚</div>
+              <div class="hero-stat-label">Solidariedade</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== COMO FUNCIONA ======== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="tag">Como funciona</div>
+      <h2>Simples, rápido e solidário</h2>
+      <p>Em poucos passos, você conecta alimentos que seriam desperdiçados a pessoas que precisam.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div style="font-size:2rem;margin-bottom:0.75rem">📝</div>
+        <h3>Cadastre a doação</h3>
+        <p>Doadores preenchem um formulário com os dados dos alimentos disponíveis.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div style="font-size:2rem;margin-bottom:0.75rem">👀</div>
+        <h3>Comunidade visualiza</h3>
+        <p>Qualquer pessoa pode ver os alimentos disponíveis, filtrar por categoria e localização.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div style="font-size:2rem;margin-bottom:0.75rem">📩</div>
+        <h3>Solicite o alimento</h3>
+        <p>O usuário faz uma solicitação informando seus dados e a quantidade desejada.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div style="font-size:2rem;margin-bottom:0.75rem">🤝</div>
+        <h3>Combine a retirada</h3>
+        <p>Doador e receptor combinam retirada ou entrega diretamente pelo contato informado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== BENEFÍCIOS ======== -->
+<section class="section" style="background:var(--grey-pale)">
+  <div class="container">
+    <div class="section-header">
+      <div class="tag">Por que participar</div>
+      <h2>Benefícios para todos</h2>
+      <p>Cada doação faz uma diferença real na vida de pessoas e no meio ambiente.</p>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon">♻️</div>
+        <div>
+          <h3>Menos desperdício</h3>
+          <p>Alimentos que iriam para o lixo chegam a quem realmente precisa, reduzindo o impacto ambiental.</p>
+        </div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">❤️</div>
+        <div>
+          <h3>Apoio a famílias</h3>
+          <p>Pessoas em situação de vulnerabilidade têm acesso a alimentos de qualidade, gratuitamente.</p>
+        </div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🏪</div>
+        <div>
+          <h3>Responsabilidade empresarial</h3>
+          <p>Empresas locais reduzem custos de descarte e constroem uma imagem mais sustentável e humana.</p>
+        </div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🌱</div>
+        <div>
+          <h3>Comunidade mais forte</h3>
+          <p>A solidariedade cria laços entre vizinhos, comerciantes e famílias, fortalecendo o bairro.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== ALIMENTOS RECENTES ======== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="tag">Disponíveis agora</div>
+      <h2>Alimentos esperando por você</h2>
+      <p>Veja alguns dos itens cadastrados recentemente.</p>
+    </div>
+    <div class="cards-grid" id="home-foods-grid">
+      <!-- Preenchido via JS -->
+    </div>
+    <div class="text-center mt-3">
+      <a href="receber.html" class="btn btn-outline btn-lg">Ver todos os alimentos →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ======== CTA ======== -->
+<section class="section-sm">
+  <div class="container">
+    <div class="cta-banner">
+      <h2>Tem alimento sobrando?</h2>
+      <p>Evite o desperdício. Cadastre sua doação agora e ajude alguém próximo de você.</p>
+      <div class="cta-banner-btns">
+        <a href="doar.html" class="btn btn-white btn-lg">🤝 Quero Doar Agora</a>
+        <a href="receber.html" class="btn btn-outline-white btn-lg">🥗 Ver Disponíveis</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== FOOTER ======== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo">
+          <div class="logo-icon">🌱</div>
+          Salve Comida
+        </a>
+        <p>Uma plataforma comunitária que conecta doadores de alimentos a pessoas que precisam. Juntos, combatemos o desperdício e fortalecemos a solidariedade.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navegação</h4>
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="doar.html">Doar alimentos</a></li>
+          <li><a href="receber.html">Receber alimentos</a></li>
+          <li><a href="sobre.html">Sobre o projeto</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contato</h4>
+        <ul>
+          <li><a href="mailto:contato@salvecomida.com">contato@salvecomida.com</a></li>
+          <li><a href="#">(11) 98765-4321</a></li>
+          <li><a href="#">São Paulo, SP</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Salve Comida — Projeto acadêmico / protótipo funcional</span>
+      <span>Feito com 💚 para a comunidade</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  // Navbar: hamburger + dropdowns
+  const hamburger = document.getElementById('nav-hamburger-btn');
+  const mobileMenu = document.getElementById('nav-mobile');
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+  });
+
+  document.querySelectorAll('.nav-dropdown-toggle').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const dropdown = btn.closest('.nav-dropdown');
+      const isOpen = dropdown.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+      // close siblings
+      document.querySelectorAll('.nav-dropdown').forEach(d => {
+        if (d !== dropdown) { d.classList.remove('open'); d.querySelector('.nav-dropdown-toggle').setAttribute('aria-expanded', false); }
+      });
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.nav-dropdown')) {
+      document.querySelectorAll('.nav-dropdown').forEach(d => {
+        d.classList.remove('open');
+        d.querySelector('.nav-dropdown-toggle').setAttribute('aria-expanded', false);
+      });
+    }
+  });
+</script>
+<script>
+  // Estatísticas dinâmicas no hero
+  document.addEventListener('DOMContentLoaded', () => {
+    const foods    = Storage.getFoods();
+    const requests = Storage.getRequests();
+    document.getElementById('stat-foods').textContent    = foods.filter(f => f.status === 'available').length;
+    document.getElementById('stat-requests').textContent = requests.length;
+
+    // Mini-cards recentes
+    const grid = document.getElementById('home-foods-grid');
+    const recent = foods.filter(f => f.status !== 'closed').slice(0, 3);
+
+    if (recent.length === 0) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📦</div><p>Nenhuma doação cadastrada ainda.</p></div>`;
+      return;
+    }
+
+    grid.innerHTML = recent.map(food => `
+      <div class="food-card fade-in">
+        <div class="food-card-img">${food.image && food.image.startsWith('data:') ? `<img src="${food.image}" alt="${food.foodName}">` : `<span style="font-size:3rem">${getCatEmoji(food.category)}</span>`}</div>
+        <div class="food-card-body">
+          <div class="food-card-title">${food.foodName}</div>
+          <div class="food-card-meta">
+            <div class="food-meta-row">📦 ${food.quantity}</div>
+            <div class="food-meta-row">📍 ${food.location}</div>
+            <div class="food-meta-row">👤 ${food.donorName}</div>
+          </div>
+        </div>
+        <div class="food-card-footer">
+          <span class="badge badge-available">Disponível</span>
+          <a href="receber.html" class="btn btn-secondary btn-sm">Ver</a>
+        </div>
+      </div>`).join('');
+  });
+
+  function getCatEmoji(cat) {
+    const map = { fruits:'🥦', breads:'🍞', meals:'🍱', canned:'🥫', dairy:'🥛', beverages:'🧃', other:'📦' };
+    return map[cat] || '📦';
+  }
+</script>
+</body>
+</html>

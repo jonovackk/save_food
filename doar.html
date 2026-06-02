@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doar Alimentos — Salve Comida</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">🌱</div>
+      Salve Comida
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Início</a>
+      <a href="doar.html">Doar</a>
+      <a href="receber.html">Receber</a>
+      <a href="mapa.html">🗺️ Mapa</a>
+      <a href="dashboard.html">📊 Impacto</a>
+      <a href="ongs.html">🏢 ONGs</a>
+      <a href="minhas-doacoes.html">Minhas Doações</a>
+      <a href="minhas-solicitacoes.html">Solicitações</a>
+      <a href="sobre.html">Sobre</a>
+      <a href="contato.html">Contato</a>
+      <a href="login.html" class="btn btn-sm btn-outline" style="margin-left:0.25rem">Entrar</a>
+    </div>
+    <button class="nav-hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="tag">Faça a diferença</div>
+    <h1>Cadastrar Doação</h1>
+    <p>Preencha o formulário abaixo para disponibilizar alimentos para a comunidade. Juntos reduzimos o desperdício.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div id="donate-alert"></div>
+
+    <div class="donate-layout">
+      <!-- FORMULÁRIO PRINCIPAL -->
+      <div class="form-card">
+        <form id="donate-form" novalidate>
+
+          <!-- Seção 1: Dados do doador -->
+          <div class="form-section-title">👤 Dados do Doador</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="donorName">Nome do doador ou empresa <span class="required">*</span></label>
+              <input type="text" id="donorName" name="donorName" class="form-control" placeholder="Ex: Padaria Pão Bom" required>
+              <span class="error-msg">Campo obrigatório.</span>
+            </div>
+            <div class="form-group">
+              <label for="donorType">Tipo de doador <span class="required">*</span></label>
+              <select id="donorType" name="donorType" class="form-control" required>
+                <option value="">Selecione...</option>
+                <option value="person">Pessoa física</option>
+                <option value="restaurant">Restaurante</option>
+                <option value="market">Mercado</option>
+                <option value="bakery">Padaria</option>
+                <option value="company">Empresa</option>
+                <option value="other">Outro</option>
+              </select>
+              <span class="error-msg">Selecione uma opção.</span>
+            </div>
+            <div class="form-group form-full">
+              <label for="contact">Telefone ou e-mail para contato <span class="required">*</span></label>
+              <input type="text" id="contact" name="contact" class="form-control" placeholder="Ex: (11) 99999-1234 ou email@exemplo.com" required>
+              <span class="error-msg">Campo obrigatório.</span>
+            </div>
+          </div>
+
+          <!-- Seção 2: Dados do alimento -->
+          <div class="form-section-title" style="margin-top:1.75rem">🥗 Dados do Alimento</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="foodName">Nome do alimento <span class="required">*</span></label>
+              <input type="text" id="foodName" name="foodName" class="form-control" placeholder="Ex: Pães variados" required>
+              <span class="error-msg">Campo obrigatório.</span>
+            </div>
+            <div class="form-group">
+              <label for="category">Categoria <span class="required">*</span></label>
+              <select id="category" name="category" class="form-control" required>
+                <option value="">Selecione...</option>
+                <option value="fruits">Frutas e verduras</option>
+                <option value="breads">Pães e massas</option>
+                <option value="meals">Refeições prontas</option>
+                <option value="canned">Enlatados</option>
+                <option value="dairy">Laticínios</option>
+                <option value="beverages">Bebidas</option>
+                <option value="other">Outros</option>
+              </select>
+              <span class="error-msg">Selecione uma categoria.</span>
+            </div>
+            <div class="form-group form-full">
+              <label for="description">Descrição do alimento</label>
+              <textarea id="description" name="description" class="form-control" placeholder="Descreva o alimento, condição, origem, etc."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="quantity">Quantidade disponível <span class="required">*</span></label>
+              <input type="text" id="quantity" name="quantity" class="form-control" placeholder="Ex: 10 unidades, 2 kg" required>
+              <span class="error-msg">Campo obrigatório.</span>
+            </div>
+            <div class="form-group">
+              <label for="expiryDate">Data limite para retirada <span class="required">*</span></label>
+              <input type="date" id="expiryDate" name="expiryDate" class="form-control" required>
+              <span class="error-msg">Campo obrigatório.</span>
+            </div>
+            <div class="form-group">
+              <label for="foodState">Estado do alimento <span class="required">*</span></label>
+              <select id="foodState" name="foodState" class="form-control" required>
+                <option value="">Selecione...</option>
+                <option value="new">Novo / fechado</option>
+                <option value="fresh">Preparado recentemente</option>
+                <option value="nearexpiry">Próximo do vencimento</option>
+                <option value="other">Outro</option>
+              </select>
+              <span class="error-msg">Selecione uma opção.</span>
+            </div>
+            <div class="form-group">
+              <label for="location">Localização para retirada <span class="required">*</span></label>
+              <input type="text" id="location" name="location" class="form-control" placeholder="Ex: Rua das Flores, 45 - Centro" required>
+              <span class="error-msg">Campo obrigatório.</span>
+            </div>
+            <div class="form-group">
+              <label for="deliveryOption">Opção de entrega <span class="required">*</span></label>
+              <select id="deliveryOption" name="deliveryOption" class="form-control" required>
+                <option value="">Selecione...</option>
+                <option value="local">Apenas retirada no local</option>
+                <option value="delivery">Posso entregar</option>
+                <option value="negotiate">A combinar</option>
+              </select>
+              <span class="error-msg">Selecione uma opção.</span>
+            </div>
+            <div class="form-group form-full">
+              <label>Foto do alimento <em style="font-weight:400;color:var(--grey-mid)">(opcional)</em></label>
+              <div class="img-upload" id="img-upload-area">
+                <input type="file" id="food-image" name="food-image" accept="image/*">
+                <div class="img-upload-icon">📷</div>
+                <p>Clique ou arraste uma imagem aqui</p>
+                <p style="font-size:0.78rem;margin-top:0.25rem">JPG, PNG, WEBP — máx. 5 MB</p>
+              </div>
+              <div class="img-preview" id="img-preview">
+                <img id="preview-img" src="" alt="Preview">
+                <button type="button" class="img-preview-remove" id="img-remove">✕</button>
+              </div>
+            </div>
+            <div class="form-group form-full">
+              <label for="observations">Observações adicionais</label>
+              <textarea id="observations" name="observations" class="form-control" placeholder="Horário de retirada, informações extras, etc."></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-ghost" onclick="document.getElementById('donate-form').reset()">Limpar</button>
+            <button type="submit" class="btn btn-primary btn-lg">🤝 Cadastrar Doação</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- SIDEBAR DE DICAS -->
+      <div class="sidebar-tips">
+        <div class="tip-card" style="background:var(--green-pale);border-color:var(--green-light)">
+          <h4 style="color:var(--green-dark)">💡 Dicas importantes</h4>
+          <ul class="tip-list">
+            <li>Informe a data limite com antecedência suficiente para a retirada.</li>
+            <li>Seja preciso na descrição do alimento e sua condição.</li>
+            <li>Adicione uma foto para aumentar as chances de doação.</li>
+            <li>Mantenha seu contato atualizado para receber solicitações.</li>
+            <li>Alimentos preparados devem ser retirados no mesmo dia.</li>
+          </ul>
+        </div>
+
+        <div class="tip-card">
+          <h4>📋 O que posso doar?</h4>
+          <ul class="tip-list">
+            <li>Alimentos industrializados dentro do prazo</li>
+            <li>Frutas e verduras em bom estado</li>
+            <li>Refeições preparadas (validade: mesmo dia)</li>
+            <li>Pães e massas frescos</li>
+            <li>Bebidas em embalagem original</li>
+            <li>Laticínios dentro do prazo</li>
+          </ul>
+        </div>
+
+        <div class="tip-card" style="background:var(--orange-pale);border-color:#fbb67a">
+          <h4 style="color:var(--orange-main)">⚠️ Atenção</h4>
+          <ul class="tip-list">
+            <li>Não cadastre alimentos vencidos.</li>
+            <li>Alimentos com sinais de deterioração não devem ser doados.</li>
+            <li>Você é responsável pela qualidade do que doa.</li>
+          </ul>
+        </div>
+
+        <div class="tip-card">
+          <h4>📊 Suas doações</h4>
+          <p style="font-size:0.88rem;color:var(--grey-mid)">Gerencie suas doações cadastradas na página <a href="minhas-doacoes.html" style="color:var(--green-main);font-weight:600">Minhas Doações</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2025 Salve Comida — Projeto acadêmico / protótipo funcional</span>
+      <span>Feito com 💚 para a comunidade</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/donations.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    initDonateForm();
+    // Pré-seleciona data de amanhã como padrão
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const expiryInput = document.getElementById('expiryDate');
+    if (expiryInput) expiryInput.value = tomorrow.toISOString().split('T')[0];
+  });
+</script>
+</body>
+</html>

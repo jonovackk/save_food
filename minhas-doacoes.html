@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minhas Doações — Salve Comida</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">🌱</div>
+      Salve Comida
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Início</a>
+      <a href="doar.html">Doar</a>
+      <a href="receber.html">Receber</a>
+      <a href="mapa.html">🗺️ Mapa</a>
+      <a href="dashboard.html">📊 Impacto</a>
+      <a href="ongs.html">🏢 ONGs</a>
+      <a href="minhas-doacoes.html">Minhas Doações</a>
+      <a href="minhas-solicitacoes.html">Solicitações</a>
+      <a href="sobre.html">Sobre</a>
+      <a href="contato.html">Contato</a>
+      <a href="login.html" class="btn btn-sm btn-outline" style="margin-left:0.25rem">Entrar</a>
+    </div>
+    <button class="nav-hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="tag">Área do Doador</div>
+    <h1>Minhas Doações</h1>
+    <p>Gerencie as doações que você cadastrou. Edite, altere o status ou remova itens conforme necessário.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="flex items-center justify-between mb-3" style="flex-wrap:wrap;gap:1rem">
+      <div id="my-donations-alert" style="flex:1"></div>
+      <a href="doar.html" class="btn btn-primary">+ Nova doação</a>
+    </div>
+
+    <div id="my-donations-list" style="display:flex;flex-direction:column;gap:1.25rem">
+      <!-- Preenchido via JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ======== MODAL DE EDIÇÃO ======== -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>✏️ Editar Doação</h3>
+      <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="edit-form" novalidate>
+        <input type="hidden" id="edit-food-id">
+        <div class="form-grid">
+          <div class="form-group form-full">
+            <label for="edit-foodName">Nome do alimento</label>
+            <input type="text" id="edit-foodName" name="edit-foodName" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-category">Categoria</label>
+            <select id="edit-category" name="edit-category" class="form-control">
+              <option value="fruits">Frutas e verduras</option>
+              <option value="breads">Pães e massas</option>
+              <option value="meals">Refeições prontas</option>
+              <option value="canned">Enlatados</option>
+              <option value="dairy">Laticínios</option>
+              <option value="beverages">Bebidas</option>
+              <option value="other">Outros</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-quantity">Quantidade</label>
+            <input type="text" id="edit-quantity" name="edit-quantity" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="edit-location">Localização</label>
+            <input type="text" id="edit-location" name="edit-location" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="edit-expiryDate">Data limite</label>
+            <input type="date" id="edit-expiryDate" name="edit-expiryDate" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="edit-deliveryOption">Entrega</label>
+            <select id="edit-deliveryOption" name="edit-deliveryOption" class="form-control">
+              <option value="local">Apenas retirada no local</option>
+              <option value="delivery">Posso entregar</option>
+              <option value="negotiate">A combinar</option>
+            </select>
+          </div>
+          <div class="form-group form-full">
+            <label for="edit-description">Descrição</label>
+            <textarea id="edit-description" name="edit-description" class="form-control" rows="3"></textarea>
+          </div>
+          <div class="form-group form-full">
+            <label for="edit-observations">Observações</label>
+            <textarea id="edit-observations" name="edit-observations" class="form-control" rows="2"></textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('edit-modal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="document.getElementById('edit-form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}))">💾 Salvar alterações</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== MODAL DE SOLICITAÇÕES RECEBIDAS ======== -->
+<div class="modal-overlay" id="requests-modal">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-header">
+      <h3 id="requests-modal-title">Solicitações recebidas</h3>
+      <button class="modal-close" onclick="closeModal('requests-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="requests-modal-body">
+      <!-- Preenchido via JS -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('requests-modal')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2025 Salve Comida — Projeto acadêmico / protótipo funcional</span>
+      <span>Feito com 💚 para a comunidade</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/donations.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    initMyDonations();
+    initEditModal();
+
+    // Fecha modal ao clicar no overlay
+    document.querySelectorAll('.modal-overlay').forEach(el => {
+      el.addEventListener('click', e => {
+        if (e.target === el) el.classList.remove('open');
+      });
+    });
+  });
+</script>
+</body>
+</html>
