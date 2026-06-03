@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/backend', (req, res) => res.status(403).end());
 
 // ── Serve os arquivos do frontend (HTML, CSS, JS) da raiz do projeto
-app.use(express.static(path.join(__dirname, '../../..')));
+app.use(express.static(path.join(__dirname, '../..')));
 
 // ── Rotas da API
 app.use('/api/auth',      authRoutes);
@@ -35,7 +35,7 @@ app.use('/api', (req, res) => {
 
 // ── Fallback: serve index.html para todas as outras rotas
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../index.html'));
+  res.sendFile(path.join(__dirname, '../../index.html'));
 });
 
 // ── Inicia servidor
