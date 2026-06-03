@@ -141,6 +141,23 @@
  </div>
 </div>
 
+<!-- MODAL DE CONFIRMAÇÃO -->
+<div class="modal-overlay" id="confirm-modal">
+ <div class="modal" style="max-width:420px">
+ <div class="modal-header">
+ <h3 id="confirm-modal-title">Confirmar</h3>
+ <button class="modal-close" onclick="confirmCancel()"></button>
+ </div>
+ <div class="modal-body">
+ <p id="confirm-modal-msg" style="color:var(--grey-dark);line-height:1.6;margin:0"></p>
+ </div>
+ <div class="modal-footer">
+ <button class="btn btn-ghost" onclick="confirmCancel()">Cancelar</button>
+ <button class="btn btn-primary" onclick="confirmOk()" style="background:#dc2626;border-color:#dc2626">Confirmar</button>
+ </div>
+ </div>
+</div>
+
 <footer class="footer">
  <div class="container">
  <div class="footer-bottom">
@@ -238,6 +255,8 @@ function openEdit(id) {
  document.getElementById('edit-deliveryOption').value = d.deliveryOption;
  document.getElementById('edit-description').value = d.description;
  document.getElementById('edit-modal').classList.add('open');
+ }).catch(function(err) {
+ showAlert('Erro ao carregar doação: ' + (err.message||'tente novamente.'), 'error');
  });
 }
 
@@ -267,7 +286,7 @@ async function saveEdit() {
 }
 
 async function encerrar(id) {
- if (!confirm('Encerrar esta doação? Ela não aparecerá mais como disponível.')) return;
+ if (!await customConfirm('Encerrar esta doação? Ela não aparecerá mais como disponível.', 'Encerrar doação')) return;
  try {
  await Api.donations.update(id, { status: 'CANCELLED' });
  showAlert(' Doação encerrada.', 'success');
@@ -276,7 +295,7 @@ async function encerrar(id) {
 }
 
 async function remover(id) {
- if (!confirm('Tem certeza que deseja remover esta doação? Esta ação não pode ser desfeita.')) return;
+ if (!await customConfirm('Tem certeza que deseja remover esta doação? Esta ação não pode ser desfeita.', 'Remover doação')) return;
  try {
  await Api.donations.remove(id);
  showAlert(' Doação removida.', 'success');
@@ -285,6 +304,24 @@ async function remover(id) {
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+var _confirmResolve = null;
+function customConfirm(msg, title) {
+ return new Promise(function(r) {
+ _confirmResolve = r;
+ document.getElementById('confirm-modal-title').textContent = title || 'Confirmar';
+ document.getElementById('confirm-modal-msg').textContent = msg;
+ document.getElementById('confirm-modal').classList.add('open');
+ });
+}
+function confirmCancel() {
+ document.getElementById('confirm-modal').classList.remove('open');
+ if (_confirmResolve) { _confirmResolve(false); _confirmResolve = null; }
+}
+function confirmOk() {
+ document.getElementById('confirm-modal').classList.remove('open');
+ if (_confirmResolve) { _confirmResolve(true); _confirmResolve = null; }
+}
 
 function showAlert(msg, type) {
  var el = document.getElementById('my-donations-alert');
