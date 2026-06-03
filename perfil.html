@@ -132,7 +132,7 @@
  <div class="form-group" style="margin-bottom:1rem">
  <label>Número do WhatsApp</label>
  <div style="display:flex;gap:0.5rem">
- <input type="tel" id="wa-phone" class="form-control" placeholder="(11) 99999-0000" style="flex:1">
+ <input type="tel" id="wa-phone" class="form-control" placeholder="+55 11 99999-0000 ou +352 691 234 567" style="flex:1">
  <button class="btn btn-primary btn-sm" id="wa-save-phone">Salvar</button>
  </div>
  </div>
@@ -346,8 +346,27 @@ document.addEventListener('DOMContentLoaded', async function() {
  localStorage.setItem('sc_' + key, el.checked ? 'true' : 'false');
  showWaAlert(el.checked ? ' Ativado!' : ' Desativado.', 'info');
  };
+ var WA_MESSAGES = {
+ new_food: 'Salve Comida: Nova doação disponível perto de você! Acesse o site para ver os detalhes e solicitar.',
+ request_received: 'Salve Comida: Você recebeu uma nova solicitação para uma de suas doações. Acesse "Solicitações Recebidas" para aceitar ou recusar.',
+ request_accepted: 'Salve Comida: Sua solicitação foi aceita! Entre em contato com o doador para combinar a retirada.',
+ expiry_reminder: 'Salve Comida: Atenção! Uma de suas doações está próxima do vencimento. Acesse o site para verificar.',
+ };
  document.getElementById('wa-test-btn').addEventListener('click', function() {
- showWaAlert('Mensagem simulada! (Em produção, enviaria via WhatsApp Business API)', 'success');
+ var raw = document.getElementById('wa-phone').value.trim();
+ if (!raw) { showWaAlert('Informe um número de WhatsApp antes de simular.', 'error'); return; }
+ var n;
+ if (raw.startsWith('+')) { n = raw.slice(1).replace(/\D/g,''); }
+ else if (raw.startsWith('00')) { n = raw.slice(2).replace(/\D/g,''); }
+ else { n = raw.replace(/\D/g,''); if (n.length === 10 || n.length === 11) n = '55' + n; }
+ var type = document.getElementById('wa-test-type').value;
+ var msg = WA_MESSAGES[type] || WA_MESSAGES.new_food;
+ var now = new Date();
+ var time = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+ document.getElementById('wa-preview-chat').innerHTML =
+ '<div class="wa-bubble received">' + msg + '<div class="wa-time">' + time + '</div></div>';
+ window.open('https://wa.me/' + n + '?text=' + encodeURIComponent(msg), '_blank');
+ showWaAlert('WhatsApp aberto com a mensagem de teste!', 'success');
  });
  function showWaAlert(msg, type) {
  var el = document.getElementById('wa-alert');
