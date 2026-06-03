@@ -1,0 +1,150 @@
+const router = require('express').Router();
+const prisma = require('../lib/prisma');
+const { authMiddleware } = require('../middleware/auth');
+
+// GET /api/requests/my — solicitações feitas pelo receptor logado
+router.get('/my', authMiddleware, async (req, res) => {
+  try {
+    const requests = await prisma.foodRequest.findMany({
+      where: { receiverId: req.userId },
+      include: {
+        donation: {
+          select: {
+            id: true, title: true, category: true, quantity: true, unit: true,
+            pickupLocation: true, status: true,
+            donor: { select: { id: true, name: true, phone: true, email: true, city: true } },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json(requests);
+  } catch (e) {
+    res.status(500).json({ error: 'Erro interno.' });
+  }
+});
+
+// GET /api/requests/received — solicitações recebidas pelo doador logado
+router.get('/received', authMiddleware, async (req, res) => {
+  try {
+    const requests = await prisma.foodRequest.findMany({
+      where: { donation: { donorId: req.userId } },
+      include: {
+        donation: { select: { id: true, title: true, category: true, unit: true } },
+        receiver: { select: { id: true, name: true, phone: true, email: true, city: true, region: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json(requests);
+  } catch (e) {
+    res.status(500).json({ error: 'Erro interno.' });
+  }
+});
+
+// PATCH /api/requests/:id/status — doador altera status
+router.patch('/:id/status', authMiddleware, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const DONOR_TRANSITIONS   = ['ACCEPTED', 'REJECTED', 'COMPLETED'];
+    const RECEIVER_TRANSITIONS = ['CANCELLED'];
+    const allowed = [...DONOR_TRANSITIONS, ...RECEIVER_TRANSITIONS];
+
+    if (!status || !allowed.includes(status.toUpperCase())) {
+      return res.status(400).json({ error: 'Status inválido.' });
+    }
+    const newStatus = status.toUpperCase();
+
+    const request = await prisma.foodRequest.findUnique({
+      where: { id: req.params.id },
+      include: { donation: true },
+    });
+    if (!request) return res.status(404).json({ error: 'Solicitação não encontrada.' });
+
+    const isDonor    = request.donation.donorId === req.userId;
+    const isReceiver = request.receiverId === req.userId;
+
+    if (!isDonor && !isReceiver) {
+      return res.status(403).json({ error: 'Acesso negado.' });
+    }
+    if (DONOR_TRANSITIONS.includes(newStatus) && !isDonor) {
+      return res.status(403).json({ error: 'Apenas o doador pode aceitar, recusar ou finalizar.' });
+    }
+    if (RECEIVER_TRANSITIONS.includes(newStatus) && !isReceiver) {
+      return res.status(403).json({ error: 'Apenas o receptor pode cancelar.' });
+    }
+    if (newStatus === 'CANCELLED' && request.status !== 'PENDING') {
+      return res.status(400).json({ error: 'Só é possível cancelar solicitações pendentes.' });
+    }
+
+    const updated = await prisma.foodRequest.update({
+      where: { id: req.params.id },
+      data: { status: newStatus },
+    });
+
+    // Quando aceito: marca doação como RESERVED
+    if (newStatus === 'ACCEPTED') {
+      await prisma.donation.update({
+        where: { id: request.donationId },
+        data: { status: 'RESERVED' },
+      });
+    }
+    // Quando finalizado: marca doação como COMPLETED
+    if (newStatus === 'COMPLETED') {
+      await prisma.donation.update({
+        where: { id: request.donationId },
+        data: { status: 'COMPLETED' },
+      });
+    }
+    // Quando recusado ou cancelado: doação volta a AVAILABLE se estava RESERVED
+    if ((newStatus === 'REJECTED' || newStatus === 'CANCELLED') && request.donation.status === 'RESERVED') {
+      const otherAccepted = await prisma.foodRequest.findFirst({
+        where: { donationId: request.donationId, status: 'ACCEPTED', id: { not: request.id } },
+      });
+      if (!otherAccepted) {
+        await prisma.donation.update({
+          where: { id: request.donationId },
+          data: { status: 'AVAILABLE' },
+        });
+      }
+    }
+
+    res.json(updated);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Erro interno.' });
+  }
+});
+
+// DELETE /api/requests/:id — receptor cancela (alias conveniente)
+router.delete('/:id', authMiddleware, async (req, res) => {
+  try {
+    const request = await prisma.foodRequest.findUnique({
+      where: { id: req.params.id },
+      include: { donation: true },
+    });
+    if (!request) return res.status(404).json({ error: 'Solicitação não encontrada.' });
+    if (request.receiverId !== req.userId) return res.status(403).json({ error: 'Acesso negado.' });
+    if (request.status !== 'PENDING') {
+      return res.status(400).json({ error: 'Só é possível cancelar solicitações pendentes.' });
+    }
+
+    await prisma.foodRequest.update({
+      where: { id: req.params.id },
+      data: { status: 'CANCELLED' },
+    });
+
+    // Volta doação para AVAILABLE se estava RESERVED por esta solicitação
+    if (request.donation.status === 'RESERVED') {
+      await prisma.donation.update({
+        where: { id: request.donationId },
+        data: { status: 'AVAILABLE' },
+      });
+    }
+
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Erro interno.' });
+  }
+});
+
+module.exports = router;

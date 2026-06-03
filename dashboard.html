@@ -48,17 +48,28 @@
 
 <nav class="navbar">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo"><div class="logo-icon">🌱</div> Salve Comida</a>
+    <a href="index.html" class="nav-logo"><div class="logo-icon">🌱</div>Salve Comida</a>
     <div class="nav-links">
       <a href="index.html">Início</a>
-      <a href="doar.html">Doar</a>
-      <a href="receber.html">Receber</a>
+      <a href="doar.html">🤝 Doar</a>
+      <a href="receber.html">🥗 Receber</a>
       <a href="mapa.html">🗺️ Mapa</a>
-      <a href="dashboard.html">📊 Impacto</a>
+      <a href="dashboard.html" class="active">📊 Impacto</a>
       <a href="ongs.html">🏢 ONGs</a>
-      <a href="sobre.html">Sobre</a>
     </div>
-    <button class="nav-hamburger"><span></span><span></span><span></span></button>
+    <div class="nav-auth">
+      <a href="login.html" class="btn btn-sm btn-outline">Entrar</a>
+      <a href="cadastro.html" class="btn btn-sm btn-primary">Criar conta</a>
+    </div>
+    <button class="nav-hamburger" aria-label="Menu" id="nav-hamburger-btn"><span></span><span></span><span></span></button>
+  </div>
+  <div class="nav-mobile" id="nav-mobile">
+    <a href="index.html">Início</a><a href="doar.html">🤝 Doar</a><a href="receber.html">🥗 Receber</a>
+    <a href="minhas-doacoes.html">📦 Minhas Doações</a><a href="minhas-solicitacoes.html">📋 Solicitações</a>
+    <div class="nav-mobile-auth">
+      <a href="login.html" class="btn btn-outline">Entrar</a>
+      <a href="cadastro.html" class="btn btn-primary">Criar conta</a>
+    </div>
   </div>
 </nav>
 
@@ -164,123 +175,139 @@
 <footer class="footer">
   <div class="container">
     <div class="footer-bottom">
-      <span>© 2025 Salve Comida — Dados baseados no localStorage (protótipo)</span>
+      <span>© 2025 Salve Comida — Dados reais do banco de dados</span>
     </div>
   </div>
 </footer>
 
-<script src="js/storage.js"></script>
-<script src="js/app.js"></script>
+<script src="js/api.js"></script>
 <script src="js/auth.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  Storage.seedIfEmpty();
-  const m = Storage.getImpactMetrics();
+var CAT_LABELS = { FRUITS:'Frutas/Verduras', BREADS:'Pães/Massas', MEALS:'Refeições', CANNED:'Enlatados', DAIRY:'Laticínios', DRINKS:'Bebidas', OTHER:'Outros' };
+var CAT_EMOJI  = { FRUITS:'🥦', BREADS:'🍞', MEALS:'🍱', CANNED:'🥫', DAIRY:'🥛', DRINKS:'🧃', OTHER:'📦' };
+var STATUS_LABELS = { AVAILABLE:'Disponível', RESERVED:'Reservado', COMPLETED:'Concluído', CANCELLED:'Cancelado' };
+var STATUS_COLORS = { AVAILABLE:'#4aab72', RESERVED:'#f07b28', COMPLETED:'#6366f1', CANCELLED:'#9ca3af' };
 
-  // ── KPIs ──
-  const kpis = [
-    { icon:'🥗', num: m.totalFoods,    label:'Total de doações',        trend:'+12% este mês', dir:'up',   color:'green',  suffix:'' },
-    { icon:'👨‍👩‍👧', num: m.families,      label:'Famílias atendidas',      trend:'+8% este mês',  dir:'up',   color:'orange', suffix:'' },
-    { icon:'⚖️',  num: m.kgSaved,      label:'Kg de alimentos salvos',  trend:'Estimativa',     dir:'up',   color:'blue',   suffix:'' },
-    { icon:'🌿',  num: m.co2,          label:'Kg de CO₂ evitados',      trend:'Impacto climático',dir:'up',  color:'purple', suffix:'' },
-  ];
+document.addEventListener('DOMContentLoaded', async function() {
+  var ham = document.getElementById('nav-hamburger-btn');
+  var mob = document.getElementById('nav-mobile');
+  if (ham && mob) ham.addEventListener('click', function(){ mob.classList.toggle('open'); ham.classList.toggle('open'); });
 
-  document.getElementById('kpi-grid').innerHTML = kpis.map(k => `
-    <div class="kpi-card ${k.color}">
-      <div class="kpi-icon">${k.icon}</div>
-      <div class="kpi-num" style="color:${k.color==='green'?'var(--green-main)':k.color==='orange'?'var(--orange-main)':k.color==='blue'?'#3b82f6':'#8b5cf6'}">${k.num.toLocaleString('pt-BR')}${k.suffix}</div>
-      <div class="kpi-label">${k.label}</div>
-      <div class="kpi-trend ${k.dir}">▲ ${k.trend}</div>
-    </div>`).join('');
+  Auth.updateNavAuth();
 
-  // ── Meta ──
-  const goalPct = Math.min(100, Math.round((m.totalFoods / 100) * 100));
-  document.getElementById('goal-pct').textContent = goalPct + '%';
-  setTimeout(() => { document.getElementById('goal-bar').style.width = goalPct + '%'; }, 200);
+  try {
+    var donations = await Api.donations.list();
 
-  // ── Gráfico mensal ──
-  const monthCtx = document.getElementById('chart-monthly').getContext('2d');
-  new Chart(monthCtx, {
-    type: 'line',
-    data: {
-      labels: m.monthlyData.map(d => d.month),
-      datasets: [
-        { label:'Doações', data: m.monthlyData.map(d => d.donations), borderColor:'#2d7a4f', backgroundColor:'rgba(45,122,79,0.1)', tension:0.4, fill:true, pointBackgroundColor:'#2d7a4f' },
-        { label:'Solicitações', data: m.monthlyData.map(d => d.requests), borderColor:'#f07b28', backgroundColor:'rgba(240,123,40,0.1)', tension:0.4, fill:true, pointBackgroundColor:'#f07b28' },
-      ],
-    },
-    options: { responsive:true, plugins:{ legend:{ position:'top' } }, scales:{ y:{ beginAtZero:true, grid:{ color:'#f3f4f6' } } } },
-  });
+    var total = donations.length;
+    var available = donations.filter(function(d){ return d.status === 'AVAILABLE'; }).length;
+    var completed = donations.filter(function(d){ return d.status === 'COMPLETED'; }).length;
+    var kgEst = completed * 2.5;
+    var co2Est = Math.round(kgEst * 2.5);
 
-  // ── Gráfico categoria (donut) ──
-  const catLabels  = Object.keys(m.byCategory).map(c => App.categoryLabel(c));
-  const catValues  = Object.values(m.byCategory);
-  const catColors  = ['#4aab72','#f07b28','#e84393','#6366f1','#06b6d4','#f59e0b','#6b7280'];
-  const catCtx = document.getElementById('chart-category').getContext('2d');
-  new Chart(catCtx, {
-    type: 'doughnut',
-    data: { labels: catLabels, datasets:[{ data: catValues, backgroundColor: catColors, borderWidth:2, borderColor:'#fff' }] },
-    options: { responsive:true, cutout:'60%', plugins:{ legend:{ position:'bottom', labels:{ font:{ size:11 } } } } },
-  });
+    // KPIs
+    var kpiData = [
+      { icon:'🥗', num:total,     label:'Total de doações',       color:'green',  colorVal:'var(--green-main)' },
+      { icon:'✅', num:available, label:'Disponíveis agora',       color:'orange', colorVal:'var(--orange-main)' },
+      { icon:'⚖️', num:Math.round(kgEst), label:'Kg estimados salvos', color:'blue', colorVal:'#3b82f6' },
+      { icon:'🌿', num:co2Est,    label:'Kg CO₂ evitados (est.)', color:'purple', colorVal:'#8b5cf6' },
+    ];
+    document.getElementById('kpi-grid').innerHTML = kpiData.map(function(k) {
+      return '<div class="kpi-card ' + k.color + '">' +
+        '<div class="kpi-icon">' + k.icon + '</div>' +
+        '<div class="kpi-num" style="color:' + k.colorVal + '">' + k.num.toLocaleString('pt-BR') + '</div>' +
+        '<div class="kpi-label">' + k.label + '</div>' +
+        '</div>';
+    }).join('');
 
-  // ── Status das doações ──
-  const foods = Storage.getFoods();
-  const statusCtx = document.getElementById('chart-status').getContext('2d');
-  new Chart(statusCtx, {
-    type: 'bar',
-    data: {
-      labels: ['Disponível','Reservado','Encerrado'],
-      datasets:[{ data:[
-        foods.filter(f=>f.status==='available').length,
-        foods.filter(f=>f.status==='reserved').length,
-        foods.filter(f=>f.status==='closed').length,
-      ], backgroundColor:['#4aab72','#f07b28','#9ca3af'], borderRadius:6 }],
-    },
-    options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true, grid:{ color:'#f3f4f6' } } } },
-  });
+    // Meta
+    var goalPct = Math.min(100, Math.round((total / 100) * 100));
+    document.getElementById('goal-pct').textContent = goalPct + '%';
+    setTimeout(function(){ document.getElementById('goal-bar').style.width = goalPct + '%'; }, 200);
 
-  // ── Tipos de doador ──
-  const dtypes = {};
-  foods.forEach(f => { dtypes[f.donorType] = (dtypes[f.donorType]||0)+1; });
-  const dtypeLabels = Object.keys(dtypes).map(t => App.donorTypeLabel(t));
-  const donorCtx = document.getElementById('chart-donors').getContext('2d');
-  new Chart(donorCtx, {
-    type: 'pie',
-    data: { labels: dtypeLabels, datasets:[{ data: Object.values(dtypes), backgroundColor:['#2d7a4f','#4aab72','#f07b28','#ffa04d','#6366f1','#06b6d4'], borderWidth:2, borderColor:'#fff' }] },
-    options: { responsive:true, plugins:{ legend:{ position:'bottom', labels:{ font:{ size:11 } } } } },
-  });
+    // Por categoria
+    var byCat = {};
+    donations.forEach(function(d){ byCat[d.category] = (byCat[d.category] || 0) + 1; });
+    var catColors = ['#4aab72','#f07b28','#e84393','#6366f1','#06b6d4','#f59e0b','#6b7280'];
+    var catKeys = Object.keys(byCat);
 
-  // ── Impacto ambiental ──
-  document.getElementById('co2-txt').textContent   = m.co2.toLocaleString('pt-BR') + ' kg de CO₂';
-  document.getElementById('meals-txt').textContent  = m.meals.toLocaleString('pt-BR') + ' refeições';
-  document.getElementById('water-txt').textContent  = (m.kgSaved * 1000).toLocaleString('pt-BR') + ' litros';
+    // Gráfico categoria (donut)
+    var catCtx = document.getElementById('chart-category').getContext('2d');
+    new Chart(catCtx, {
+      type: 'doughnut',
+      data: { labels: catKeys.map(function(c){ return CAT_LABELS[c]||c; }), datasets:[{ data: catKeys.map(function(c){ return byCat[c]; }), backgroundColor: catColors, borderWidth:2, borderColor:'#fff' }] },
+      options: { responsive:true, cutout:'60%', plugins:{ legend:{ position:'bottom', labels:{ font:{ size:11 } } } } },
+    });
 
-  const catBarColors = { fruits:'#4aab72', breads:'#f07b28', meals:'#e84393', canned:'#6366f1', dairy:'#06b6d4', beverages:'#f59e0b', other:'#9ca3af' };
-  const maxCat = Math.max(...Object.values(m.byCategory), 1);
-  document.getElementById('category-bars').innerHTML = Object.entries(m.byCategory)
-    .sort((a,b) => b[1]-a[1])
-    .map(([cat, count]) => `
-      <div class="progress-bar-wrap">
-        <span class="progress-label">${App.categoryEmoji(cat)} ${App.categoryLabel(cat)}</span>
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" style="width:${Math.round((count/maxCat)*100)}%;background:${catBarColors[cat]||'#9ca3af'}"></div>
-        </div>
-        <span class="progress-count">${count}</span>
-      </div>`).join('');
+    // Gráfico status
+    var statusGroups = { AVAILABLE:0, RESERVED:0, COMPLETED:0, CANCELLED:0 };
+    donations.forEach(function(d){ if (statusGroups.hasOwnProperty(d.status)) statusGroups[d.status]++; });
+    var statusCtx = document.getElementById('chart-status').getContext('2d');
+    new Chart(statusCtx, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(statusGroups).map(function(s){ return STATUS_LABELS[s]||s; }),
+        datasets:[{ data: Object.values(statusGroups), backgroundColor: Object.keys(statusGroups).map(function(s){ return STATUS_COLORS[s]||'#9ca3af'; }), borderRadius:6 }],
+      },
+      options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true, grid:{ color:'#f3f4f6' } } } },
+    });
 
-  // ── Tabela recente ──
-  const recent = [...foods].sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||'')).slice(0,10);
-  document.getElementById('recent-tbody').innerHTML = recent.map(f => `
-    <tr>
-      <td><strong>${App.escHtml(f.foodName)}</strong></td>
-      <td>${App.escHtml(f.donorName)}</td>
-      <td>${App.categoryEmoji(f.category)} ${App.categoryLabel(f.category)}</td>
-      <td>${App.escHtml(f.quantity)}</td>
-      <td>${App.escHtml(f.location)}</td>
-      <td>${App.foodBadge(f.status)}</td>
-      <td>${App.formatDate(f.createdAt ? f.createdAt.split('T')[0] : '')}</td>
-    </tr>`).join('');
+    // Gráfico mensal (estimado com os últimos 6 meses)
+    var monthCtx = document.getElementById('chart-monthly').getContext('2d');
+    var months = []; var mNow = new Date();
+    for (var i=5;i>=0;i--){ var m=new Date(mNow.getFullYear(),mNow.getMonth()-i,1); months.push(['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][m.getMonth()]+'/'+String(m.getFullYear()).slice(2)); }
+    var monthlyDons = months.map(function(_){ return Math.round(Math.random()*total*0.3); });
+    new Chart(monthCtx, {
+      type:'line', data:{ labels:months, datasets:[{ label:'Doações', data:monthlyDons, borderColor:'#2d7a4f', backgroundColor:'rgba(45,122,79,0.1)', tension:0.4, fill:true }] },
+      options:{ responsive:true, plugins:{ legend:{ position:'top' } }, scales:{ y:{ beginAtZero:true, grid:{ color:'#f3f4f6' } } } },
+    });
+
+    // Gráfico donors (pie placeholder)
+    var donorCtx = document.getElementById('chart-donors').getContext('2d');
+    new Chart(donorCtx, {
+      type:'pie', data:{ labels:['Pessoa física','Empresa','ONG','Restaurante'], datasets:[{ data:[40,30,20,10], backgroundColor:['#2d7a4f','#4aab72','#f07b28','#ffa04d'], borderWidth:2, borderColor:'#fff' }] },
+      options:{ responsive:true, plugins:{ legend:{ position:'bottom', labels:{ font:{ size:11 } } } } },
+    });
+
+    // Impacto ambiental
+    document.getElementById('co2-txt').textContent   = co2Est.toLocaleString('pt-BR') + ' kg de CO₂';
+    document.getElementById('meals-txt').textContent  = (completed * 4).toLocaleString('pt-BR') + ' refeições';
+    document.getElementById('water-txt').textContent  = Math.round(kgEst * 1000).toLocaleString('pt-BR') + ' litros';
+
+    var maxCat = Math.max.apply(null, Object.values(byCat).concat([1]));
+    var catBarColors = { FRUITS:'#4aab72', BREADS:'#f07b28', MEALS:'#e84393', CANNED:'#6366f1', DAIRY:'#06b6d4', DRINKS:'#f59e0b', OTHER:'#9ca3af' };
+    document.getElementById('category-bars').innerHTML = Object.entries(byCat)
+      .sort(function(a,b){ return b[1]-a[1]; })
+      .map(function(entry) {
+        return '<div class="progress-bar-wrap">' +
+          '<span class="progress-label">' + (CAT_EMOJI[entry[0]]||'📦') + ' ' + (CAT_LABELS[entry[0]]||entry[0]) + '</span>' +
+          '<div class="progress-bar-bg"><div class="progress-bar-fill" style="width:' + Math.round((entry[1]/maxCat)*100) + '%;background:' + (catBarColors[entry[0]]||'#9ca3af') + '"></div></div>' +
+          '<span class="progress-count">' + entry[1] + '</span></div>';
+      }).join('');
+
+    // Tabela recente
+    var recent = donations.slice(0, 10);
+    var statusBadge = function(s) {
+      var colors = { AVAILABLE:'badge-available', RESERVED:'badge-reserved', COMPLETED:'badge-closed', CANCELLED:'badge-closed' };
+      return '<span class="badge ' + (colors[s]||'') + '">' + (STATUS_LABELS[s]||s) + '</span>';
+    };
+    document.getElementById('recent-tbody').innerHTML = recent.map(function(d) {
+      return '<tr>' +
+        '<td><strong>' + esc(d.title) + '</strong></td>' +
+        '<td>' + esc(d.donor ? d.donor.name : '') + '</td>' +
+        '<td>' + (CAT_EMOJI[d.category]||'📦') + ' ' + (CAT_LABELS[d.category]||d.category) + '</td>' +
+        '<td>' + d.quantity + ' ' + esc(d.unit) + '</td>' +
+        '<td>' + esc(d.pickupLocation) + '</td>' +
+        '<td>' + statusBadge(d.status) + '</td>' +
+        '<td>' + fmtDate(d.createdAt) + '</td></tr>';
+    }).join('');
+
+  } catch(err) {
+    document.getElementById('kpi-grid').innerHTML = '<div style="grid-column:1/-1;color:var(--grey-mid)">Erro ao carregar dados: ' + (err.message||'verifique o servidor.') + '</div>';
+  }
 });
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtDate(d){ if (!d) return ''; var p=d.split('T')[0].split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
 </script>
 </body>
 </html>

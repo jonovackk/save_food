@@ -11,26 +11,31 @@
 
 <nav class="navbar">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">
-      <div class="logo-icon">🌱</div>
-      Salve Comida
-    </a>
+    <a href="index.html" class="nav-logo"><div class="logo-icon">🌱</div>Salve Comida</a>
     <div class="nav-links">
       <a href="index.html">Início</a>
-      <a href="doar.html">Doar</a>
-      <a href="receber.html">Receber</a>
+      <a href="doar.html">🤝 Doar</a>
+      <a href="receber.html">🥗 Receber</a>
       <a href="mapa.html">🗺️ Mapa</a>
-      <a href="dashboard.html">📊 Impacto</a>
-      <a href="ongs.html">🏢 ONGs</a>
-      <a href="minhas-doacoes.html">Minhas Doações</a>
-      <a href="minhas-solicitacoes.html">Solicitações</a>
-      <a href="sobre.html">Sobre</a>
-      <a href="contato.html">Contato</a>
-      <a href="login.html" class="btn btn-sm btn-outline" style="margin-left:0.25rem">Entrar</a>
+      <a href="minhas-doacoes.html" class="active">Minhas Doações</a>
+      <a href="solicitacoes-recebidas.html">Solicitações Recebidas</a>
     </div>
-    <button class="nav-hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="nav-auth">
+      <a href="login.html" class="btn btn-sm btn-outline">Entrar</a>
+      <a href="cadastro.html" class="btn btn-sm btn-primary">Criar conta</a>
+    </div>
+    <button class="nav-hamburger" aria-label="Menu" id="nav-hamburger-btn"><span></span><span></span><span></span></button>
+  </div>
+  <div class="nav-mobile" id="nav-mobile">
+    <a href="index.html">Início</a><a href="doar.html">🤝 Doar</a><a href="receber.html">🥗 Receber</a>
+    <a href="minhas-doacoes.html">📦 Minhas Doações</a>
+    <a href="solicitacoes-recebidas.html">📋 Solicitações Recebidas</a>
+    <a href="minhas-solicitacoes.html">📋 Minhas Solicitações</a>
+    <a href="perfil.html">👤 Perfil</a>
+    <div class="nav-mobile-auth">
+      <a href="login.html" class="btn btn-outline">Entrar</a>
+      <a href="cadastro.html" class="btn btn-primary">Criar conta</a>
+    </div>
   </div>
 </nav>
 
@@ -73,21 +78,25 @@
           <div class="form-group">
             <label for="edit-category">Categoria</label>
             <select id="edit-category" name="edit-category" class="form-control">
-              <option value="fruits">Frutas e verduras</option>
-              <option value="breads">Pães e massas</option>
-              <option value="meals">Refeições prontas</option>
-              <option value="canned">Enlatados</option>
-              <option value="dairy">Laticínios</option>
-              <option value="beverages">Bebidas</option>
-              <option value="other">Outros</option>
+              <option value="FRUITS">Frutas e verduras</option>
+              <option value="BREADS">Pães e massas</option>
+              <option value="MEALS">Refeições prontas</option>
+              <option value="CANNED">Enlatados</option>
+              <option value="DAIRY">Laticínios</option>
+              <option value="DRINKS">Bebidas</option>
+              <option value="OTHER">Outros</option>
             </select>
           </div>
           <div class="form-group">
             <label for="edit-quantity">Quantidade</label>
-            <input type="text" id="edit-quantity" name="edit-quantity" class="form-control">
+            <input type="number" id="edit-quantity" name="edit-quantity" class="form-control" min="1">
           </div>
           <div class="form-group">
-            <label for="edit-location">Localização</label>
+            <label for="edit-unit">Unidade</label>
+            <input type="text" id="edit-unit" name="edit-unit" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="edit-location">Local de retirada</label>
             <input type="text" id="edit-location" name="edit-location" class="form-control">
           </div>
           <div class="form-group">
@@ -97,18 +106,14 @@
           <div class="form-group">
             <label for="edit-deliveryOption">Entrega</label>
             <select id="edit-deliveryOption" name="edit-deliveryOption" class="form-control">
-              <option value="local">Apenas retirada no local</option>
-              <option value="delivery">Posso entregar</option>
-              <option value="negotiate">A combinar</option>
+              <option value="PICKUP_ONLY">Apenas retirada no local</option>
+              <option value="CAN_DELIVER">Posso entregar</option>
+              <option value="TO_AGREE">A combinar</option>
             </select>
           </div>
           <div class="form-group form-full">
             <label for="edit-description">Descrição</label>
             <textarea id="edit-description" name="edit-description" class="form-control" rows="3"></textarea>
-          </div>
-          <div class="form-group form-full">
-            <label for="edit-observations">Observações</label>
-            <textarea id="edit-observations" name="edit-observations" class="form-control" rows="2"></textarea>
           </div>
         </div>
       </form>
@@ -145,22 +150,149 @@
   </div>
 </footer>
 
-<script src="js/storage.js"></script>
-<script src="js/app.js"></script>
+<script src="js/api.js"></script>
 <script src="js/auth.js"></script>
-<script src="js/donations.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    initMyDonations();
-    initEditModal();
+var CAT_LABELS = { FRUITS:'Frutas/Verduras', BREADS:'Pães/Massas', MEALS:'Refeições', CANNED:'Enlatados', DAIRY:'Laticínios', DRINKS:'Bebidas', OTHER:'Outros' };
+var STATUS_LABELS = { AVAILABLE:'Disponível', RESERVED:'Reservado', COMPLETED:'Concluído', CANCELLED:'Cancelado' };
 
-    // Fecha modal ao clicar no overlay
-    document.querySelectorAll('.modal-overlay').forEach(el => {
-      el.addEventListener('click', e => {
-        if (e.target === el) el.classList.remove('open');
-      });
-    });
+document.addEventListener('DOMContentLoaded', async function() {
+  var ham = document.getElementById('nav-hamburger-btn');
+  var mob = document.getElementById('nav-mobile');
+  if (ham && mob) ham.addEventListener('click', function(){ mob.classList.toggle('open'); ham.classList.toggle('open'); });
+
+  var user = await Auth.requireLogin();
+  if (!user) return;
+  Auth.updateNavAuth();
+
+  document.querySelectorAll('.modal-overlay').forEach(function(el) {
+    el.addEventListener('click', function(e){ if (e.target === el) el.classList.remove('open'); });
   });
+
+  await loadMyDonations();
+
+  document.getElementById('edit-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    await saveEdit();
+  });
+});
+
+async function loadMyDonations() {
+  var list = document.getElementById('my-donations-list');
+  list.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--grey-mid)">Carregando...</div>';
+  try {
+    var donations = await Api.donations.my();
+    if (donations.length === 0) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">📦</div><p>Você ainda não cadastrou nenhuma doação. <a href="doar.html">Cadastrar agora →</a></p></div>';
+      return;
+    }
+    list.innerHTML = donations.map(function(d) {
+      var pending   = d.requests.filter(function(r){ return r.status === 'PENDING'; }).length;
+      var accepted  = d.requests.filter(function(r){ return r.status === 'ACCEPTED'; }).length;
+      var badgeCls  = d.status === 'AVAILABLE' ? 'badge-available' : d.status === 'RESERVED' ? 'badge-reserved' : 'badge-closed';
+      return '<div class="my-donation-card">' +
+        '<div class="my-donation-header">' +
+          '<div>' +
+            '<div class="my-donation-title">' + esc(d.title) + '</div>' +
+            '<div class="my-donation-meta">' +
+              '<span>📦 ' + d.quantity + ' ' + esc(d.unit) + '</span>' +
+              '<span>📍 ' + esc(d.pickupLocation) + '</span>' +
+              '<span>🏷️ ' + (CAT_LABELS[d.category]||d.category) + '</span>' +
+              (d.expirationDate ? '<span>📅 Até ' + fmtDate(d.expirationDate) + '</span>' : '') +
+            '</div>' +
+          '</div>' +
+          '<span class="badge ' + badgeCls + '">' + (STATUS_LABELS[d.status]||d.status) + '</span>' +
+        '</div>' +
+        '<div class="my-donation-body">' +
+          '<p style="font-size:.88rem;color:var(--grey-mid);margin-bottom:.75rem">' + esc(d.description).slice(0, 120) + (d.description.length > 120 ? '...' : '') + '</p>' +
+          '<div style="display:flex;gap:.5rem;flex-wrap:wrap;font-size:.82rem;color:var(--grey-mid)">' +
+            '<span>' + pending + ' pendente(s)</span>' +
+            '<span>· ' + accepted + ' aceita(s)</span>' +
+            '<span>· ' + d.requests.length + ' total</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="my-donation-footer">' +
+          '<a href="solicitacoes-recebidas.html" class="btn btn-ghost btn-sm">📋 Ver solicitações</a>' +
+          '<button class="btn btn-outline btn-sm" onclick="openEdit(\'' + d.id + '\')">✏️ Editar</button>' +
+          (d.status === 'AVAILABLE' ? '<button class="btn btn-outline btn-sm" onclick="encerrar(\'' + d.id + '\')">🔒 Encerrar</button>' : '') +
+          '<button class="btn btn-ghost btn-sm" style="color:#dc2626" onclick="remover(\'' + d.id + '\')">🗑️ Remover</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch(err) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p>' + (err.message||'Erro ao carregar.') + '</p></div>';
+  }
+}
+
+var _editId = null;
+function openEdit(id) {
+  _editId = id;
+  Api.donations.get(id).then(function(d) {
+    document.getElementById('edit-food-id').value = d.id;
+    document.getElementById('edit-foodName').value = d.title;
+    document.getElementById('edit-category').value = d.category;
+    document.getElementById('edit-quantity').value = d.quantity;
+    document.getElementById('edit-unit').value = d.unit || '';
+    document.getElementById('edit-location').value = d.pickupLocation;
+    document.getElementById('edit-expiryDate').value = d.expirationDate ? d.expirationDate.split('T')[0] : '';
+    document.getElementById('edit-deliveryOption').value = d.deliveryOption;
+    document.getElementById('edit-description').value = d.description;
+    document.getElementById('edit-modal').classList.add('open');
+  });
+}
+
+async function saveEdit() {
+  if (!_editId) return;
+  var btn = document.querySelector('#edit-modal .btn-primary');
+  if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
+  try {
+    await Api.donations.update(_editId, {
+      title:          document.getElementById('edit-foodName').value.trim(),
+      category:       document.getElementById('edit-category').value,
+      quantity:       parseInt(document.getElementById('edit-quantity').value, 10),
+      unit:           document.getElementById('edit-unit').value.trim(),
+      pickupLocation: document.getElementById('edit-location').value.trim(),
+      expirationDate: document.getElementById('edit-expiryDate').value || null,
+      deliveryOption: document.getElementById('edit-deliveryOption').value,
+      description:    document.getElementById('edit-description').value.trim(),
+    });
+    closeModal('edit-modal');
+    showAlert('✅ Doação atualizada!', 'success');
+    await loadMyDonations();
+  } catch(err) {
+    showAlert('❌ ' + (err.message||'Erro ao salvar.'), 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '💾 Salvar alterações'; }
+  }
+}
+
+async function encerrar(id) {
+  if (!confirm('Encerrar esta doação? Ela não aparecerá mais como disponível.')) return;
+  try {
+    await Api.donations.update(id, { status: 'CANCELLED' });
+    showAlert('✅ Doação encerrada.', 'success');
+    await loadMyDonations();
+  } catch(err) { showAlert('❌ ' + err.message, 'error'); }
+}
+
+async function remover(id) {
+  if (!confirm('Tem certeza que deseja remover esta doação? Esta ação não pode ser desfeita.')) return;
+  try {
+    await Api.donations.remove(id);
+    showAlert('✅ Doação removida.', 'success');
+    await loadMyDonations();
+  } catch(err) { showAlert('❌ ' + err.message, 'error'); }
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function showAlert(msg, type) {
+  var el = document.getElementById('my-donations-alert');
+  el.innerHTML = '<div class="alert alert-' + type + '">' + msg + '</div>';
+  if (type !== 'error') setTimeout(function(){ el.innerHTML = ''; }, 4000);
+}
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtDate(d){ if (!d) return ''; var p=d.split('T')[0].split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
 </script>
 </body>
 </html>

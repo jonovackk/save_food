@@ -1,0 +1,11 @@
+{
+  "name": "salve-comida",
+  "version": "1.0.0",
+  "description": "Plataforma de doação de alimentos",
+  "scripts": {
+    "install:backend": "cd backend && npm install",
+    "setup": "npm run install:backend && cd backend && npm run db:push",
+    "dev": "cd backend && npm run dev",
+    "start": "cd backend && npm start"
+  }
+}

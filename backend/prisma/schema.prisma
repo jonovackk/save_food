@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?
+  role      String   @default("BOTH")
+  city      String?
+  region    String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  donations Donation[]
+  requests  FoodRequest[]
+}
+
+// role: DONOR | RECEIVER | BOTH
+
+model Donation {
+  id             String    @id @default(uuid())
+  title          String
+  description    String
+  category       String
+  quantity       Int
+  unit           String
+  expirationDate String?
+  pickupLocation String
+  deliveryOption String    @default("PICKUP_ONLY")
+  imageUrl       String?
+  status         String    @default("AVAILABLE")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  donorId  String
+  donor    User          @relation(fields: [donorId], references: [id])
+  requests FoodRequest[]
+}
+
+// status: AVAILABLE | RESERVED | COMPLETED | CANCELLED
+// category: FRUITS | BREADS | MEALS | CANNED | DAIRY | DRINKS | OTHER
+// deliveryOption: PICKUP_ONLY | CAN_DELIVER | TO_AGREE
+
+model FoodRequest {
+  id         String   @id @default(uuid())
+  quantity   Int      @default(1)
+  message    String?
+  status     String   @default("PENDING")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  donationId String
+  donation   Donation @relation(fields: [donationId], references: [id])
+
+  receiverId String
+  receiver   User     @relation(fields: [receiverId], references: [id])
+}
+
+// status: PENDING | ACCEPTED | REJECTED | CANCELLED | COMPLETED

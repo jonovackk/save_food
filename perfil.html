@@ -11,17 +11,25 @@
 
 <nav class="navbar">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo"><div class="logo-icon">🌱</div> Salve Comida</a>
+    <a href="index.html" class="nav-logo"><div class="logo-icon">🌱</div>Salve Comida</a>
     <div class="nav-links">
       <a href="index.html">Início</a>
-      <a href="doar.html">Doar</a>
-      <a href="receber.html">Receber</a>
+      <a href="doar.html">🤝 Doar</a>
+      <a href="receber.html">🥗 Receber</a>
       <a href="minhas-doacoes.html">Minhas Doações</a>
       <a href="minhas-solicitacoes.html">Solicitações</a>
-      <a href="sobre.html">Sobre</a>
-      <a href="contato.html">Contato</a>
     </div>
-    <button class="nav-hamburger"><span></span><span></span><span></span></button>
+    <div class="nav-auth">
+      <a href="login.html" class="btn btn-sm btn-outline">Entrar</a>
+    </div>
+    <button class="nav-hamburger" aria-label="Menu" id="nav-hamburger-btn"><span></span><span></span><span></span></button>
+  </div>
+  <div class="nav-mobile" id="nav-mobile">
+    <a href="index.html">Início</a><a href="doar.html">🤝 Doar</a><a href="receber.html">🥗 Receber</a>
+    <a href="minhas-doacoes.html">📦 Minhas Doações</a><a href="minhas-solicitacoes.html">📋 Solicitações</a>
+    <div class="nav-mobile-auth">
+      <button onclick="Auth.logout()" class="btn btn-outline">Sair</button>
+    </div>
   </div>
 </nav>
 
@@ -226,224 +234,146 @@
   </div>
 </footer>
 
-<script src="js/storage.js"></script>
-<script src="js/app.js"></script>
+<script src="js/api.js"></script>
 <script src="js/auth.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  Auth.requireLogin('login.html');
-  const user = Auth.current();
+var _currentUser = null;
+
+document.addEventListener('DOMContentLoaded', async function() {
+  var ham = document.getElementById('nav-hamburger-btn');
+  var mob = document.getElementById('nav-mobile');
+  if (ham && mob) ham.addEventListener('click', function(){ mob.classList.toggle('open'); ham.classList.toggle('open'); });
+
+  _currentUser = await Auth.requireLogin('login.html');
+  if (!_currentUser) return;
+  Auth.updateNavAuth();
+
+  var user = _currentUser;
+  var roleLabels = { DONOR:'Doador', RECEIVER:'Receptor', BOTH:'Doador e Receptor' };
 
   // ── Hero ──
-  const roleLabels = { user:'Receptor', donor:'Doador', ong:'ONG Parceira', admin:'Administrador' };
-  document.getElementById('profile-hero-content').innerHTML = `
-    <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;justify-content:center;text-align:center">
-      <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;color:white;flex-shrink:0;font-family:var(--font-display)">
-        ${user.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase()}
-      </div>
-      <div>
-        <h1 style="color:white;font-size:1.8rem">${App.escHtml(user.name)}</h1>
-        <p style="color:rgba(255,255,255,0.8)">${App.escHtml(user.email)} · ${roleLabels[user.role]||user.role}</p>
-        ${user.verified ? '<span class="verified-badge" style="margin-top:0.35rem;display:inline-flex">✓ E-mail verificado</span>' : ''}
-      </div>
-    </div>`;
+  var initials = user.name.split(' ').slice(0,2).map(function(w){ return w[0]; }).join('').toUpperCase();
+  document.getElementById('profile-hero-content').innerHTML =
+    '<div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;justify-content:center;text-align:center">' +
+      '<div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;color:white;flex-shrink:0;font-family:var(--font-display)">' +
+        initials +
+      '</div>' +
+      '<div>' +
+        '<h1 style="color:white;font-size:1.8rem">' + esc(user.name) + '</h1>' +
+        '<p style="color:rgba(255,255,255,0.8)">' + esc(user.email) + ' · ' + (roleLabels[user.role]||user.role) + '</p>' +
+      '</div>' +
+    '</div>';
 
   // ── Tabs ──
-  document.querySelectorAll('.profile-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.profile-tab').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.profile-tab').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.profile-tab').forEach(function(b){ b.classList.remove('active'); });
+      document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
       btn.classList.add('active');
       document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-      if (btn.dataset.tab === 'notifs') renderNotifs();
     });
   });
 
-  // Deep-link a aba por hash
-  if (location.hash === '#notificacoes') {
-    document.querySelector('[data-tab="notifs"]').click();
-  }
-
-  // ── Perfil form ──
+  // ── Preenche formulário ──
   document.getElementById('pf-name').value  = user.name;
   document.getElementById('pf-email').value = user.email;
   document.getElementById('pf-phone').value = user.phone || '';
-  const roleLabel = { user:'Receptor', donor:'Doador', ong:'ONG Parceira', admin:'Administrador' };
-  document.getElementById('pf-role').value  = roleLabel[user.role] || user.role;
+  document.getElementById('pf-role').value  = roleLabels[user.role] || user.role;
 
-  document.getElementById('profile-form').addEventListener('submit', e => {
-    e.preventDefault();
-    const name  = document.getElementById('pf-name').value.trim();
-    const phone = document.getElementById('pf-phone').value.trim();
-    if (!name) { App.showAlert('profile-alert','error','O nome é obrigatório.'); return; }
-    Storage.updateUser(user.id, { name, phone });
-    App.showAlert('profile-alert','success','Perfil atualizado com sucesso!');
-    Auth.updateNavAuth();
-  });
-
-  // ── Verificação e-mail ──
-  const verifyEl = document.getElementById('verify-status');
-  if (user.verified) {
-    verifyEl.innerHTML = `<div class="verified-badge">✓ E-mail verificado</div>
-      <p style="font-size:0.82rem;color:var(--grey-mid);margin-top:0.5rem">Sua conta está ativa e verificada.</p>`;
-  } else {
-    verifyEl.innerHTML = `
-      <div class="alert alert-info" style="margin-bottom:0.75rem">⚠️ E-mail ainda não verificado.</div>
-      <button class="btn btn-outline btn-sm" id="verify-btn">📧 Verificar e-mail</button>`;
-    document.getElementById('verify-btn').addEventListener('click', () => {
-      Storage.updateUser(user.id, { verified: true });
-      Storage.addNotification({ userId: user.id, type:'system', title:'E-mail verificado! ✅', body:'Sua conta está completamente ativa. Bem-vindo ao Salve Comida!', link:'' });
-      verifyEl.innerHTML = `<div class="verified-badge">✓ E-mail verificado</div>`;
-    });
-  }
+  var verifyEl = document.getElementById('verify-status');
+  if (verifyEl) verifyEl.innerHTML = '<div class="verified-badge">✓ Conta ativa</div>';
 
   // ── Atividade ──
-  const myFoods = Storage.getFoods().filter(f => f.userId === user.id);
-  const myReqs  = Storage.getRequestsByUser ? Storage.getRequests().filter(r => r.userId === user.id) : [];
-  document.getElementById('user-activity').innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.88rem">
-      <div style="display:flex;justify-content:space-between"><span>Doações cadastradas</span><strong>${myFoods.length}</strong></div>
-      <div style="display:flex;justify-content:space-between"><span>Solicitações feitas</span><strong>${myReqs.length}</strong></div>
-      <div style="display:flex;justify-content:space-between"><span>Membro desde</span><strong>${App.formatDate(user.createdAt ? user.createdAt.split('T')[0] : '')}</strong></div>
-    </div>`;
-
-  // ── Notificações ──
-  renderNotifs();
-
-  document.getElementById('mark-all-read').addEventListener('click', () => {
-    Storage.markAllNotifsRead(user.id);
-    renderNotifs();
-    Auth.updateNavAuth();
-    document.getElementById('tab-notifs-btn').textContent = '🔔 Notificações';
-  });
-
-  function renderNotifs() {
-    const notifs = Storage.getNotifications(user.id);
-    const list   = document.getElementById('notif-list');
-    const unread = notifs.filter(n => !n.read).length;
-
-    const btn = document.getElementById('tab-notifs-btn');
-    btn.textContent = `🔔 Notificações${unread > 0 ? ` (${unread})` : ''}`;
-
-    if (notifs.length === 0) {
-      list.innerHTML = `<div class="empty-state" style="padding:3rem"><div class="empty-icon">🔔</div><p>Nenhuma notificação ainda.</p></div>`;
-      return;
-    }
-    const typeIcon = { system:'⚙️', food:'🥗', request:'📩', whatsapp:'💬' };
-    const typeClass= { system:'',   food:'',    request:'orange', whatsapp:'blue' };
-    list.innerHTML = notifs.map(n => `
-      <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markRead('${n.id}')">
-        <div class="notif-icon ${typeClass[n.type]||''}">${typeIcon[n.type]||'📢'}</div>
-        <div class="notif-content">
-          <div class="notif-title">${App.escHtml(n.title)}</div>
-          <div class="notif-body">${App.escHtml(n.body)}</div>
-          <div class="notif-time">${App.formatDatetime(n.createdAt)}</div>
-        </div>
-        ${!n.read ? '<div style="width:8px;height:8px;border-radius:50%;background:#3b82f6;flex-shrink:0;margin-top:6px"></div>' : ''}
-      </div>`).join('');
+  var activityEl = document.getElementById('user-activity');
+  if (activityEl) {
+    Promise.all([Api.donations.my(), Api.requests.my()]).then(function(results) {
+      var dons = results[0]; var reqs = results[1];
+      var joined = user.createdAt ? user.createdAt.split('T')[0].split('-') : [];
+      var joinedStr = joined.length === 3 ? joined[2]+'/'+joined[1]+'/'+joined[0] : '—';
+      activityEl.innerHTML =
+        '<div style="display:flex;flex-direction:column;gap:.5rem;font-size:.88rem">' +
+          '<div style="display:flex;justify-content:space-between"><span>Doações cadastradas</span><strong>' + dons.length + '</strong></div>' +
+          '<div style="display:flex;justify-content:space-between"><span>Solicitações feitas</span><strong>' + reqs.length + '</strong></div>' +
+          '<div style="display:flex;justify-content:space-between"><span>Membro desde</span><strong>' + joinedStr + '</strong></div>' +
+        '</div>';
+    }).catch(function(){});
   }
 
-  window.markRead = function(id) {
-    Storage.markNotifRead(id);
-    renderNotifs();
-    Auth.updateNavAuth();
-  };
+  // ── Salvar perfil ──
+  document.getElementById('profile-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var name  = document.getElementById('pf-name').value.trim();
+    var phone = document.getElementById('pf-phone').value.trim();
+    if (!name) { showAlert('profile-alert','error','O nome é obrigatório.'); return; }
+    var btn = e.target.querySelector('[type=submit]');
+    btn.disabled = true;
+    try {
+      var updated = await Api.users.update({ name: name, phone: phone || null });
+      Auth.setCachedUser(updated);
+      showAlert('profile-alert','success','✅ Perfil atualizado com sucesso!');
+    } catch(err) {
+      showAlert('profile-alert','error','❌ ' + (err.message||'Erro ao salvar.'));
+    } finally { btn.disabled = false; }
+  });
 
-  // ── WhatsApp ──
-  const waTypes = [
+  // Notificações: sem backend — área limpa
+  var notifList = document.getElementById('notif-list');
+  if (notifList) notifList.innerHTML = '<div class="empty-state" style="padding:2rem"><div class="empty-icon">🔔</div><p>Notificações em tempo real serão implementadas em breve.</p></div>';
+
+  // WhatsApp: mantém funcionalidade visual
+  var waTypes = [
     { key:'wa_new_food',         label:'Nova doação disponível perto de mim' },
     { key:'wa_request_received', label:'Recebi uma nova solicitação'          },
     { key:'wa_request_accepted', label:'Minha solicitação foi aceita'         },
     { key:'wa_expiry_reminder',  label:'Lembrete: doação próxima do vencimento' },
-    { key:'wa_weekly_digest',    label:'Resumo semanal de atividade'          },
   ];
-
-  const savedPhone = localStorage.getItem('sc_wa_phone_' + user.id) || user.phone || '';
+  var savedPhone = localStorage.getItem('sc_wa_phone') || user.phone || '';
   document.getElementById('wa-phone').value = savedPhone;
-
-  document.getElementById('wa-save-phone').addEventListener('click', () => {
-    const ph = document.getElementById('wa-phone').value.trim();
-    localStorage.setItem('sc_wa_phone_' + user.id, ph);
-    showWaAlert('Número salvo! ' + (ph ? ph : '(sem número)'), 'success');
+  document.getElementById('wa-save-phone').addEventListener('click', function() {
+    localStorage.setItem('sc_wa_phone', document.getElementById('wa-phone').value.trim());
+    showWaAlert('Número salvo!', 'success');
   });
-
-  const waTogglesEl = document.getElementById('wa-toggles');
-  waTogglesEl.innerHTML = waTypes.map(t => {
-    const enabled = localStorage.getItem('sc_' + t.key + '_' + user.id) !== 'false';
-    return `<div class="wa-notif-row">
-      <span>${t.label}</span>
-      <label class="toggle-switch">
-        <input type="checkbox" id="${t.key}" ${enabled ? 'checked' : ''} onchange="toggleWa('${t.key}')">
-        <span class="toggle-slider"></span>
-      </label>
-    </div>`;
+  var waTogglesEl = document.getElementById('wa-toggles');
+  waTogglesEl.innerHTML = waTypes.map(function(t) {
+    var enabled = localStorage.getItem('sc_' + t.key) !== 'false';
+    return '<div class="wa-notif-row"><span>' + t.label + '</span>' +
+      '<label class="toggle-switch"><input type="checkbox" id="' + t.key + '" ' + (enabled?'checked':'') + ' onchange="toggleWa(\'' + t.key + '\')">' +
+      '<span class="toggle-slider"></span></label></div>';
   }).join('');
-
   window.toggleWa = function(key) {
-    const el = document.getElementById(key);
-    localStorage.setItem('sc_' + key + '_' + user.id, el.checked ? 'true' : 'false');
-    showWaAlert(el.checked ? '✅ Notificação ativada!' : '🔕 Notificação desativada.', 'info');
+    var el = document.getElementById(key);
+    localStorage.setItem('sc_' + key, el.checked ? 'true' : 'false');
+    showWaAlert(el.checked ? '✅ Ativado!' : '🔕 Desativado.', 'info');
   };
-
-  const waMsgs = {
-    new_food:          `🌱 *Salve Comida*\nNova doação disponível!\n\n🍞 *Pães variados* — Padaria Pão Bom\n📍 Centro · 20 unidades\n📅 Disponível até hoje\n\nAcesse: salvecomida.com/receber`,
-    request_received:  `🌱 *Salve Comida*\nVocê recebeu uma solicitação!\n\n📩 Maria Silva quer receber seus *Pães variados*\n📞 (11) 99999-1234\n\nResponda em: salvecomida.com/minhas-doacoes`,
-    request_accepted:  `🌱 *Salve Comida*\nSua solicitação foi aceita! 🎉\n\n✅ *Marmitas prontas* — Restaurante Sabor Caseiro\nentrará em contato para combinar a retirada.`,
-    expiry_reminder:   `🌱 *Salve Comida*\n⏰ Lembrete de validade!\n\n🍱 Sua doação *Marmitas prontas* vence HOJE.\nAtualize o status em: salvecomida.com/minhas-doacoes`,
-  };
-
-  document.getElementById('wa-test-btn').addEventListener('click', () => {
-    const type = document.getElementById('wa-test-type').value;
-    const msg  = waMsgs[type] || 'Notificação de teste.';
-    const time = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    const chat = document.getElementById('wa-preview-chat');
-    chat.innerHTML = `
-      <div class="wa-bubble received">
-        ${msg.replace(/\n/g,'<br>').replace(/\*(.*?)\*/g,'<strong>$1</strong>')}
-        <div class="wa-time">${time}</div>
-      </div>
-      <div class="wa-bubble sent">Ok, entendido! Obrigado. 👍<div class="wa-time">${time}</div></div>`;
-    showWaAlert('Mensagem simulada com sucesso! Veja o preview ao lado.', 'success');
-
-    Storage.addNotification({ userId: user.id, type:'whatsapp', title:'📲 Teste de WhatsApp enviado', body:`Mensagem do tipo "${document.getElementById('wa-test-type').options[document.getElementById('wa-test-type').selectedIndex].text}" simulada com sucesso.`, link:'' });
-    Auth.updateNavAuth();
+  document.getElementById('wa-test-btn').addEventListener('click', function() {
+    showWaAlert('Mensagem simulada! (Em produção, enviaria via WhatsApp Business API)', 'success');
   });
-
   function showWaAlert(msg, type) {
-    const el = document.getElementById('wa-alert');
-    el.innerHTML = `<div class="alert alert-${type} fade-in" style="padding:0.6rem 0.9rem;font-size:0.85rem">${msg}</div>`;
-    setTimeout(() => { el.innerHTML = ''; }, 4000);
+    var el = document.getElementById('wa-alert');
+    el.innerHTML = '<div class="alert alert-' + type + '" style="padding:.6rem .9rem;font-size:.85rem">' + msg + '</div>';
+    setTimeout(function(){ el.innerHTML = ''; }, 4000);
   }
 
-  // ── Segurança ──
-  document.getElementById('security-form').addEventListener('submit', e => {
-    e.preventDefault();
-    const current = document.getElementById('sec-current').value;
-    const newPw   = document.getElementById('sec-new').value;
-    const confirm = document.getElementById('sec-confirm').value;
-    const freshUser = Storage.getUserById(user.id);
-
-    if (newPw.length < 6) { App.showAlert('security-alert','error','Nova senha deve ter mínimo 6 caracteres.'); return; }
-    if (newPw !== confirm)  { App.showAlert('security-alert','error','As senhas não coincidem.'); return; }
-
-    const hashFn = pw => { let h=0; for(let i=0;i<pw.length;i++) h=(Math.imul(31,h)+pw.charCodeAt(i))|0; return 'h'+Math.abs(h).toString(16); };
-    if (freshUser.password !== hashFn(current)) { App.showAlert('security-alert','error','Senha atual incorreta.'); return; }
-
-    Storage.updateUser(user.id, { password: hashFn(newPw) });
-    App.showAlert('security-alert','success','Senha alterada com sucesso!');
-    document.getElementById('security-form').reset();
-  });
-
-  document.getElementById('logout-btn').addEventListener('click', () => {
+  // ── Segurança: logout ──
+  document.getElementById('logout-btn').addEventListener('click', function() {
     if (confirm('Deseja encerrar sua sessão?')) Auth.logout();
   });
+  document.getElementById('security-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    showAlert('security-alert','info','Alteração de senha via API será implementada. Por ora, crie uma conta nova se necessário.');
+  });
 
-  function togglePw(id) {
-    const el = document.getElementById(id);
+  window.togglePw = function(id) {
+    var el = document.getElementById(id);
     el.type = el.type === 'password' ? 'text' : 'password';
-  }
-  window.togglePw = togglePw;
+  };
 });
+
+function showAlert(elId, type, msg) {
+  var el = document.getElementById(elId);
+  if (el) { el.innerHTML = '<div class="alert alert-' + type + '">' + msg + '</div>'; setTimeout(function(){ el.innerHTML=''; },5000); }
+}
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body>
 </html>

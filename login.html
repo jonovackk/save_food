@@ -44,9 +44,7 @@
     <div class="auth-divider">ou</div>
 
     <div style="background:var(--grey-pale);border-radius:var(--radius-sm);padding:1rem;font-size:0.85rem;color:var(--grey-mid)">
-      <strong style="color:var(--grey-dark)">🧪 Conta de demonstração:</strong><br>
-      E-mail: <code>admin@salvecomida.com</code><br>
-      Senha: <code>admin123</code>
+      <strong style="color:var(--grey-dark)">🚀 Novo aqui?</strong> <a href="cadastro.html" style="color:var(--green-main)">Crie sua conta gratuitamente</a> em segundos.
     </div>
 
     <div class="auth-footer">
@@ -58,49 +56,59 @@
   </div>
 </div>
 
-<script src="js/storage.js"></script>
+<script src="js/api.js"></script>
 <script src="js/auth.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  Storage.seedIfEmpty();
+document.addEventListener('DOMContentLoaded', function() {
+  // Se já logado, redireciona
+  if (Auth.getToken()) {
+    Auth.fetchCurrentUser().then(function(u) {
+      if (u) location.replace(sessionStorage.getItem('sc_after_login') || 'index.html');
+    });
+  }
 
-  // Toggle senha
-  document.getElementById('toggle-pw').addEventListener('click', () => {
-    const pw = document.getElementById('password');
+  document.getElementById('toggle-pw').addEventListener('click', function() {
+    var pw = document.getElementById('password');
     pw.type = pw.type === 'password' ? 'text' : 'password';
   });
 
-  const form = document.getElementById('login-form');
+  var form = document.getElementById('login-form');
+  var btn  = form.querySelector('[type=submit]');
 
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async function(e) {
     e.preventDefault();
-    const email = form.email.value.trim();
-    const password = form.password.value;
+    var email    = form.email.value.trim();
+    var password = form.password.value;
 
     if (!email || !password) {
       showAlert('E-mail e senha são obrigatórios.', 'error'); return;
     }
 
-    const result = Storage.loginUser(email, password);
-    if (!result.ok) {
-      showAlert(result.msg, 'error'); return;
+    btn.disabled = true;
+    btn.textContent = 'Entrando...';
+
+    try {
+      var result = await Api.auth.login({ email: email, password: password });
+      Auth.setToken(result.token);
+      Auth.setCachedUser(result.user);
+      showAlert('✅ Login realizado! Redirecionando...', 'success');
+      setTimeout(function() {
+        var dest = sessionStorage.getItem('sc_after_login') || 'index.html';
+        sessionStorage.removeItem('sc_after_login');
+        location.replace(dest);
+      }, 900);
+    } catch(err) {
+      showAlert(err.message || 'Erro ao entrar.', 'error');
+      btn.disabled = false;
+      btn.innerHTML = '🔑 Entrar';
     }
-
-    showAlert('✅ Login realizado! Redirecionando...', 'success');
-
-    setTimeout(() => {
-      const dest = sessionStorage.getItem('sc_after_login') || 'index.html';
-      sessionStorage.removeItem('sc_after_login');
-      location.replace(dest);
-    }, 1200);
   });
 
   function showAlert(msg, type) {
-    const el = document.getElementById('login-alert');
-    const icons = { success:'✅', error:'❌' };
-    el.innerHTML = `<div class="alert alert-${type}">${icons[type]||''} ${msg}</div>`;
-    if (type === 'success') return;
-    setTimeout(() => { el.innerHTML = ''; }, 5000);
+    var el = document.getElementById('login-alert');
+    var icons = { success:'✅', error:'❌' };
+    el.innerHTML = '<div class="alert alert-' + type + '">' + (icons[type]||'') + ' ' + msg + '</div>';
+    if (type !== 'success') setTimeout(function(){ el.innerHTML = ''; }, 5000);
   }
 });
 </script>

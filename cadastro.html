@@ -26,19 +26,19 @@
         <label style="margin-bottom:0.6rem;display:block">Qual é o seu perfil? <span class="required">*</span></label>
         <div class="role-grid">
           <div>
-            <input type="radio" name="role" id="role-user" value="user" class="role-option" checked>
+            <input type="radio" name="role" id="role-user" value="RECEIVER" class="role-option" checked>
             <label for="role-user"><span>🙋</span>Quero receber</label>
           </div>
           <div>
-            <input type="radio" name="role" id="role-donor" value="donor" class="role-option">
+            <input type="radio" name="role" id="role-donor" value="DONOR" class="role-option">
             <label for="role-donor"><span>🤝</span>Quero doar</label>
           </div>
           <div>
-            <input type="radio" name="role" id="role-ong" value="ong" class="role-option">
-            <label for="role-ong"><span>🏢</span>Sou uma ONG</label>
+            <input type="radio" name="role" id="role-both" value="BOTH" class="role-option">
+            <label for="role-both"><span>🔄</span>Doar e receber</label>
           </div>
           <div>
-            <input type="radio" name="role" id="role-company" value="donor" class="role-option">
+            <input type="radio" name="role" id="role-company" value="DONOR" class="role-option">
             <label for="role-company"><span>🏪</span>Empresa doadora</label>
           </div>
         </div>
@@ -102,33 +102,30 @@
   </div>
 </div>
 
-<script src="js/storage.js"></script>
+<script src="js/api.js"></script>
 <script src="js/auth.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  Storage.seedIfEmpty();
-
-  // Toggle senhas
-  [['toggle-pw2','reg-password'],['toggle-pw3','confirm-password']].forEach(([btnId,inputId]) => {
-    document.getElementById(btnId).addEventListener('click', () => {
-      const el = document.getElementById(inputId);
+document.addEventListener('DOMContentLoaded', function() {
+  [['toggle-pw2','reg-password'],['toggle-pw3','confirm-password']].forEach(function(pair) {
+    document.getElementById(pair[0]).addEventListener('click', function() {
+      var el = document.getElementById(pair[1]);
       el.type = el.type === 'password' ? 'text' : 'password';
     });
   });
 
-  const form = document.getElementById('register-form');
+  var form = document.getElementById('register-form');
+  var btn  = form.querySelector('[type=submit]');
 
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async function(e) {
     e.preventDefault();
-    const name     = form.name.value.trim();
-    const email    = form['reg-email'] ? form['reg-email'].value.trim() : form.email.value.trim();
-    const emailEl  = document.getElementById('reg-email');
-    const password = form.password.value;
-    const confirm  = form.confirmPassword.value;
-    const phone    = form.phone.value.trim();
-    const role     = form.role.value;
+    var name     = form.name.value.trim();
+    var email    = document.getElementById('reg-email').value.trim();
+    var password = document.getElementById('reg-password').value;
+    var confirm  = document.getElementById('confirm-password').value;
+    var phone    = form.phone.value.trim();
+    var role     = form.role.value;
 
-    if (!name || !emailEl.value.trim() || !password) {
+    if (!name || !email || !password) {
       showAlert('Preencha todos os campos obrigatórios.', 'error'); return;
     }
     if (password.length < 6) {
@@ -138,23 +135,30 @@ document.addEventListener('DOMContentLoaded', () => {
       showAlert('As senhas não coincidem.', 'error'); return;
     }
 
-    const result = Storage.registerUser({ name, email: emailEl.value.trim(), password, phone, role });
-    if (!result.ok) {
-      showAlert(result.msg, 'error'); return;
+    btn.disabled = true;
+    btn.textContent = 'Criando conta...';
+
+    try {
+      var result = await Api.auth.register({
+        name: name, email: email, password: password,
+        phone: phone || null, role: role,
+      });
+      Auth.setToken(result.token);
+      Auth.setCachedUser(result.user);
+      showAlert('🎉 Conta criada! Redirecionando...', 'success');
+      setTimeout(function(){ location.replace('perfil.html'); }, 1200);
+    } catch(err) {
+      showAlert(err.message || 'Erro ao criar conta.', 'error');
+      btn.disabled = false;
+      btn.innerHTML = '🚀 Criar minha conta';
     }
-
-    // Login automático
-    Storage.loginUser(emailEl.value.trim(), password);
-    showAlert('🎉 Conta criada! Redirecionando...', 'success');
-
-    setTimeout(() => location.replace('perfil.html'), 1500);
   });
 
   function showAlert(msg, type) {
-    const el = document.getElementById('register-alert');
-    const icons = { success:'✅', error:'❌' };
-    el.innerHTML = `<div class="alert alert-${type}">${icons[type]||''} ${msg}</div>`;
-    if (type !== 'success') setTimeout(() => { el.innerHTML = ''; }, 6000);
+    var el = document.getElementById('register-alert');
+    var icons = { success:'✅', error:'❌' };
+    el.innerHTML = '<div class="alert alert-' + type + '">' + (icons[type]||'') + ' ' + msg + '</div>';
+    if (type !== 'success') setTimeout(function(){ el.innerHTML = ''; }, 6000);
   }
 });
 </script>
