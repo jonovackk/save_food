@@ -2,6 +2,25 @@ const router = require('express').Router();
 const prisma = require('../lib/prisma');
 const { authMiddleware } = require('../middleware/auth');
 
+// GET /api/requests/daily-status — quantas solicitações o usuário fez hoje
+router.get('/daily-status', authMiddleware, async (req, res) => {
+  try {
+    const DAILY_LIMIT = parseInt(process.env.DAILY_REQUEST_LIMIT || '5', 10);
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    const used = await prisma.foodRequest.count({
+      where: {
+        receiverId: req.userId,
+        createdAt: { gte: startOfDay },
+        status: { not: 'CANCELLED' },
+      },
+    });
+    res.json({ used, limit: DAILY_LIMIT, remaining: Math.max(0, DAILY_LIMIT - used) });
+  } catch (e) {
+    res.status(500).json({ error: 'Erro interno.' });
+  }
+});
+
 // GET /api/requests/my — solicitações feitas pelo receptor logado
 router.get('/my', authMiddleware, async (req, res) => {
   try {

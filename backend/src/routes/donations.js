@@ -206,6 +206,23 @@ router.post('/:id/requests', authMiddleware, async (req, res) => {
       return res.status(409).json({ error: 'Você já possui uma solicitação pendente para esta doação.' });
     }
 
+    // Limite diário de solicitações por conta
+    const DAILY_LIMIT = parseInt(process.env.DAILY_REQUEST_LIMIT || '5', 10);
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    const todayCount = await prisma.foodRequest.count({
+      where: {
+        receiverId: req.userId,
+        createdAt: { gte: startOfDay },
+        status: { not: 'CANCELLED' },
+      },
+    });
+    if (todayCount >= DAILY_LIMIT) {
+      return res.status(429).json({
+        error: `Limite diário atingido. Você pode fazer no máximo ${DAILY_LIMIT} solicitações por dia. Tente novamente amanhã.`,
+      });
+    }
+
     const { quantity, message } = req.body;
     const qty = parseInt(quantity || 1, 10);
 

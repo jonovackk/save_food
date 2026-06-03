@@ -81,6 +81,8 @@
  </div>
  </div>
 
+ <div id="daily-limit-banner" style="display:none;margin-bottom:1rem"></div>
+
  <div class="flex items-center justify-between mb-2" style="flex-wrap:wrap;gap:0.5rem">
  <span id="results-count" style="font-size:0.88rem;color:var(--grey-mid)"></span>
  <a href="doar.html" class="btn btn-outline btn-sm">+ Cadastrar doação</a>
@@ -163,6 +165,20 @@ document.addEventListener('DOMContentLoaded', async function() {
 
  _currentUser = await Auth.fetchCurrentUser();
  Auth.updateNavAuth();
+
+ if (_currentUser) {
+ try {
+ var ds = await Api.requests.dailyStatus();
+ var banner = document.getElementById('daily-limit-banner');
+ if (ds.remaining === 0) {
+ banner.style.display = 'block';
+ banner.innerHTML = '<div class="alert alert-error">Você atingiu o limite de ' + ds.limit + ' solicitações por dia. Tente novamente amanhã.</div>';
+ } else if (ds.used > 0) {
+ banner.style.display = 'block';
+ banner.innerHTML = '<div style="background:var(--orange-pale);border:1px solid #fbb67a;border-radius:var(--radius-sm);padding:0.65rem 1rem;font-size:0.85rem;color:#92400e">Você usou <strong>' + ds.used + '</strong> de <strong>' + ds.limit + '</strong> solicitações hoje. Restam <strong>' + ds.remaining + '</strong>.</div>';
+ }
+ } catch(e) {}
+ }
 
  await loadDonations();
 

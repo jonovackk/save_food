@@ -81,6 +81,9 @@ var Api = {
  my: function() {
  return _fetch('/requests/my');
  },
+ dailyStatus: function() {
+ return _fetch('/requests/daily-status');
+ },
  received: function() {
  return _fetch('/requests/received');
  },
