@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const prisma = require('../lib/prisma');
 const { authMiddleware } = require('../middleware/auth');
+const { checkFields } = require('../lib/moderation');
 
 const VALID_CATEGORIES = ['FRUITS','BREADS','MEALS','CANNED','DAIRY','DRINKS','OTHER'];
 const VALID_DELIVERY   = ['PICKUP_ONLY','CAN_DELIVER','TO_AGREE'];
@@ -95,6 +96,10 @@ router.post('/', authMiddleware, async (req, res) => {
     if (maxPR !== null && (isNaN(maxPR) || maxPR <= 0)) {
       return res.status(400).json({ error: 'Limite por solicitacao deve ser maior que zero.' });
     }
+    const modErr = checkFields({ title, description, pickupLocation });
+    if (modErr) {
+      return res.status(400).json({ error: 'O conteúdo contém linguagem inapropriada. Por favor, revise o texto.' });
+    }
 
     const donation = await prisma.donation.create({
       data: {
@@ -144,6 +149,11 @@ router.patch('/:id', authMiddleware, async (req, res) => {
     if (deliveryOption) data.deliveryOption = deliveryOption.toUpperCase();
     if (imageUrl !== undefined) data.imageUrl = imageUrl || null;
     if (status) data.status = status.toUpperCase();
+
+    const modErr = checkFields({ title: data.title, description: data.description, pickupLocation: data.pickupLocation });
+    if (modErr) {
+      return res.status(400).json({ error: 'O conteúdo contém linguagem inapropriada. Por favor, revise o texto.' });
+    }
 
     const updated = await prisma.donation.update({
       where: { id: req.params.id }, data,
