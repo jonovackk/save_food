@@ -2,9 +2,61 @@ const router = require('express').Router();
 const prisma = require('../lib/prisma');
 const { authMiddleware } = require('../middleware/auth');
 const { checkFields } = require('../lib/moderation');
+const { sendRequestReceived } = require('../lib/email');
 
 const VALID_CATEGORIES = ['FRUITS','BREADS','MEALS','CANNED','DAIRY','DRINKS','OTHER'];
 const VALID_DELIVERY   = ['PICKUP_ONLY','CAN_DELIVER','TO_AGREE'];
+
+// GET /api/donations/metrics — métricas reais para o dashboard
+router.get('/metrics', authMiddleware, async (req, res) => {
+  try {
+    const all = await prisma.donation.findMany({
+      include: {
+        donor:    { select: { role: true } },
+        requests: { select: { id: true } },
+      },
+    });
+    const byStatus   = { AVAILABLE:0, RESERVED:0, COMPLETED:0, CANCELLED:0 };
+    const byCategory = {};
+    const byMonth    = {};
+    let totalRequests = 0;
+
+    all.forEach(function(d) {
+      if (byStatus.hasOwnProperty(d.status)) byStatus[d.status]++;
+      byCategory[d.category] = (byCategory[d.category] || 0) + 1;
+      totalRequests += d.requests.length;
+      var m = d.createdAt.toISOString().slice(0, 7); // YYYY-MM
+      byMonth[m] = (byMonth[m] || 0) + 1;
+    });
+
+    // Últimos 6 meses
+    var months = [];
+    var now = new Date();
+    for (var i = 5; i >= 0; i--) {
+      var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push(d.toISOString().slice(0, 7));
+    }
+    var monthlyCounts = months.map(function(m) { return byMonth[m] || 0; });
+
+    const completed  = byStatus.COMPLETED;
+    const kgEst      = Math.round((completed + byStatus.RESERVED) * 2.5);
+
+    res.json({
+      total:         all.length,
+      byStatus,
+      byCategory,
+      totalRequests,
+      kgEst,
+      co2Est:        Math.round(kgEst * 2.5),
+      mealsEst:      completed * 4,
+      months,
+      monthlyCounts,
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Erro interno.' });
+  }
+});
 
 // GET /api/donations/my  — deve vir ANTES de /:id
 router.get('/my', authMiddleware, async (req, res) => {
@@ -28,7 +80,11 @@ router.get('/my', authMiddleware, async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const { category, city, search, delivery } = req.query;
-    const where = { status: 'AVAILABLE' };
+    const today = new Date().toISOString().split('T')[0];
+    const where = {
+      status: 'AVAILABLE',
+      OR: [{ expirationDate: null }, { expirationDate: { gte: today } }],
+    };
     if (category) where.category = category.toUpperCase();
     if (delivery) where.deliveryOption = delivery.toUpperCase();
     if (city) where.donor = { city: { contains: city } };
@@ -249,6 +305,14 @@ router.post('/:id/requests', authMiddleware, async (req, res) => {
       },
     });
     res.status(201).json(request);
+
+    // Notifica o doador por e-mail (assíncrono)
+    try {
+      const donor = await prisma.user.findUnique({ where: { id: donation.donorId } });
+      if (donor) {
+        sendRequestReceived(donor.email, user.name, donation.title).catch(function(){});
+      }
+    } catch(e) {}
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'Erro interno.' });

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Redefinir senha — Salve Comida</title>
+ <link rel="stylesheet" href="css/style.css">
+ <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+<div class="auth-page">
+ <div class="auth-card">
+ <div class="auth-logo">
+ <a href="index.html"><div class="logo-icon">SC</div>Salve Comida</a>
+ </div>
+
+ <h2 class="auth-title">Criar nova senha</h2>
+ <p class="auth-subtitle">Escolha uma senha segura com pelo menos 6 caracteres.</p>
+
+ <div id="alert"></div>
+
+ <form id="reset-form" novalidate>
+ <div class="form-group">
+ <label for="password">Nova senha <span class="required">*</span></label>
+ <div class="input-icon-right">
+ <input type="password" id="password" class="form-control" placeholder="Mínimo 6 caracteres" required autocomplete="new-password">
+ <button type="button" class="toggle-pw" id="toggle-pw" title="Mostrar/ocultar senha"></button>
+ </div>
+ <span class="error-msg">Informe a nova senha.</span>
+ </div>
+ <div class="form-group">
+ <label for="confirm">Confirmar senha <span class="required">*</span></label>
+ <input type="password" id="confirm" class="form-control" placeholder="Repita a senha" required autocomplete="new-password">
+ <span class="error-msg">As senhas não coincidem.</span>
+ </div>
+ <button type="submit" class="btn btn-primary w-full" style="justify-content:center;margin-top:0.5rem">
+ Salvar nova senha
+ </button>
+ </form>
+
+ <div class="auth-footer">
+ <a href="login.html">← Voltar ao login</a>
+ </div>
+ </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+var token = new URLSearchParams(location.search).get('token');
+if (!token) {
+ document.getElementById('alert').innerHTML = '<div class="alert alert-error">Link inválido. Solicite um novo link de redefinição.</div>';
+ document.getElementById('reset-form').style.display = 'none';
+}
+
+document.getElementById('toggle-pw').addEventListener('click', function() {
+ var pw = document.getElementById('password');
+ pw.type = pw.type === 'password' ? 'text' : 'password';
+});
+
+document.getElementById('reset-form').addEventListener('submit', async function(e) {
+ e.preventDefault();
+ var password = document.getElementById('password').value;
+ var confirm  = document.getElementById('confirm').value;
+ var btn      = this.querySelector('[type=submit]');
+
+ if (password.length < 6) {
+ document.getElementById('alert').innerHTML = '<div class="alert alert-error">A senha deve ter pelo menos 6 caracteres.</div>';
+ return;
+ }
+ if (password !== confirm) {
+ document.getElementById('alert').innerHTML = '<div class="alert alert-error">As senhas não coincidem.</div>';
+ return;
+ }
+
+ btn.disabled = true;
+ btn.textContent = 'Salvando...';
+
+ try {
+ await Api.auth.resetPassword(token, password);
+ document.getElementById('alert').innerHTML = '<div class="alert alert-success">Senha redefinida com sucesso! Redirecionando...</div>';
+ this.style.display = 'none';
+ setTimeout(function(){ location.replace('login.html'); }, 2000);
+ } catch(err) {
+ document.getElementById('alert').innerHTML = '<div class="alert alert-error">' + (err.message || 'Erro ao redefinir. O link pode ter expirado.') + '</div>';
+ btn.disabled = false;
+ btn.textContent = 'Salvar nova senha';
+ }
+});
+</script>
+</body>
+</html>

@@ -299,6 +299,20 @@ document.addEventListener('DOMContentLoaded', async function() {
     btn.textContent = 'Cadastrando...';
 
     try {
+      // Upload da imagem (se houver) antes de salvar
+      var imageUrl = null;
+      var fileInput = document.getElementById('food-image');
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        btn.textContent = 'Enviando imagem...';
+        try {
+          var up = await Api.upload.image(fileInput.files[0]);
+          imageUrl = up.url;
+        } catch(upErr) {
+          showAlert('Nao foi possivel enviar a imagem: ' + (upErr.message || '') + '. A doacao sera salva sem foto.', 'error');
+        }
+      }
+
+      btn.textContent = 'Cadastrando...';
       await Api.donations.create({
         title: title, description: fullDescription, category: category,
         quantity: parseInt(quantity, 10), unit: unit,
@@ -307,6 +321,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         state: state, city: city,
         pickupLocation: pickupLocation,
         deliveryOption: deliveryOption,
+        imageUrl: imageUrl,
       });
       showAlert('Doacao cadastrada com sucesso! Redirecionando...', 'success');
       setTimeout(function(){ location.replace('minhas-doacoes.html'); }, 1500);

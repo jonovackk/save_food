@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const prisma = require('../lib/prisma');
 const { authMiddleware } = require('../middleware/auth');
+const { sendRequestAccepted } = require('../lib/email');
 
 // GET /api/requests/daily-status — quantas solicitações o usuário fez hoje
 router.get('/daily-status', authMiddleware, async (req, res) => {
@@ -37,7 +38,15 @@ router.get('/my', authMiddleware, async (req, res) => {
       },
       orderBy: { createdAt: 'desc' },
     });
-    res.json(requests);
+    // Oculta contato do doador enquanto solicitação não for aceita
+    const safe = requests.map(function(r) {
+      if (r.status !== 'ACCEPTED' && r.donation && r.donation.donor) {
+        r.donation.donor.phone = null;
+        r.donation.donor.email = null;
+      }
+      return r;
+    });
+    res.json(safe);
   } catch (e) {
     res.status(500).json({ error: 'Erro interno.' });
   }
@@ -128,6 +137,20 @@ router.patch('/:id/status', authMiddleware, async (req, res) => {
     }
 
     res.json(updated);
+
+    // Notificações por e-mail (assíncrono — não bloqueia a resposta)
+    if (newStatus === 'ACCEPTED') {
+      try {
+        const receiver = await prisma.user.findUnique({ where: { id: request.receiverId } });
+        const donor    = await prisma.user.findUnique({ where: { id: request.donation.donorId } });
+        if (receiver && donor) {
+          sendRequestAccepted(
+            receiver.email, donor.name,
+            request.donation.title, request.donation.pickupLocation || ''
+          ).catch(function(){});
+        }
+      } catch(e) {}
+    }
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'Erro interno.' });

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Esqueci minha senha — Salve Comida</title>
+ <link rel="stylesheet" href="css/style.css">
+ <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+<div class="auth-page">
+ <div class="auth-card">
+ <div class="auth-logo">
+ <a href="index.html"><div class="logo-icon">SC</div>Salve Comida</a>
+ </div>
+
+ <h2 class="auth-title">Esqueci minha senha</h2>
+ <p class="auth-subtitle">Informe seu e-mail e enviaremos um link para redefinir sua senha.</p>
+
+ <div id="alert"></div>
+
+ <form id="forgot-form" novalidate>
+ <div class="form-group">
+ <label for="email">E-mail <span class="required">*</span></label>
+ <input type="email" id="email" class="form-control" placeholder="seu@email.com" required autocomplete="email">
+ <span class="error-msg">Informe um e-mail válido.</span>
+ </div>
+ <button type="submit" class="btn btn-primary w-full" style="justify-content:center;margin-top:0.5rem">
+ Enviar link de redefinição
+ </button>
+ </form>
+
+ <div class="auth-footer">
+ <a href="login.html">← Voltar ao login</a>
+ </div>
+ </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+document.getElementById('forgot-form').addEventListener('submit', async function(e) {
+ e.preventDefault();
+ var email = document.getElementById('email').value.trim();
+ var btn   = this.querySelector('[type=submit]');
+ if (!email) return;
+
+ btn.disabled = true;
+ btn.textContent = 'Enviando...';
+
+ try {
+ await Api.auth.forgotPassword(email);
+ document.getElementById('alert').innerHTML =
+ '<div class="alert alert-success">Se este e-mail estiver cadastrado, você receberá um link em instantes. Verifique também a pasta de spam.</div>';
+ this.style.display = 'none';
+ } catch(err) {
+ document.getElementById('alert').innerHTML =
+ '<div class="alert alert-error">' + (err.message || 'Erro ao enviar. Tente novamente.') + '</div>';
+ btn.disabled = false;
+ btn.textContent = 'Enviar link de redefinição';
+ }
+});
+</script>
+</body>
+</html>

@@ -41,6 +41,12 @@ var Api = {
  me: function() {
  return _fetch('/auth/me');
  },
+ forgotPassword: function(email) {
+ return _fetch('/auth/forgot-password', { method: 'POST', body: { email: email } });
+ },
+ resetPassword: function(token, password) {
+ return _fetch('/auth/reset-password', { method: 'POST', body: { token: token, password: password } });
+ },
  },
 
  users: {
@@ -63,6 +69,9 @@ var Api = {
  my: function() {
  return _fetch('/donations/my');
  },
+ metrics: function() {
+ return _fetch('/donations/metrics');
+ },
  create: function(data) {
  return _fetch('/donations', { method: 'POST', body: data });
  },
@@ -74,6 +83,22 @@ var Api = {
  },
  createRequest: function(donationId, data) {
  return _fetch('/donations/' + donationId + '/requests', { method: 'POST', body: data });
+ },
+ },
+
+ upload: {
+ image: async function(file) {
+ var token = localStorage.getItem('sc_token');
+ var form = new FormData();
+ form.append('image', file);
+ var res = await fetch('/api/upload', {
+ method: 'POST',
+ headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+ body: form,
+ });
+ var data = await res.json();
+ if (!res.ok) throw new Error(data.error || 'Erro no upload.');
+ return data;
  },
  },
 

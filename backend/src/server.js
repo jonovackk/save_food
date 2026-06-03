@@ -3,11 +3,14 @@ const express   = require('express');
 const cors      = require('cors');
 const path      = require('path');
 const rateLimit = require('express-rate-limit');
+const cron      = require('node-cron');
 
-const authRoutes     = require('./routes/auth');
-const usersRoutes    = require('./routes/users');
+const authRoutes      = require('./routes/auth');
+const usersRoutes     = require('./routes/users');
 const donationsRoutes = require('./routes/donations');
-const requestsRoutes = require('./routes/requests');
+const requestsRoutes  = require('./routes/requests');
+const uploadRoutes    = require('./routes/upload');
+const prisma          = require('./lib/prisma');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -52,6 +55,7 @@ app.use('/api/auth',      authRoutes);
 app.use('/api/users',     usersRoutes);
 app.use('/api/donations', donationsRoutes);
 app.use('/api/requests',  requestsRoutes);
+app.use('/api/upload',    uploadRoutes);
 
 // ── 404 para rotas /api/* desconhecidas
 app.use('/api', (req, res) => {
@@ -62,6 +66,20 @@ app.use('/api', (req, res) => {
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../index.html'));
 });
+
+// ── Job: expira doações vencidas (roda ao iniciar + todo dia à meia-noite)
+async function expireOldDonations() {
+  const today = new Date().toISOString().split('T')[0];
+  try {
+    const { count } = await prisma.donation.updateMany({
+      where: { status: 'AVAILABLE', expirationDate: { lt: today } },
+      data:  { status: 'CANCELLED' },
+    });
+    if (count > 0) console.log(`[cron] ${count} doação(ões) expirada(s).`);
+  } catch (e) { console.error('[cron] erro ao expirar doações:', e.message); }
+}
+expireOldDonations();
+cron.schedule('0 0 * * *', expireOldDonations);
 
 // ── Inicia servidor
 app.listen(PORT, () => {
