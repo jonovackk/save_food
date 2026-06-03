@@ -1180,12 +1180,14 @@ textarea.form-control {
 }
 .request-info-item span { color: var(--grey-dark); }
 
-.request-actions {
+.request-actions,
+.request-card-footer {
  padding: 1rem 1.5rem;
  border-top: 1px solid var(--grey-light);
  display: flex;
  gap: 0.5rem;
  flex-wrap: wrap;
+ align-items: center;
 }
 
 /* ===========================
