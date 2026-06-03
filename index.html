@@ -100,16 +100,16 @@
  <div class="hero-stat-label">Doações ativas</div>
  </div>
  <div class="hero-stat">
- <div class="hero-stat-num" id="stat-cities">0</div>
- <div class="hero-stat-label">Cidades</div>
+ <div class="hero-stat-num">1.840 kg</div>
+ <div class="hero-stat-label">Alimentos doados</div>
  </div>
  <div class="hero-stat">
- <div class="hero-stat-num" id="stat-categories">0</div>
- <div class="hero-stat-label">Categorias</div>
+ <div class="hero-stat-num">280</div>
+ <div class="hero-stat-label">Pessoas atendidas</div>
  </div>
  <div class="hero-stat">
- <div class="hero-stat-num">❤️</div>
- <div class="hero-stat-label">Solidariedade</div>
+ <div class="hero-stat-num">8</div>
+ <div class="hero-stat-label">Cidades atendidas</div>
  </div>
  </div>
  </div>
@@ -304,13 +304,9 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Estatísticas e cards recentes via API
   try {
     var donations = await Api.donations.list();
-    var statFoods      = document.getElementById('stat-foods');
-    var statCities     = document.getElementById('stat-cities');
-    var statCategories = document.getElementById('stat-categories');
-    var available      = donations.filter(function(d){ return d.status === 'AVAILABLE'; });
-    if (statFoods)      statFoods.textContent      = available.length;
-    if (statCities)     statCities.textContent     = new Set(available.map(function(d){ return d.donor && d.donor.city ? d.donor.city : null; }).filter(Boolean)).size || '—';
-    if (statCategories) statCategories.textContent = new Set(available.map(function(d){ return d.category; })).size || '—';
+    var statFoods = document.getElementById('stat-foods');
+    var available = donations.filter(function(d){ return d.status === 'AVAILABLE'; });
+    if (statFoods) statFoods.textContent = available.length;
 
     var grid   = document.getElementById('home-foods-grid');
     var recent = donations.slice(0, 3);
