@@ -16,11 +16,12 @@ router.get('/me', authMiddleware, async (req, res) => {
 // PATCH /api/users/me
 router.patch('/me', authMiddleware, async (req, res) => {
   try {
-    const { name, phone, city, region, address, role } = req.body;
+    const { name, phone, state, city, region, address, role } = req.body;
     const VALID_ROLES = ['DONOR', 'RECEIVER', 'BOTH'];
     const data = {};
     if (name) data.name = name.trim();
     if (phone !== undefined) data.phone = phone || null;
+    if (state !== undefined) data.state = state || null;
     if (city !== undefined) data.city = city || null;
     if (region !== undefined) data.region = region || null;
     if (address !== undefined) data.address = address || null;
@@ -36,7 +37,8 @@ router.patch('/me', authMiddleware, async (req, res) => {
 function safeUser(u) {
   return {
     id: u.id, name: u.name, email: u.email,
-    phone: u.phone, role: u.role, city: u.city,
+    phone: u.phone, role: u.role,
+    state: u.state, city: u.city,
     region: u.region, address: u.address, createdAt: u.createdAt,
   };
 }

@@ -1321,6 +1321,43 @@ textarea.form-control {
  .filter-item { min-width: 100%; }
 }
 
+/* ---- Autocomplete cidades ---- */
+.cidade-wrap { position: relative; }
+.cidade-list {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0; right: 0;
+  background: var(--white);
+  border: 1px solid var(--grey-light);
+  border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  z-index: 100;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.cidade-option {
+  padding: 0.55rem 0.9rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  color: var(--grey-dark);
+  transition: background 0.15s;
+}
+.cidade-option:hover { background: var(--green-pale); color: var(--green-main); }
+
+/* ---- Limit badge ---- */
+.limit-badge {
+  display: inline-block;
+  background: var(--orange-pale);
+  color: var(--orange-main);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  margin-top: 0.3rem;
+}
+
 /* ---- Utility ---- */
 .text-center { text-align: center; }
 .mt-1 { margin-top: 0.5rem; }

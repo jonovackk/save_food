@@ -102,23 +102,23 @@
  <div class="modal-body">
  <!-- Info do alimento -->
  <div style="background:var(--green-pale);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1.5rem">
- <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--green-dark);margin-bottom:0.5rem" id="req-food-name">—</div>
- <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem;font-size:0.82rem;color:var(--grey-mid)">
- <span>Qtd disponível: <strong id="req-food-qty">—</strong></span>
- <span>Doador: <strong id="req-food-donor">—</strong></span>
- <span>Local: <strong id="req-food-local">—</strong></span>
- <span>Limite: <strong id="req-food-expiry">—</strong></span>
- </div>
+   <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--green-dark);margin-bottom:0.5rem" id="req-food-name">—</div>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem;font-size:0.82rem;color:var(--grey-mid)">
+     <span>Disponivel: <strong id="req-food-qty">—</strong></span>
+     <span>Doador: <strong id="req-food-donor">—</strong></span>
+     <span>Local: <strong id="req-food-local">—</strong></span>
+     <span>Limite por pedido: <strong id="req-food-max">sem limite</strong></span>
+   </div>
  </div>
 
  <div id="req-alert"></div>
 
  <form id="request-form" novalidate>
- <div id="req-alert"></div>
  <div class="form-group">
- <label for="req-qty">Quantidade desejada <span class="required">*</span></label>
- <input type="number" id="req-qty" name="req-qty" class="form-control" placeholder="Ex: 2" min="1" value="1" required>
- <span class="error-msg">Informe uma quantidade.</span>
+   <label for="req-qty">Quantidade desejada <span class="required">*</span></label>
+   <input type="number" id="req-qty" name="req-qty" class="form-control" placeholder="1" min="1" value="1" required>
+   <small id="req-qty-hint" style="color:var(--grey-mid);font-size:0.78rem"></small>
+   <span class="error-msg">Informe uma quantidade.</span>
  </div>
  <div class="form-group">
  <label for="req-message">Mensagem para o doador <em style="font-weight:400;color:var(--grey-mid)">(opcional)</em></label>
@@ -231,17 +231,43 @@ async function loadDonations() {
  }
 }
 
+var _currentDonation = null;
+
 function openRequest(donationId, btn) {
- if (!_currentUser) {
- sessionStorage.setItem('sc_after_login', location.href);
- location.replace('login.html');
- return;
- }
- _currentDonationId = donationId;
- document.getElementById('req-qty').value = '1';
- document.getElementById('req-message').value = '';
- document.getElementById('req-alert').innerHTML = '';
- document.getElementById('request-modal').classList.add('open');
+  if (!_currentUser) {
+    sessionStorage.setItem('sc_after_login', location.href);
+    location.replace('login.html');
+    return;
+  }
+  _currentDonationId = donationId;
+  _currentDonation   = null;
+  document.getElementById('req-qty').value = '1';
+  document.getElementById('req-message').value = '';
+  document.getElementById('req-alert').innerHTML = '';
+
+  Api.donations.get(donationId).then(function(d) {
+    _currentDonation = d;
+    document.getElementById('req-food-name').textContent  = d.title;
+    document.getElementById('req-food-qty').textContent   = d.quantity + ' ' + d.unit;
+    document.getElementById('req-food-donor').textContent = d.donor ? d.donor.name : '—';
+    var loc = (d.city ? d.city : '') + (d.state ? '/' + d.state : '') || d.pickupLocation;
+    document.getElementById('req-food-local').textContent = loc;
+
+    var maxEl = document.getElementById('req-food-max');
+    var hint  = document.getElementById('req-qty-hint');
+    var qtyIn = document.getElementById('req-qty');
+    if (d.maxPerRequest) {
+      maxEl.textContent = d.maxPerRequest + ' ' + d.unit + ' por pedido';
+      qtyIn.max = d.maxPerRequest;
+      if (hint) hint.textContent = 'Maximo: ' + d.maxPerRequest + ' ' + d.unit + ' por pedido.';
+    } else {
+      maxEl.textContent = 'sem limite definido';
+      qtyIn.max = d.quantity;
+      if (hint) hint.textContent = 'Total disponivel: ' + d.quantity + ' ' + d.unit + '.';
+    }
+  });
+
+  document.getElementById('request-modal').classList.add('open');
 }
 
 function closeModalR(id) {
@@ -254,9 +280,17 @@ async function submitRequest() {
  var message = document.getElementById('req-message').value.trim();
  var alertEl = document.getElementById('req-alert');
 
- if (!qty || qty < 1) {
- alertEl.innerHTML = '<div class="alert alert-error">Informe uma quantidade válida.</div>'; return;
- }
+  if (!qty || qty < 1) {
+    alertEl.innerHTML = '<div class="alert alert-error">Informe uma quantidade valida.</div>'; return;
+  }
+  if (_currentDonation) {
+    if (qty > _currentDonation.quantity) {
+      alertEl.innerHTML = '<div class="alert alert-error">Quantidade maior que o disponivel (' + _currentDonation.quantity + ' ' + _currentDonation.unit + ').</div>'; return;
+    }
+    if (_currentDonation.maxPerRequest && qty > _currentDonation.maxPerRequest) {
+      alertEl.innerHTML = '<div class="alert alert-error">Limite por pedido: maximo de ' + _currentDonation.maxPerRequest + ' ' + _currentDonation.unit + '.</div>'; return;
+    }
+  }
 
  var modalBtn = document.querySelector('#request-modal .modal-footer .btn-secondary');
  if (modalBtn) { modalBtn.disabled = true; modalBtn.textContent = 'Enviando...'; }

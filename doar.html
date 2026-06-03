@@ -81,38 +81,60 @@
  <textarea id="description" name="description" class="form-control" placeholder="Descreva o alimento, condição, origem, etc." required></textarea>
  <span class="error-msg">Campo obrigatório.</span>
  </div>
+ <!-- Quantidade + tipo de embalagem -->
  <div class="form-group">
- <label for="quantity">Quantidade <span class="required">*</span></label>
- <input type="number" id="quantity" name="quantity" class="form-control" placeholder="Ex: 10" min="1" required>
- <span class="error-msg">Informe um número maior que zero.</span>
+   <label for="quantity">Quantidade total <span class="required">*</span></label>
+   <input type="number" id="quantity" name="quantity" class="form-control" placeholder="Ex: 10" min="1" required>
+   <span class="error-msg">Informe um número maior que zero.</span>
  </div>
  <div class="form-group">
- <label for="unit">Unidade <span class="required">*</span></label>
- <input type="text" id="unit" name="unit" class="form-control" placeholder="Ex: unidades, kg, litros" required>
- <span class="error-msg">Campo obrigatório.</span>
+   <label for="unit">Tipo / embalagem <span class="required">*</span></label>
+   <input type="text" id="unit" name="unit" class="form-control" placeholder="Ex: pacotes de 1kg, latas de 400g, marmitas, kg" required>
+   <small style="color:var(--grey-mid);font-size:0.78rem">Sera exibido como: <em id="qty-preview">—</em></small>
+   <span class="error-msg">Campo obrigatório.</span>
  </div>
  <div class="form-group">
- <label for="expiryDate">Data limite para retirada</label>
- <input type="date" id="expiryDate" name="expiryDate" class="form-control">
+   <label for="maxPerRequest">
+     Limite por solicitacao
+     <span style="font-size:0.78rem;font-weight:400;color:var(--grey-mid)">(opcional)</span>
+   </label>
+   <input type="number" id="maxPerRequest" name="maxPerRequest" class="form-control" placeholder="Ex: 2" min="1">
+   <small style="color:var(--grey-mid);font-size:0.78rem" id="max-hint">Maximo que cada pessoa pode pedir de uma vez.</small>
  </div>
  <div class="form-group">
- <label for="deliveryOption">Opção de entrega <span class="required">*</span></label>
- <select id="deliveryOption" name="deliveryOption" class="form-control" required>
- <option value="">Selecione...</option>
- <option value="PICKUP_ONLY">Apenas retirada no local</option>
- <option value="CAN_DELIVER">Posso entregar</option>
- <option value="TO_AGREE">A combinar</option>
- </select>
- <span class="error-msg">Selecione uma opção.</span>
+   <label for="expiryDate">Data limite para retirada</label>
+   <input type="date" id="expiryDate" name="expiryDate" class="form-control">
  </div>
  <div class="form-group">
- <label for="location">Local de retirada <span class="required">*</span></label>
- <input type="text" id="location" name="location" class="form-control" placeholder="Ex: Rua das Flores, 45 - Centro" required>
- <span class="error-msg">Campo obrigatório.</span>
+   <label for="deliveryOption">Opcao de entrega <span class="required">*</span></label>
+   <select id="deliveryOption" name="deliveryOption" class="form-control" required>
+     <option value="">Selecione...</option>
+     <option value="PICKUP_ONLY">Apenas retirada no local</option>
+     <option value="CAN_DELIVER">Posso entregar</option>
+     <option value="TO_AGREE">A combinar</option>
+   </select>
+   <span class="error-msg">Selecione uma opcao.</span>
+ </div>
+ <!-- Estado e cidade -->
+ <div class="form-group">
+   <label for="select-estado">Estado <span class="required">*</span></label>
+   <select id="select-estado" class="form-control" required></select>
+ </div>
+ <div class="form-group">
+   <label for="input-cidade">Cidade <span class="required">*</span></label>
+   <div class="cidade-wrap">
+     <input type="text" id="input-cidade" class="form-control" placeholder="Digite para buscar..." autocomplete="off" required>
+     <div class="cidade-list" id="input-cidade-list"></div>
+   </div>
+ </div>
+ <div class="form-group">
+   <label for="location">Endereco / ponto de referencia <span class="required">*</span></label>
+   <input type="text" id="location" name="location" class="form-control" placeholder="Ex: Rua das Flores, 45 - Centro" required>
+   <span class="error-msg">Campo obrigatorio.</span>
  </div>
  <div class="form-group form-full">
- <label for="observations">Observações adicionais</label>
- <textarea id="observations" name="observations" class="form-control" placeholder="Horário de retirada, informações extras, etc."></textarea>
+   <label for="observations">Observacoes adicionais</label>
+   <textarea id="observations" name="observations" class="form-control" placeholder="Horário de retirada, informacoes extras, etc."></textarea>
  </div>
  </div>
 
@@ -177,82 +199,117 @@
 
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/cidades.js"></script>
 <script>
+// Defaults de limite por categoria
+var MAX_PER_CAT = { MEALS: 2, CANNED: 3, BREADS: 5, FRUITS: 3, DAIRY: 2, DRINKS: 3, OTHER: 3 };
+
 document.addEventListener('DOMContentLoaded', async function() {
- // Hamburger
- var ham = document.getElementById('nav-hamburger-btn');
- var mob = document.getElementById('nav-mobile');
- if (ham && mob) ham.addEventListener('click', function() { mob.classList.toggle('open'); ham.classList.toggle('open'); });
+  var ham = document.getElementById('nav-hamburger-btn');
+  var mob = document.getElementById('nav-mobile');
+  if (ham && mob) ham.addEventListener('click', function() { mob.classList.toggle('open'); ham.classList.toggle('open'); });
 
- // Pré-data de amanhã
- var tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
- var expiryInput = document.getElementById('expiryDate');
- if (expiryInput) expiryInput.value = tomorrow.toISOString().split('T')[0];
+  var tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+  var expiryInput = document.getElementById('expiryDate');
+  if (expiryInput) expiryInput.value = tomorrow.toISOString().split('T')[0];
 
- // Requer login
- var user = await Auth.requireLogin();
- if (!user) return;
- Auth.updateNavAuth();
+  var user = await Auth.requireLogin();
+  if (!user) return;
+  Auth.updateNavAuth();
 
- // Avisa se não pode doar
- if (!Auth.canDonate(user)) {
- showAlert('Sua conta é do tipo "Receptor". Para cadastrar doações, altere seu perfil para "Ambos" em <a href="perfil.html">Perfil</a>.', 'error');
- document.getElementById('donate-form').querySelectorAll('input,select,textarea,button[type=submit]').forEach(function(el){ el.disabled = true; });
- return;
- }
+  if (!Auth.canDonate(user)) {
+    showAlert('Sua conta e do tipo "Receptor". Para cadastrar doacoes, altere seu perfil para "Ambos" em <a href="perfil.html">Perfil</a>.', 'error');
+    document.getElementById('donate-form').querySelectorAll('input,select,textarea,button[type=submit]').forEach(function(el){ el.disabled = true; });
+    return;
+  }
 
- var form = document.getElementById('donate-form');
- var btn = form.querySelector('[type=submit]');
+  // Inicializa seletor estado/cidade
+  CidadeSelector.init('select-estado', 'input-cidade', {
+    initialState: user.state || '',
+    initialCity:  user.city  || '',
+  });
 
- form.addEventListener('submit', async function(e) {
- e.preventDefault();
- var title = document.getElementById('foodName').value.trim();
- var description = document.getElementById('description').value.trim();
- var category = document.getElementById('category').value;
- var quantity = document.getElementById('quantity').value;
- var unit = document.getElementById('unit').value.trim();
- var pickupLocation = document.getElementById('location').value.trim();
- var deliveryOption = document.getElementById('deliveryOption').value;
- var expirationDate = document.getElementById('expiryDate').value || null;
- var observations = document.getElementById('observations').value.trim();
+  // Preview "10 pacotes de 1kg"
+  function updatePreview() {
+    var qty  = document.getElementById('quantity').value;
+    var unit = document.getElementById('unit').value.trim();
+    var el   = document.getElementById('qty-preview');
+    if (el) el.textContent = (qty && unit) ? qty + ' ' + unit : '—';
+  }
+  document.getElementById('quantity').addEventListener('input', updatePreview);
+  document.getElementById('unit').addEventListener('input', updatePreview);
 
- if (!title || !description || !category || !quantity || !unit || !pickupLocation || !deliveryOption) {
- showAlert('Preencha todos os campos obrigatórios.', 'error'); return;
- }
- if (parseInt(quantity, 10) <= 0 || isNaN(parseInt(quantity, 10))) {
- showAlert('A quantidade deve ser um número maior que zero.', 'error'); return;
- }
+  // Sugere limite ao mudar categoria
+  document.getElementById('category').addEventListener('change', function() {
+    var cat    = this.value;
+    var maxEl  = document.getElementById('maxPerRequest');
+    var hint   = document.getElementById('max-hint');
+    var def    = MAX_PER_CAT[cat];
+    if (def && !maxEl.value) {
+      maxEl.value = def;
+      if (hint) hint.textContent = 'Sugestao para esta categoria: ' + def + ' por pedido.';
+    }
+  });
 
- var fullDescription = description + (observations ? '\n\nObservações: ' + observations : '');
+  var form = document.getElementById('donate-form');
+  var btn  = form.querySelector('[type=submit]');
 
- btn.disabled = true;
- btn.textContent = 'Cadastrando...';
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var title          = document.getElementById('foodName').value.trim();
+    var description    = document.getElementById('description').value.trim();
+    var category       = document.getElementById('category').value;
+    var quantity       = document.getElementById('quantity').value;
+    var unit           = document.getElementById('unit').value.trim();
+    var maxPerRequest  = document.getElementById('maxPerRequest').value || null;
+    var pickupLocation = document.getElementById('location').value.trim();
+    var deliveryOption = document.getElementById('deliveryOption').value;
+    var expirationDate = document.getElementById('expiryDate').value || null;
+    var observations   = document.getElementById('observations').value.trim();
+    var state          = document.getElementById('select-estado').value || null;
+    var city           = document.getElementById('input-cidade').value.trim() || null;
 
- try {
- await Api.donations.create({
- title: title,
- description: fullDescription,
- category: category,
- quantity: parseInt(quantity, 10),
- unit: unit,
- expirationDate: expirationDate,
- pickupLocation: pickupLocation,
- deliveryOption: deliveryOption,
- });
- showAlert(' Doação cadastrada com sucesso! Redirecionando...', 'success');
- setTimeout(function(){ location.replace('minhas-doacoes.html'); }, 1500);
- } catch(err) {
- showAlert(err.message || 'Erro ao cadastrar doação.', 'error');
- btn.disabled = false;
- btn.innerHTML = ' Cadastrar Doação';
- }
- });
+    if (!title || !description || !category || !quantity || !unit || !pickupLocation || !deliveryOption) {
+      showAlert('Preencha todos os campos obrigatorios.', 'error'); return;
+    }
+    if (!state || !city) {
+      showAlert('Informe o estado e a cidade de retirada.', 'error'); return;
+    }
+    if (parseInt(quantity, 10) <= 0 || isNaN(parseInt(quantity, 10))) {
+      showAlert('A quantidade deve ser um numero maior que zero.', 'error'); return;
+    }
+    if (maxPerRequest && parseInt(maxPerRequest, 10) > parseInt(quantity, 10)) {
+      showAlert('O limite por solicitacao nao pode ser maior que a quantidade total.', 'error'); return;
+    }
 
- function showAlert(msg, type) {
- var el = document.getElementById('donate-alert');
- el.innerHTML = '<div class="alert alert-' + type + '">' + msg + '</div>';
- if (type !== 'success') setTimeout(function(){ el.innerHTML = ''; }, 6000);
- }
+    var fullDescription = description + (observations ? '\n\nObservacoes: ' + observations : '');
+    btn.disabled = true;
+    btn.textContent = 'Cadastrando...';
+
+    try {
+      await Api.donations.create({
+        title: title, description: fullDescription, category: category,
+        quantity: parseInt(quantity, 10), unit: unit,
+        maxPerRequest: maxPerRequest ? parseInt(maxPerRequest, 10) : null,
+        expirationDate: expirationDate,
+        state: state, city: city,
+        pickupLocation: pickupLocation,
+        deliveryOption: deliveryOption,
+      });
+      showAlert('Doacao cadastrada com sucesso! Redirecionando...', 'success');
+      setTimeout(function(){ location.replace('minhas-doacoes.html'); }, 1500);
+    } catch(err) {
+      showAlert(err.message || 'Erro ao cadastrar doacao.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Cadastrar Doacao';
+    }
+  });
+
+  function showAlert(msg, type) {
+    var el = document.getElementById('donate-alert');
+    el.innerHTML = '<div class="alert alert-' + type + '">' + msg + '</div>';
+    if (type !== 'success') setTimeout(function(){ el.innerHTML = ''; }, 6000);
+  }
 });
 </script>
 </body>

@@ -14,6 +14,7 @@ model User {
   password  String
   phone     String?
   role      String   @default("BOTH")
+  state     String?
   city      String?
   region    String?
   address   String?
@@ -33,7 +34,10 @@ model Donation {
   category       String
   quantity       Int
   unit           String
+  maxPerRequest  Int?
   expirationDate String?
+  state          String?
+  city           String?
   pickupLocation String
   deliveryOption String    @default("PICKUP_ONLY")
   imageUrl       String?

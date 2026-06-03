@@ -36,7 +36,7 @@ router.get('/', async (req, res) => {
     const donations = await prisma.donation.findMany({
       where,
       include: {
-        donor: { select: { id: true, name: true, city: true, region: true } },
+        donor: { select: { id: true, name: true, state: true, city: true, region: true } },
         requests: { select: { id: true, status: true } },
       },
       orderBy: { createdAt: 'desc' },
@@ -73,8 +73,8 @@ router.post('/', authMiddleware, async (req, res) => {
       return res.status(403).json({ error: 'Receptores não podem cadastrar doações. Altere seu tipo de conta para "Ambos" no perfil.' });
     }
 
-    const { title, description, category, quantity, unit, expirationDate,
-            pickupLocation, deliveryOption, imageUrl } = req.body;
+    const { title, description, category, quantity, unit, maxPerRequest,
+            expirationDate, state, city, pickupLocation, deliveryOption, imageUrl } = req.body;
 
     if (!title || !description || !category || !quantity || !unit || !pickupLocation) {
       return res.status(400).json({ error: 'Preencha todos os campos obrigatórios.' });
@@ -91,6 +91,10 @@ router.post('/', authMiddleware, async (req, res) => {
     if (!VALID_DELIVERY.includes(del)) {
       return res.status(400).json({ error: 'Opção de entrega inválida.' });
     }
+    const maxPR = maxPerRequest ? parseInt(maxPerRequest, 10) : null;
+    if (maxPR !== null && (isNaN(maxPR) || maxPR <= 0)) {
+      return res.status(400).json({ error: 'Limite por solicitacao deve ser maior que zero.' });
+    }
 
     const donation = await prisma.donation.create({
       data: {
@@ -99,13 +103,16 @@ router.post('/', authMiddleware, async (req, res) => {
         category: cat,
         quantity: qty,
         unit: unit.trim(),
+        maxPerRequest: maxPR,
         expirationDate: expirationDate || null,
+        state: state || null,
+        city: city || null,
         pickupLocation: pickupLocation.trim(),
         deliveryOption: del,
         imageUrl: imageUrl || null,
         donorId: req.userId,
       },
-      include: { donor: { select: { id: true, name: true, city: true, region: true } } },
+      include: { donor: { select: { id: true, name: true, state: true, city: true, region: true } } },
     });
     res.status(201).json(donation);
   } catch (e) {
@@ -121,15 +128,18 @@ router.patch('/:id', authMiddleware, async (req, res) => {
     if (!donation) return res.status(404).json({ error: 'Doação não encontrada.' });
     if (donation.donorId !== req.userId) return res.status(403).json({ error: 'Acesso negado.' });
 
-    const { title, description, category, quantity, unit, expirationDate,
-            pickupLocation, deliveryOption, imageUrl, status } = req.body;
+    const { title, description, category, quantity, unit, maxPerRequest,
+            expirationDate, state, city, pickupLocation, deliveryOption, imageUrl, status } = req.body;
     const data = {};
     if (title) data.title = title.trim();
     if (description) data.description = description.trim();
     if (category) data.category = category.toUpperCase();
     if (quantity) data.quantity = parseInt(quantity, 10);
     if (unit) data.unit = unit.trim();
+    if (maxPerRequest !== undefined) data.maxPerRequest = maxPerRequest ? parseInt(maxPerRequest, 10) : null;
     if (expirationDate !== undefined) data.expirationDate = expirationDate || null;
+    if (state !== undefined) data.state = state || null;
+    if (city !== undefined) data.city = city || null;
     if (pickupLocation) data.pickupLocation = pickupLocation.trim();
     if (deliveryOption) data.deliveryOption = deliveryOption.toUpperCase();
     if (imageUrl !== undefined) data.imageUrl = imageUrl || null;
@@ -188,6 +198,16 @@ router.post('/:id/requests', authMiddleware, async (req, res) => {
 
     const { quantity, message } = req.body;
     const qty = parseInt(quantity || 1, 10);
+
+    if (isNaN(qty) || qty <= 0) {
+      return res.status(400).json({ error: 'Quantidade invalida.' });
+    }
+    if (qty > donation.quantity) {
+      return res.status(400).json({ error: 'Quantidade solicitada maior que o disponivel (' + donation.quantity + ' ' + donation.unit + ').' });
+    }
+    if (donation.maxPerRequest && qty > donation.maxPerRequest) {
+      return res.status(400).json({ error: 'Limite por solicitacao: maximo de ' + donation.maxPerRequest + ' ' + donation.unit + ' por pedido.' });
+    }
 
     const request = await prisma.foodRequest.create({
       data: {

@@ -93,7 +93,8 @@ router.get('/me', authMiddleware, async (req, res) => {
 function safeUser(u) {
   return {
     id: u.id, name: u.name, email: u.email,
-    phone: u.phone, role: u.role, city: u.city,
+    phone: u.phone, role: u.role,
+    state: u.state, city: u.city,
     region: u.region, address: u.address, createdAt: u.createdAt,
   };
 }
