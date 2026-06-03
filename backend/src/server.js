@@ -13,8 +13,13 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 
 // ── Middlewares
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000')
-  .split(',').map(function(o) { return o.trim(); });
+const ALLOWED_ORIGINS = ['http://localhost:3000'];
+if (process.env.RENDER_EXTERNAL_URL) ALLOWED_ORIGINS.push(process.env.RENDER_EXTERNAL_URL);
+if (process.env.ALLOWED_ORIGINS) {
+  process.env.ALLOWED_ORIGINS.split(',').forEach(function(o) {
+    var t = o.trim(); if (t) ALLOWED_ORIGINS.push(t);
+  });
+}
 app.use(cors({
   origin: function(origin, cb) {
     if (!origin || ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
