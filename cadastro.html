@@ -1,165 +1,165 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Criar Conta — Salve Comida</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/auth.css">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Criar Conta — Salve Comida</title>
+ <link rel="stylesheet" href="css/style.css">
+ <link rel="stylesheet" href="css/auth.css">
 </head>
 <body>
 <div class="auth-page" style="align-items:flex-start;padding:2rem 1rem">
-  <div class="auth-card" style="max-width:520px;margin:auto">
-    <div class="auth-logo">
-      <a href="index.html"><div class="logo-icon">🌱</div> Salve Comida</a>
-    </div>
+ <div class="auth-card" style="max-width:520px;margin:auto">
+ <div class="auth-logo">
+ <a href="index.html"><div class="logo-icon">SC</div>Salve Comida</a>
+ </div>
 
-    <h2 class="auth-title">Criar conta gratuita</h2>
-    <p class="auth-subtitle">Junte-se à comunidade que combate o desperdício.</p>
+ <h2 class="auth-title">Criar conta gratuita</h2>
+ <p class="auth-subtitle">Junte-se à comunidade que combate o desperdício.</p>
 
-    <div id="register-alert"></div>
+ <div id="register-alert"></div>
 
-    <form id="register-form" novalidate>
+ <form id="register-form" novalidate>
 
-      <!-- Tipo de perfil -->
-      <div class="form-group">
-        <label style="margin-bottom:0.6rem;display:block">Qual é o seu perfil? <span class="required">*</span></label>
-        <div class="role-grid">
-          <div>
-            <input type="radio" name="role" id="role-user" value="RECEIVER" class="role-option" checked>
-            <label for="role-user"><span>🙋</span>Quero receber</label>
-          </div>
-          <div>
-            <input type="radio" name="role" id="role-donor" value="DONOR" class="role-option">
-            <label for="role-donor"><span>🤝</span>Quero doar</label>
-          </div>
-          <div>
-            <input type="radio" name="role" id="role-both" value="BOTH" class="role-option">
-            <label for="role-both"><span>🔄</span>Doar e receber</label>
-          </div>
-          <div>
-            <input type="radio" name="role" id="role-company" value="DONOR" class="role-option">
-            <label for="role-company"><span>🏪</span>Empresa doadora</label>
-          </div>
-        </div>
-      </div>
+ <!-- Tipo de perfil -->
+ <div class="form-group">
+ <label style="margin-bottom:0.6rem;display:block">Qual é o seu perfil? <span class="required">*</span></label>
+ <div class="role-grid">
+ <div>
+ <input type="radio" name="role" id="role-user" value="RECEIVER" class="role-option" checked>
+ <label for="role-user"><span></span>Quero receber</label>
+ </div>
+ <div>
+ <input type="radio" name="role" id="role-donor" value="DONOR" class="role-option">
+ <label for="role-donor"><span></span>Quero doar</label>
+ </div>
+ <div>
+ <input type="radio" name="role" id="role-both" value="BOTH" class="role-option">
+ <label for="role-both"><span></span>Doar e receber</label>
+ </div>
+ <div>
+ <input type="radio" name="role" id="role-company" value="DONOR" class="role-option">
+ <label for="role-company"><span></span>Empresa doadora</label>
+ </div>
+ </div>
+ </div>
 
-      <div class="form-group">
-        <label for="name">Nome completo <span class="required">*</span></label>
-        <input type="text" id="name" name="name" class="form-control"
-               placeholder="Seu nome ou razão social" required>
-        <span class="error-msg">Campo obrigatório.</span>
-      </div>
+ <div class="form-group">
+ <label for="name">Nome completo <span class="required">*</span></label>
+ <input type="text" id="name" name="name" class="form-control"
+ placeholder="Seu nome ou razão social" required>
+ <span class="error-msg">Campo obrigatório.</span>
+ </div>
 
-      <div class="form-group">
-        <label for="reg-email">E-mail <span class="required">*</span></label>
-        <input type="email" id="reg-email" name="email" class="form-control"
-               placeholder="seu@email.com" required>
-        <span class="error-msg">Informe um e-mail válido.</span>
-      </div>
+ <div class="form-group">
+ <label for="reg-email">E-mail <span class="required">*</span></label>
+ <input type="email" id="reg-email" name="email" class="form-control"
+ placeholder="seu@email.com" required>
+ <span class="error-msg">Informe um e-mail válido.</span>
+ </div>
 
-      <div class="form-group">
-        <label for="phone">Telefone / WhatsApp</label>
-        <input type="tel" id="phone" name="phone" class="form-control"
-               placeholder="(11) 99999-0000">
-      </div>
+ <div class="form-group">
+ <label for="phone">Telefone / WhatsApp</label>
+ <input type="tel" id="phone" name="phone" class="form-control"
+ placeholder="(11) 99999-0000">
+ </div>
 
-      <div class="form-group">
-        <label for="reg-password">Senha <span class="required">*</span></label>
-        <div class="input-icon-right">
-          <input type="password" id="reg-password" name="password" class="form-control"
-                 placeholder="Mínimo 6 caracteres" required minlength="6">
-          <button type="button" class="toggle-pw" id="toggle-pw2">👁️</button>
-        </div>
-        <span class="error-msg">Mínimo 6 caracteres.</span>
-      </div>
+ <div class="form-group">
+ <label for="reg-password">Senha <span class="required">*</span></label>
+ <div class="input-icon-right">
+ <input type="password" id="reg-password" name="password" class="form-control"
+ placeholder="Mínimo 6 caracteres" required minlength="6">
+ <button type="button" class="toggle-pw" id="toggle-pw2"></button>
+ </div>
+ <span class="error-msg">Mínimo 6 caracteres.</span>
+ </div>
 
-      <div class="form-group">
-        <label for="confirm-password">Confirmar senha <span class="required">*</span></label>
-        <div class="input-icon-right">
-          <input type="password" id="confirm-password" name="confirmPassword" class="form-control"
-                 placeholder="Repita a senha" required>
-          <button type="button" class="toggle-pw" id="toggle-pw3">👁️</button>
-        </div>
-        <span class="error-msg">As senhas não coincidem.</span>
-      </div>
+ <div class="form-group">
+ <label for="confirm-password">Confirmar senha <span class="required">*</span></label>
+ <div class="input-icon-right">
+ <input type="password" id="confirm-password" name="confirmPassword" class="form-control"
+ placeholder="Repita a senha" required>
+ <button type="button" class="toggle-pw" id="toggle-pw3"></button>
+ </div>
+ <span class="error-msg">As senhas não coincidem.</span>
+ </div>
 
-      <div style="font-size:0.82rem;color:var(--grey-mid);margin-bottom:1.25rem">
-        Ao criar sua conta você concorda com os <a href="sobre.html" style="color:var(--green-main)">termos de uso</a> e a política de privacidade do projeto.
-      </div>
+ <div style="font-size:0.82rem;color:var(--grey-mid);margin-bottom:1.25rem">
+ Ao criar sua conta você concorda com os <a href="sobre.html" style="color:var(--green-main)">termos de uso</a>e a política de privacidade do projeto.
+ </div>
 
-      <button type="submit" class="btn btn-primary w-full" style="justify-content:center">
-        🚀 Criar minha conta
-      </button>
-    </form>
+ <button type="submit" class="btn btn-primary w-full" style="justify-content:center">
+ Criar minha conta
+ </button>
+ </form>
 
-    <div class="auth-footer">
-      Já tem conta? <a href="login.html">Entrar</a>
-    </div>
-    <div class="auth-footer" style="margin-top:0.5rem">
-      <a href="index.html" style="color:var(--grey-mid)">← Voltar ao início</a>
-    </div>
-  </div>
+ <div class="auth-footer">
+ Já tem conta? <a href="login.html">Entrar</a>
+ </div>
+ <div class="auth-footer" style="margin-top:0.5rem">
+ <a href="index.html" style="color:var(--grey-mid)">← Voltar ao início</a>
+ </div>
+ </div>
 </div>
 
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  [['toggle-pw2','reg-password'],['toggle-pw3','confirm-password']].forEach(function(pair) {
-    document.getElementById(pair[0]).addEventListener('click', function() {
-      var el = document.getElementById(pair[1]);
-      el.type = el.type === 'password' ? 'text' : 'password';
-    });
-  });
+ [['toggle-pw2','reg-password'],['toggle-pw3','confirm-password']].forEach(function(pair) {
+ document.getElementById(pair[0]).addEventListener('click', function() {
+ var el = document.getElementById(pair[1]);
+ el.type = el.type === 'password' ? 'text' : 'password';
+ });
+ });
 
-  var form = document.getElementById('register-form');
-  var btn  = form.querySelector('[type=submit]');
+ var form = document.getElementById('register-form');
+ var btn = form.querySelector('[type=submit]');
 
-  form.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    var name     = form.name.value.trim();
-    var email    = document.getElementById('reg-email').value.trim();
-    var password = document.getElementById('reg-password').value;
-    var confirm  = document.getElementById('confirm-password').value;
-    var phone    = form.phone.value.trim();
-    var role     = form.role.value;
+ form.addEventListener('submit', async function(e) {
+ e.preventDefault();
+ var name = form.name.value.trim();
+ var email = document.getElementById('reg-email').value.trim();
+ var password = document.getElementById('reg-password').value;
+ var confirm = document.getElementById('confirm-password').value;
+ var phone = form.phone.value.trim();
+ var role = form.role.value;
 
-    if (!name || !email || !password) {
-      showAlert('Preencha todos os campos obrigatórios.', 'error'); return;
-    }
-    if (password.length < 6) {
-      showAlert('A senha deve ter pelo menos 6 caracteres.', 'error'); return;
-    }
-    if (password !== confirm) {
-      showAlert('As senhas não coincidem.', 'error'); return;
-    }
+ if (!name || !email || !password) {
+ showAlert('Preencha todos os campos obrigatórios.', 'error'); return;
+ }
+ if (password.length < 6) {
+ showAlert('A senha deve ter pelo menos 6 caracteres.', 'error'); return;
+ }
+ if (password !== confirm) {
+ showAlert('As senhas não coincidem.', 'error'); return;
+ }
 
-    btn.disabled = true;
-    btn.textContent = 'Criando conta...';
+ btn.disabled = true;
+ btn.textContent = 'Criando conta...';
 
-    try {
-      var result = await Api.auth.register({
-        name: name, email: email, password: password,
-        phone: phone || null, role: role,
-      });
-      Auth.setToken(result.token);
-      Auth.setCachedUser(result.user);
-      showAlert('🎉 Conta criada! Redirecionando...', 'success');
-      setTimeout(function(){ location.replace('perfil.html'); }, 1200);
-    } catch(err) {
-      showAlert(err.message || 'Erro ao criar conta.', 'error');
-      btn.disabled = false;
-      btn.innerHTML = '🚀 Criar minha conta';
-    }
-  });
+ try {
+ var result = await Api.auth.register({
+ name: name, email: email, password: password,
+ phone: phone || null, role: role,
+ });
+ Auth.setToken(result.token);
+ Auth.setCachedUser(result.user);
+ showAlert(' Conta criada! Redirecionando...', 'success');
+ setTimeout(function(){ location.replace('perfil.html'); }, 1200);
+ } catch(err) {
+ showAlert(err.message || 'Erro ao criar conta.', 'error');
+ btn.disabled = false;
+ btn.innerHTML = ' Criar minha conta';
+ }
+ });
 
-  function showAlert(msg, type) {
-    var el = document.getElementById('register-alert');
-    var icons = { success:'✅', error:'❌' };
-    el.innerHTML = '<div class="alert alert-' + type + '">' + (icons[type]||'') + ' ' + msg + '</div>';
-    if (type !== 'success') setTimeout(function(){ el.innerHTML = ''; }, 6000);
-  }
+ function showAlert(msg, type) {
+ var el = document.getElementById('register-alert');
+ var icons = { success:'', error:'' };
+ el.innerHTML = '<div class="alert alert-' + type + '">' + (icons[type]||'') + ' ' + msg + '</div>';
+ if (type !== 'success') setTimeout(function(){ el.innerHTML = ''; }, 6000);
+ }
 });
 </script>
 </body>

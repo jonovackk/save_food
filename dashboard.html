@@ -1,309 +1,309 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard de Impacto — Salve Comida</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/auth.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <style>
-    .dash-kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.25rem; margin-bottom:2.5rem; }
-    @media(max-width:768px){ .dash-kpi-grid{grid-template-columns:repeat(2,1fr);} .charts-row{grid-template-columns:1fr!important;} }
-    @media(max-width:480px){ .dash-kpi-grid{grid-template-columns:1fr;} }
-    .kpi-card { background:white; border-radius:var(--radius); padding:1.5rem; box-shadow:var(--shadow-sm); border:1px solid var(--grey-light); position:relative; overflow:hidden; }
-    .kpi-card::before { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; border-radius:50%; opacity:0.08; }
-    .kpi-card.green::before  { background:var(--green-main); }
-    .kpi-card.orange::before { background:var(--orange-main); }
-    .kpi-card.blue::before   { background:#3b82f6; }
-    .kpi-card.purple::before { background:#8b5cf6; }
-    .kpi-num  { font-family:var(--font-display); font-size:2.2rem; font-weight:800; line-height:1; margin:0.5rem 0 0.2rem; }
-    .kpi-label{ font-size:0.82rem; color:var(--grey-mid); }
-    .kpi-icon { font-size:1.5rem; }
-    .kpi-trend { font-size:0.78rem; margin-top:0.5rem; }
-    .kpi-trend.up   { color:#065f46; }
-    .kpi-trend.down { color:#dc2626; }
-    .chart-card { background:white; border-radius:var(--radius); padding:1.5rem; box-shadow:var(--shadow-sm); border:1px solid var(--grey-light); }
-    .chart-card h3 { color:var(--green-dark); margin-bottom:1.25rem; font-size:1rem; }
-    .charts-row { display:grid; grid-template-columns:2fr 1fr; gap:1.5rem; margin-bottom:1.5rem; }
-    .progress-bar-wrap { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.6rem; }
-    .progress-label { font-size:0.82rem; min-width:130px; color:var(--grey-dark); }
-    .progress-bar-bg { flex:1; height:10px; background:var(--grey-light); border-radius:999px; overflow:hidden; }
-    .progress-bar-fill { height:100%; border-radius:999px; transition:width 1s ease; }
-    .progress-count { font-size:0.78rem; color:var(--grey-mid); min-width:30px; text-align:right; }
-    .goal-card { background:linear-gradient(135deg,var(--green-dark),var(--green-main)); border-radius:var(--radius); padding:2rem; color:white; margin-bottom:1.5rem; }
-    .goal-card h3 { color:white; margin-bottom:0.5rem; }
-    .goal-progress-outer { background:rgba(255,255,255,0.2); border-radius:999px; height:16px; margin:1rem 0 0.5rem; overflow:hidden; }
-    .goal-progress-inner { background:var(--orange-light); height:100%; border-radius:999px; transition:width 1.5s ease; }
-    .co2-badge { display:inline-flex; align-items:center; gap:0.5rem; background:var(--green-pale); color:var(--green-dark); padding:0.75rem 1.25rem; border-radius:var(--radius-sm); font-size:0.88rem; font-weight:600; }
-    .recent-table { width:100%; font-size:0.85rem; border-collapse:collapse; }
-    .recent-table th { text-align:left; padding:0.6rem 0.75rem; color:var(--grey-mid); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; border-bottom:1px solid var(--grey-light); }
-    .recent-table td { padding:0.7rem 0.75rem; border-bottom:1px solid var(--grey-light); color:var(--grey-dark); }
-    .recent-table tr:last-child td { border-bottom:none; }
-    .sdg-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; }
-    .sdg-item { border-radius:var(--radius-sm); padding:1rem; text-align:center; font-size:0.78rem; font-weight:600; }
-  </style>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Dashboard de Impacto — Salve Comida</title>
+ <link rel="stylesheet" href="css/style.css">
+ <link rel="stylesheet" href="css/auth.css">
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+ <style>
+ .dash-kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.25rem; margin-bottom:2.5rem; }
+ @media(max-width:768px){ .dash-kpi-grid{grid-template-columns:repeat(2,1fr);} .charts-row{grid-template-columns:1fr!important;} }
+ @media(max-width:480px){ .dash-kpi-grid{grid-template-columns:1fr;} }
+ .kpi-card { background:white; border-radius:var(--radius); padding:1.5rem; box-shadow:var(--shadow-sm); border:1px solid var(--grey-light); position:relative; overflow:hidden; }
+ .kpi-card::before { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; border-radius:50%; opacity:0.08; }
+ .kpi-card.green::before { background:var(--green-main); }
+ .kpi-card.orange::before { background:var(--orange-main); }
+ .kpi-card.blue::before { background:#3b82f6; }
+ .kpi-card.purple::before { background:#8b5cf6; }
+ .kpi-num { font-family:var(--font-display); font-size:2.2rem; font-weight:800; line-height:1; margin:0.5rem 0 0.2rem; }
+ .kpi-label{ font-size:0.82rem; color:var(--grey-mid); }
+ .kpi-icon { font-size:1.5rem; }
+ .kpi-trend { font-size:0.78rem; margin-top:0.5rem; }
+ .kpi-trend.up { color:#065f46; }
+ .kpi-trend.down { color:#dc2626; }
+ .chart-card { background:white; border-radius:var(--radius); padding:1.5rem; box-shadow:var(--shadow-sm); border:1px solid var(--grey-light); }
+ .chart-card h3 { color:var(--green-dark); margin-bottom:1.25rem; font-size:1rem; }
+ .charts-row { display:grid; grid-template-columns:2fr 1fr; gap:1.5rem; margin-bottom:1.5rem; }
+ .progress-bar-wrap { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.6rem; }
+ .progress-label { font-size:0.82rem; min-width:130px; color:var(--grey-dark); }
+ .progress-bar-bg { flex:1; height:10px; background:var(--grey-light); border-radius:999px; overflow:hidden; }
+ .progress-bar-fill { height:100%; border-radius:999px; transition:width 1s ease; }
+ .progress-count { font-size:0.78rem; color:var(--grey-mid); min-width:30px; text-align:right; }
+ .goal-card { background:linear-gradient(135deg,var(--green-dark),var(--green-main)); border-radius:var(--radius); padding:2rem; color:white; margin-bottom:1.5rem; }
+ .goal-card h3 { color:white; margin-bottom:0.5rem; }
+ .goal-progress-outer { background:rgba(255,255,255,0.2); border-radius:999px; height:16px; margin:1rem 0 0.5rem; overflow:hidden; }
+ .goal-progress-inner { background:var(--orange-light); height:100%; border-radius:999px; transition:width 1.5s ease; }
+ .co2-badge { display:inline-flex; align-items:center; gap:0.5rem; background:var(--green-pale); color:var(--green-dark); padding:0.75rem 1.25rem; border-radius:var(--radius-sm); font-size:0.88rem; font-weight:600; }
+ .recent-table { width:100%; font-size:0.85rem; border-collapse:collapse; }
+ .recent-table th { text-align:left; padding:0.6rem 0.75rem; color:var(--grey-mid); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; border-bottom:1px solid var(--grey-light); }
+ .recent-table td { padding:0.7rem 0.75rem; border-bottom:1px solid var(--grey-light); color:var(--grey-dark); }
+ .recent-table tr:last-child td { border-bottom:none; }
+ .sdg-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; }
+ .sdg-item { border-radius:var(--radius-sm); padding:1rem; text-align:center; font-size:0.78rem; font-weight:600; }
+ </style>
 </head>
 <body>
 
 <nav class="navbar">
-  <div class="nav-inner">
-    <a href="index.html" class="nav-logo"><div class="logo-icon">🌱</div>Salve Comida</a>
-    <div class="nav-links">
-      <a href="index.html">Início</a>
-      <a href="doar.html">🤝 Doar</a>
-      <a href="receber.html">🥗 Receber</a>
-      <a href="mapa.html">🗺️ Mapa</a>
-      <a href="dashboard.html" class="active">📊 Impacto</a>
-      <a href="ongs.html">🏢 ONGs</a>
-    </div>
-    <div class="nav-auth">
-      <a href="login.html" class="btn btn-sm btn-outline">Entrar</a>
-      <a href="cadastro.html" class="btn btn-sm btn-primary">Criar conta</a>
-    </div>
-    <button class="nav-hamburger" aria-label="Menu" id="nav-hamburger-btn"><span></span><span></span><span></span></button>
-  </div>
-  <div class="nav-mobile" id="nav-mobile">
-    <a href="index.html">Início</a><a href="doar.html">🤝 Doar</a><a href="receber.html">🥗 Receber</a>
-    <a href="minhas-doacoes.html">📦 Minhas Doações</a><a href="minhas-solicitacoes.html">📋 Solicitações</a>
-    <div class="nav-mobile-auth">
-      <a href="login.html" class="btn btn-outline">Entrar</a>
-      <a href="cadastro.html" class="btn btn-primary">Criar conta</a>
-    </div>
-  </div>
+ <div class="nav-inner">
+ <a href="index.html" class="nav-logo"><div class="logo-icon">SC</div>Salve Comida</a>
+ <div class="nav-links">
+ <a href="index.html">Início</a>
+ <a href="doar.html">Doar</a>
+ <a href="receber.html">Receber</a>
+ <a href="mapa.html">Mapa</a>
+ <a href="dashboard.html" class="active">Impacto</a>
+ <a href="ongs.html">ONGs</a>
+ </div>
+ <div class="nav-auth">
+ <a href="login.html" class="btn btn-sm btn-outline">Entrar</a>
+ <a href="cadastro.html" class="btn btn-sm btn-primary">Criar conta</a>
+ </div>
+ <button class="nav-hamburger" aria-label="Menu" id="nav-hamburger-btn"><span></span><span></span><span></span></button>
+ </div>
+ <div class="nav-mobile" id="nav-mobile">
+ <a href="index.html">Início</a><a href="doar.html">Doar</a><a href="receber.html">Receber</a>
+ <a href="minhas-doacoes.html">Minhas Doações</a><a href="minhas-solicitacoes.html">Solicitações</a>
+ <div class="nav-mobile-auth">
+ <a href="login.html" class="btn btn-outline">Entrar</a>
+ <a href="cadastro.html" class="btn btn-primary">Criar conta</a>
+ </div>
+ </div>
 </nav>
 
 <div class="page-hero">
-  <div class="container">
-    <div class="tag">Transparência</div>
-    <h1>Dashboard de Impacto</h1>
-    <p>Acompanhe em tempo real o impacto da plataforma — alimentos salvos, famílias atendidas, CO₂ evitado e muito mais.</p>
-  </div>
+ <div class="container">
+ <div class="tag">Transparência</div>
+ <h1>Dashboard de Impacto</h1>
+ <p>Acompanhe em tempo real o impacto da plataforma — alimentos salvos, famílias atendidas, CO₂ evitado e muito mais.</p>
+ </div>
 </div>
 
 <section class="section">
-  <div class="container">
+ <div class="container">
 
-    <!-- KPIs -->
-    <div class="dash-kpi-grid" id="kpi-grid"><!-- JS --></div>
+ <!-- KPIs -->
+ <div class="dash-kpi-grid" id="kpi-grid"><!-- JS --></div>
 
-    <!-- Meta do mês -->
-    <div class="goal-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
-        <div>
-          <h3>🎯 Meta do mês: 100 doações</h3>
-          <p style="color:rgba(255,255,255,0.8);font-size:0.9rem">Cada doação conta. Ajude a comunidade a atingir a meta mensal!</p>
-        </div>
-        <div id="goal-pct" style="font-family:var(--font-display);font-size:2rem;font-weight:800;color:var(--orange-light)"></div>
-      </div>
-      <div class="goal-progress-outer">
-        <div class="goal-progress-inner" id="goal-bar" style="width:0%"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:0.8rem;opacity:0.8">
-        <span>0</span><span>100 doações</span>
-      </div>
-    </div>
+ <!-- Meta do mês -->
+ <div class="goal-card">
+ <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+ <div>
+ <h3>Meta do mês: 100 doações</h3>
+ <p style="color:rgba(255,255,255,0.8);font-size:0.9rem">Cada doação conta. Ajude a comunidade a atingir a meta mensal!</p>
+ </div>
+ <div id="goal-pct" style="font-family:var(--font-display);font-size:2rem;font-weight:800;color:var(--orange-light)"></div>
+ </div>
+ <div class="goal-progress-outer">
+ <div class="goal-progress-inner" id="goal-bar" style="width:0%"></div>
+ </div>
+ <div style="display:flex;justify-content:space-between;font-size:0.8rem;opacity:0.8">
+ <span>0</span><span>100 doações</span>
+ </div>
+ </div>
 
-    <!-- Gráficos linha 1 -->
-    <div class="charts-row">
-      <div class="chart-card">
-        <h3>📈 Evolução mensal</h3>
-        <canvas id="chart-monthly" height="100"></canvas>
-      </div>
-      <div class="chart-card">
-        <h3>🏷️ Por categoria</h3>
-        <canvas id="chart-category" height="180"></canvas>
-      </div>
-    </div>
+ <!-- Gráficos linha 1 -->
+ <div class="charts-row">
+ <div class="chart-card">
+ <h3>Evolução mensal</h3>
+ <canvas id="chart-monthly" height="100"></canvas>
+ </div>
+ <div class="chart-card">
+ <h3>Por categoria</h3>
+ <canvas id="chart-category" height="180"></canvas>
+ </div>
+ </div>
 
-    <!-- Gráficos linha 2 -->
-    <div class="charts-row">
-      <div class="chart-card">
-        <h3>📊 Status das doações</h3>
-        <canvas id="chart-status" height="100"></canvas>
-      </div>
-      <div class="chart-card">
-        <h3>🏢 Tipos de doador</h3>
-        <canvas id="chart-donors" height="180"></canvas>
-      </div>
-    </div>
+ <!-- Gráficos linha 2 -->
+ <div class="charts-row">
+ <div class="chart-card">
+ <h3>Status das doações</h3>
+ <canvas id="chart-status" height="100"></canvas>
+ </div>
+ <div class="chart-card">
+ <h3>Tipos de doador</h3>
+ <canvas id="chart-donors" height="180"></canvas>
+ </div>
+ </div>
 
-    <!-- Impacto ambiental + Barra categorias -->
-    <div class="charts-row" style="margin-top:1.5rem">
-      <div class="chart-card">
-        <h3>🌿 Impacto ambiental</h3>
-        <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
-          <div class="co2-badge">🌍 <span id="co2-txt">— kg de CO₂</span> evitados</div>
-          <div class="co2-badge" style="background:var(--orange-pale);color:var(--orange-main)">🍽️ <span id="meals-txt">— refeições</span> geradas</div>
-          <div class="co2-badge" style="background:#dbeafe;color:#1e40af">💧 <span id="water-txt">— litros</span> de água poupados</div>
-        </div>
-        <div id="category-bars"><!-- JS --></div>
-      </div>
+ <!-- Impacto ambiental + Barra categorias -->
+ <div class="charts-row" style="margin-top:1.5rem">
+ <div class="chart-card">
+ <h3>Impacto ambiental</h3>
+ <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
+ <div class="co2-badge"><span id="co2-txt">— kg de CO₂</span>evitados</div>
+ <div class="co2-badge" style="background:var(--orange-pale);color:var(--orange-main)"><span id="meals-txt">— refeições</span>geradas</div>
+ <div class="co2-badge" style="background:#dbeafe;color:#1e40af"><span id="water-txt">— litros</span>de água poupados</div>
+ </div>
+ <div id="category-bars"><!-- JS --></div>
+ </div>
 
-      <div class="chart-card">
-        <h3>🌱 ODS — Objetivos de Desenvolvimento Sustentável</h3>
-        <p style="font-size:0.82rem;color:var(--grey-mid);margin-bottom:1rem">O Salve Comida contribui diretamente com:</p>
-        <div class="sdg-grid">
-          <div class="sdg-item" style="background:#e74c3c;color:white">ODS 1<br><small>Sem pobreza</small></div>
-          <div class="sdg-item" style="background:#dda63a;color:white">ODS 2<br><small>Fome zero</small></div>
-          <div class="sdg-item" style="background:#4c9f38;color:white">ODS 3<br><small>Saúde e bem-estar</small></div>
-          <div class="sdg-item" style="background:#c5192d;color:white">ODS 10<br><small>Redução das desigualdades</small></div>
-          <div class="sdg-item" style="background:#fd6925;color:white">ODS 12<br><small>Produção responsável</small></div>
-          <div class="sdg-item" style="background:#3f7e44;color:white">ODS 13<br><small>Ação pelo clima</small></div>
-        </div>
-      </div>
-    </div>
+ <div class="chart-card">
+ <h3>ODS — Objetivos de Desenvolvimento Sustentável</h3>
+ <p style="font-size:0.82rem;color:var(--grey-mid);margin-bottom:1rem">O Salve Comida contribui diretamente com:</p>
+ <div class="sdg-grid">
+ <div class="sdg-item" style="background:#e74c3c;color:white">ODS 1<br><small>Sem pobreza</small></div>
+ <div class="sdg-item" style="background:#dda63a;color:white">ODS 2<br><small>Fome zero</small></div>
+ <div class="sdg-item" style="background:#4c9f38;color:white">ODS 3<br><small>Saúde e bem-estar</small></div>
+ <div class="sdg-item" style="background:#c5192d;color:white">ODS 10<br><small>Redução das desigualdades</small></div>
+ <div class="sdg-item" style="background:#fd6925;color:white">ODS 12<br><small>Produção responsável</small></div>
+ <div class="sdg-item" style="background:#3f7e44;color:white">ODS 13<br><small>Ação pelo clima</small></div>
+ </div>
+ </div>
+ </div>
 
-    <!-- Tabela de doações recentes -->
-    <div class="chart-card" style="margin-top:1.5rem">
-      <h3>🕐 Doações recentes</h3>
-      <div style="overflow-x:auto">
-        <table class="recent-table" id="recent-table">
-          <thead>
-            <tr>
-              <th>Alimento</th><th>Doador</th><th>Categoria</th><th>Quantidade</th><th>Localização</th><th>Status</th><th>Data</th>
-            </tr>
-          </thead>
-          <tbody id="recent-tbody"><!-- JS --></tbody>
-        </table>
-      </div>
-    </div>
+ <!-- Tabela de doações recentes -->
+ <div class="chart-card" style="margin-top:1.5rem">
+ <h3>Doações recentes</h3>
+ <div style="overflow-x:auto">
+ <table class="recent-table" id="recent-table">
+ <thead>
+ <tr>
+ <th>Alimento</th><th>Doador</th><th>Categoria</th><th>Quantidade</th><th>Localização</th><th>Status</th><th>Data</th>
+ </tr>
+ </thead>
+ <tbody id="recent-tbody"><!-- JS --></tbody>
+ </table>
+ </div>
+ </div>
 
-  </div>
+ </div>
 </section>
 
 <footer class="footer">
-  <div class="container">
-    <div class="footer-bottom">
-      <span>© 2025 Salve Comida — Dados reais do banco de dados</span>
-    </div>
-  </div>
+ <div class="container">
+ <div class="footer-bottom">
+ <span>© 2025 Salve Comida — Dados reais do banco de dados</span>
+ </div>
+ </div>
 </footer>
 
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
 <script>
 var CAT_LABELS = { FRUITS:'Frutas/Verduras', BREADS:'Pães/Massas', MEALS:'Refeições', CANNED:'Enlatados', DAIRY:'Laticínios', DRINKS:'Bebidas', OTHER:'Outros' };
-var CAT_EMOJI  = { FRUITS:'🥦', BREADS:'🍞', MEALS:'🍱', CANNED:'🥫', DAIRY:'🥛', DRINKS:'🧃', OTHER:'📦' };
+var CAT_EMOJI = { FRUITS:'', BREADS:'', MEALS:'', CANNED:'', DAIRY:'', DRINKS:'', OTHER:'' };
 var STATUS_LABELS = { AVAILABLE:'Disponível', RESERVED:'Reservado', COMPLETED:'Concluído', CANCELLED:'Cancelado' };
 var STATUS_COLORS = { AVAILABLE:'#4aab72', RESERVED:'#f07b28', COMPLETED:'#6366f1', CANCELLED:'#9ca3af' };
 
 document.addEventListener('DOMContentLoaded', async function() {
-  var ham = document.getElementById('nav-hamburger-btn');
-  var mob = document.getElementById('nav-mobile');
-  if (ham && mob) ham.addEventListener('click', function(){ mob.classList.toggle('open'); ham.classList.toggle('open'); });
+ var ham = document.getElementById('nav-hamburger-btn');
+ var mob = document.getElementById('nav-mobile');
+ if (ham && mob) ham.addEventListener('click', function(){ mob.classList.toggle('open'); ham.classList.toggle('open'); });
 
-  Auth.updateNavAuth();
+ Auth.updateNavAuth();
 
-  try {
-    var donations = await Api.donations.list();
+ try {
+ var donations = await Api.donations.list();
 
-    var total = donations.length;
-    var available = donations.filter(function(d){ return d.status === 'AVAILABLE'; }).length;
-    var completed = donations.filter(function(d){ return d.status === 'COMPLETED'; }).length;
-    var kgEst = completed * 2.5;
-    var co2Est = Math.round(kgEst * 2.5);
+ var total = donations.length;
+ var available = donations.filter(function(d){ return d.status === 'AVAILABLE'; }).length;
+ var completed = donations.filter(function(d){ return d.status === 'COMPLETED'; }).length;
+ var kgEst = completed * 2.5;
+ var co2Est = Math.round(kgEst * 2.5);
 
-    // KPIs
-    var kpiData = [
-      { icon:'🥗', num:total,     label:'Total de doações',       color:'green',  colorVal:'var(--green-main)' },
-      { icon:'✅', num:available, label:'Disponíveis agora',       color:'orange', colorVal:'var(--orange-main)' },
-      { icon:'⚖️', num:Math.round(kgEst), label:'Kg estimados salvos', color:'blue', colorVal:'#3b82f6' },
-      { icon:'🌿', num:co2Est,    label:'Kg CO₂ evitados (est.)', color:'purple', colorVal:'#8b5cf6' },
-    ];
-    document.getElementById('kpi-grid').innerHTML = kpiData.map(function(k) {
-      return '<div class="kpi-card ' + k.color + '">' +
-        '<div class="kpi-icon">' + k.icon + '</div>' +
-        '<div class="kpi-num" style="color:' + k.colorVal + '">' + k.num.toLocaleString('pt-BR') + '</div>' +
-        '<div class="kpi-label">' + k.label + '</div>' +
-        '</div>';
-    }).join('');
+ // KPIs
+ var kpiData = [
+ { icon:'', num:total, label:'Total de doações', color:'green', colorVal:'var(--green-main)' },
+ { icon:'', num:available, label:'Disponíveis agora', color:'orange', colorVal:'var(--orange-main)' },
+ { icon:'', num:Math.round(kgEst), label:'Kg estimados salvos', color:'blue', colorVal:'#3b82f6' },
+ { icon:'', num:co2Est, label:'Kg CO₂ evitados (est.)', color:'purple', colorVal:'#8b5cf6' },
+ ];
+ document.getElementById('kpi-grid').innerHTML = kpiData.map(function(k) {
+ return '<div class="kpi-card ' + k.color + '">' +
+ '<div class="kpi-icon">' + k.icon + '</div>' +
+ '<div class="kpi-num" style="color:' + k.colorVal + '">' + k.num.toLocaleString('pt-BR') + '</div>' +
+ '<div class="kpi-label">' + k.label + '</div>' +
+ '</div>';
+ }).join('');
 
-    // Meta
-    var goalPct = Math.min(100, Math.round((total / 100) * 100));
-    document.getElementById('goal-pct').textContent = goalPct + '%';
-    setTimeout(function(){ document.getElementById('goal-bar').style.width = goalPct + '%'; }, 200);
+ // Meta
+ var goalPct = Math.min(100, Math.round((total / 100) * 100));
+ document.getElementById('goal-pct').textContent = goalPct + '%';
+ setTimeout(function(){ document.getElementById('goal-bar').style.width = goalPct + '%'; }, 200);
 
-    // Por categoria
-    var byCat = {};
-    donations.forEach(function(d){ byCat[d.category] = (byCat[d.category] || 0) + 1; });
-    var catColors = ['#4aab72','#f07b28','#e84393','#6366f1','#06b6d4','#f59e0b','#6b7280'];
-    var catKeys = Object.keys(byCat);
+ // Por categoria
+ var byCat = {};
+ donations.forEach(function(d){ byCat[d.category] = (byCat[d.category] || 0) + 1; });
+ var catColors = ['#4aab72','#f07b28','#e84393','#6366f1','#06b6d4','#f59e0b','#6b7280'];
+ var catKeys = Object.keys(byCat);
 
-    // Gráfico categoria (donut)
-    var catCtx = document.getElementById('chart-category').getContext('2d');
-    new Chart(catCtx, {
-      type: 'doughnut',
-      data: { labels: catKeys.map(function(c){ return CAT_LABELS[c]||c; }), datasets:[{ data: catKeys.map(function(c){ return byCat[c]; }), backgroundColor: catColors, borderWidth:2, borderColor:'#fff' }] },
-      options: { responsive:true, cutout:'60%', plugins:{ legend:{ position:'bottom', labels:{ font:{ size:11 } } } } },
-    });
+ // Gráfico categoria (donut)
+ var catCtx = document.getElementById('chart-category').getContext('2d');
+ new Chart(catCtx, {
+ type: 'doughnut',
+ data: { labels: catKeys.map(function(c){ return CAT_LABELS[c]||c; }), datasets:[{ data: catKeys.map(function(c){ return byCat[c]; }), backgroundColor: catColors, borderWidth:2, borderColor:'#fff' }] },
+ options: { responsive:true, cutout:'60%', plugins:{ legend:{ position:'bottom', labels:{ font:{ size:11 } } } } },
+ });
 
-    // Gráfico status
-    var statusGroups = { AVAILABLE:0, RESERVED:0, COMPLETED:0, CANCELLED:0 };
-    donations.forEach(function(d){ if (statusGroups.hasOwnProperty(d.status)) statusGroups[d.status]++; });
-    var statusCtx = document.getElementById('chart-status').getContext('2d');
-    new Chart(statusCtx, {
-      type: 'bar',
-      data: {
-        labels: Object.keys(statusGroups).map(function(s){ return STATUS_LABELS[s]||s; }),
-        datasets:[{ data: Object.values(statusGroups), backgroundColor: Object.keys(statusGroups).map(function(s){ return STATUS_COLORS[s]||'#9ca3af'; }), borderRadius:6 }],
-      },
-      options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true, grid:{ color:'#f3f4f6' } } } },
-    });
+ // Gráfico status
+ var statusGroups = { AVAILABLE:0, RESERVED:0, COMPLETED:0, CANCELLED:0 };
+ donations.forEach(function(d){ if (statusGroups.hasOwnProperty(d.status)) statusGroups[d.status]++; });
+ var statusCtx = document.getElementById('chart-status').getContext('2d');
+ new Chart(statusCtx, {
+ type: 'bar',
+ data: {
+ labels: Object.keys(statusGroups).map(function(s){ return STATUS_LABELS[s]||s; }),
+ datasets:[{ data: Object.values(statusGroups), backgroundColor: Object.keys(statusGroups).map(function(s){ return STATUS_COLORS[s]||'#9ca3af'; }), borderRadius:6 }],
+ },
+ options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true, grid:{ color:'#f3f4f6' } } } },
+ });
 
-    // Gráfico mensal (estimado com os últimos 6 meses)
-    var monthCtx = document.getElementById('chart-monthly').getContext('2d');
-    var months = []; var mNow = new Date();
-    for (var i=5;i>=0;i--){ var m=new Date(mNow.getFullYear(),mNow.getMonth()-i,1); months.push(['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][m.getMonth()]+'/'+String(m.getFullYear()).slice(2)); }
-    var monthlyDons = months.map(function(_){ return Math.round(Math.random()*total*0.3); });
-    new Chart(monthCtx, {
-      type:'line', data:{ labels:months, datasets:[{ label:'Doações', data:monthlyDons, borderColor:'#2d7a4f', backgroundColor:'rgba(45,122,79,0.1)', tension:0.4, fill:true }] },
-      options:{ responsive:true, plugins:{ legend:{ position:'top' } }, scales:{ y:{ beginAtZero:true, grid:{ color:'#f3f4f6' } } } },
-    });
+ // Gráfico mensal (estimado com os últimos 6 meses)
+ var monthCtx = document.getElementById('chart-monthly').getContext('2d');
+ var months = []; var mNow = new Date();
+ for (var i=5;i>=0;i--){ var m=new Date(mNow.getFullYear(),mNow.getMonth()-i,1); months.push(['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][m.getMonth()]+'/'+String(m.getFullYear()).slice(2)); }
+ var monthlyDons = months.map(function(_){ return Math.round(Math.random()*total*0.3); });
+ new Chart(monthCtx, {
+ type:'line', data:{ labels:months, datasets:[{ label:'Doações', data:monthlyDons, borderColor:'#2d7a4f', backgroundColor:'rgba(45,122,79,0.1)', tension:0.4, fill:true }] },
+ options:{ responsive:true, plugins:{ legend:{ position:'top' } }, scales:{ y:{ beginAtZero:true, grid:{ color:'#f3f4f6' } } } },
+ });
 
-    // Gráfico donors (pie placeholder)
-    var donorCtx = document.getElementById('chart-donors').getContext('2d');
-    new Chart(donorCtx, {
-      type:'pie', data:{ labels:['Pessoa física','Empresa','ONG','Restaurante'], datasets:[{ data:[40,30,20,10], backgroundColor:['#2d7a4f','#4aab72','#f07b28','#ffa04d'], borderWidth:2, borderColor:'#fff' }] },
-      options:{ responsive:true, plugins:{ legend:{ position:'bottom', labels:{ font:{ size:11 } } } } },
-    });
+ // Gráfico donors (pie placeholder)
+ var donorCtx = document.getElementById('chart-donors').getContext('2d');
+ new Chart(donorCtx, {
+ type:'pie', data:{ labels:['Pessoa física','Empresa','ONG','Restaurante'], datasets:[{ data:[40,30,20,10], backgroundColor:['#2d7a4f','#4aab72','#f07b28','#ffa04d'], borderWidth:2, borderColor:'#fff' }] },
+ options:{ responsive:true, plugins:{ legend:{ position:'bottom', labels:{ font:{ size:11 } } } } },
+ });
 
-    // Impacto ambiental
-    document.getElementById('co2-txt').textContent   = co2Est.toLocaleString('pt-BR') + ' kg de CO₂';
-    document.getElementById('meals-txt').textContent  = (completed * 4).toLocaleString('pt-BR') + ' refeições';
-    document.getElementById('water-txt').textContent  = Math.round(kgEst * 1000).toLocaleString('pt-BR') + ' litros';
+ // Impacto ambiental
+ document.getElementById('co2-txt').textContent = co2Est.toLocaleString('pt-BR') + ' kg de CO₂';
+ document.getElementById('meals-txt').textContent = (completed * 4).toLocaleString('pt-BR') + ' refeições';
+ document.getElementById('water-txt').textContent = Math.round(kgEst * 1000).toLocaleString('pt-BR') + ' litros';
 
-    var maxCat = Math.max.apply(null, Object.values(byCat).concat([1]));
-    var catBarColors = { FRUITS:'#4aab72', BREADS:'#f07b28', MEALS:'#e84393', CANNED:'#6366f1', DAIRY:'#06b6d4', DRINKS:'#f59e0b', OTHER:'#9ca3af' };
-    document.getElementById('category-bars').innerHTML = Object.entries(byCat)
-      .sort(function(a,b){ return b[1]-a[1]; })
-      .map(function(entry) {
-        return '<div class="progress-bar-wrap">' +
-          '<span class="progress-label">' + (CAT_EMOJI[entry[0]]||'📦') + ' ' + (CAT_LABELS[entry[0]]||entry[0]) + '</span>' +
-          '<div class="progress-bar-bg"><div class="progress-bar-fill" style="width:' + Math.round((entry[1]/maxCat)*100) + '%;background:' + (catBarColors[entry[0]]||'#9ca3af') + '"></div></div>' +
-          '<span class="progress-count">' + entry[1] + '</span></div>';
-      }).join('');
+ var maxCat = Math.max.apply(null, Object.values(byCat).concat([1]));
+ var catBarColors = { FRUITS:'#4aab72', BREADS:'#f07b28', MEALS:'#e84393', CANNED:'#6366f1', DAIRY:'#06b6d4', DRINKS:'#f59e0b', OTHER:'#9ca3af' };
+ document.getElementById('category-bars').innerHTML = Object.entries(byCat)
+ .sort(function(a,b){ return b[1]-a[1]; })
+ .map(function(entry) {
+ return '<div class="progress-bar-wrap">' +
+ '<span class="progress-label">' + (CAT_EMOJI[entry[0]]||'') + ' ' + (CAT_LABELS[entry[0]]||entry[0]) + '</span>' +
+ '<div class="progress-bar-bg"><div class="progress-bar-fill" style="width:' + Math.round((entry[1]/maxCat)*100) + '%;background:' + (catBarColors[entry[0]]||'#9ca3af') + '"></div></div>' +
+ '<span class="progress-count">' + entry[1] + '</span></div>';
+ }).join('');
 
-    // Tabela recente
-    var recent = donations.slice(0, 10);
-    var statusBadge = function(s) {
-      var colors = { AVAILABLE:'badge-available', RESERVED:'badge-reserved', COMPLETED:'badge-closed', CANCELLED:'badge-closed' };
-      return '<span class="badge ' + (colors[s]||'') + '">' + (STATUS_LABELS[s]||s) + '</span>';
-    };
-    document.getElementById('recent-tbody').innerHTML = recent.map(function(d) {
-      return '<tr>' +
-        '<td><strong>' + esc(d.title) + '</strong></td>' +
-        '<td>' + esc(d.donor ? d.donor.name : '') + '</td>' +
-        '<td>' + (CAT_EMOJI[d.category]||'📦') + ' ' + (CAT_LABELS[d.category]||d.category) + '</td>' +
-        '<td>' + d.quantity + ' ' + esc(d.unit) + '</td>' +
-        '<td>' + esc(d.pickupLocation) + '</td>' +
-        '<td>' + statusBadge(d.status) + '</td>' +
-        '<td>' + fmtDate(d.createdAt) + '</td></tr>';
-    }).join('');
+ // Tabela recente
+ var recent = donations.slice(0, 10);
+ var statusBadge = function(s) {
+ var colors = { AVAILABLE:'badge-available', RESERVED:'badge-reserved', COMPLETED:'badge-closed', CANCELLED:'badge-closed' };
+ return '<span class="badge ' + (colors[s]||'') + '">' + (STATUS_LABELS[s]||s) + '</span>';
+ };
+ document.getElementById('recent-tbody').innerHTML = recent.map(function(d) {
+ return '<tr>' +
+ '<td><strong>' + esc(d.title) + '</strong></td>' +
+ '<td>' + esc(d.donor ? d.donor.name : '') + '</td>' +
+ '<td>' + (CAT_EMOJI[d.category]||'') + ' ' + (CAT_LABELS[d.category]||d.category) + '</td>' +
+ '<td>' + d.quantity + ' ' + esc(d.unit) + '</td>' +
+ '<td>' + esc(d.pickupLocation) + '</td>' +
+ '<td>' + statusBadge(d.status) + '</td>' +
+ '<td>' + fmtDate(d.createdAt) + '</td></tr>';
+ }).join('');
 
-  } catch(err) {
-    document.getElementById('kpi-grid').innerHTML = '<div style="grid-column:1/-1;color:var(--grey-mid)">Erro ao carregar dados: ' + (err.message||'verifique o servidor.') + '</div>';
-  }
+ } catch(err) {
+ document.getElementById('kpi-grid').innerHTML = '<div style="grid-column:1/-1;color:var(--grey-mid)">Erro ao carregar dados: ' + (err.message||'verifique o servidor.') + '</div>';
+ }
 });
 
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }

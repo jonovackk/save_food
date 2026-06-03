@@ -1,148 +1,148 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alimentos Disponíveis — Salve Comida</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/auth.css">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Alimentos Disponíveis — Salve Comida</title>
+ <link rel="stylesheet" href="css/style.css">
+ <link rel="stylesheet" href="css/auth.css">
 </head>
 <body>
 
 <nav class="navbar">
-  <div class="nav-inner">
-    <a href="index.html" class="nav-logo"><div class="logo-icon">🌱</div>Salve Comida</a>
-    <div class="nav-links">
-      <a href="index.html">Início</a>
-      <a href="doar.html">🤝 Doar</a>
-      <a href="receber.html" class="active">🥗 Receber</a>
-      <a href="mapa.html">🗺️ Mapa</a>
-      <a href="minhas-doacoes.html">Minhas Doações</a>
-      <a href="minhas-solicitacoes.html">Solicitações</a>
-    </div>
-    <div class="nav-auth">
-      <a href="login.html" class="btn btn-sm btn-outline">Entrar</a>
-      <a href="cadastro.html" class="btn btn-sm btn-primary">Criar conta</a>
-    </div>
-    <button class="nav-hamburger" aria-label="Menu" id="nav-hamburger-btn"><span></span><span></span><span></span></button>
-  </div>
-  <div class="nav-mobile" id="nav-mobile">
-    <a href="index.html">Início</a><a href="doar.html">🤝 Doar</a><a href="receber.html">🥗 Receber</a>
-    <a href="mapa.html">🗺️ Mapa</a><a href="minhas-doacoes.html">📦 Minhas Doações</a>
-    <a href="minhas-solicitacoes.html">📋 Solicitações</a><a href="perfil.html">👤 Perfil</a>
-    <div class="nav-mobile-auth">
-      <a href="login.html" class="btn btn-outline">Entrar</a>
-      <a href="cadastro.html" class="btn btn-primary">Criar conta</a>
-    </div>
-  </div>
+ <div class="nav-inner">
+ <a href="index.html" class="nav-logo"><div class="logo-icon">SC</div>Salve Comida</a>
+ <div class="nav-links">
+ <a href="index.html">Início</a>
+ <a href="doar.html">Doar</a>
+ <a href="receber.html" class="active">Receber</a>
+ <a href="mapa.html">Mapa</a>
+ <a href="minhas-doacoes.html">Minhas Doações</a>
+ <a href="minhas-solicitacoes.html">Solicitações</a>
+ </div>
+ <div class="nav-auth">
+ <a href="login.html" class="btn btn-sm btn-outline">Entrar</a>
+ <a href="cadastro.html" class="btn btn-sm btn-primary">Criar conta</a>
+ </div>
+ <button class="nav-hamburger" aria-label="Menu" id="nav-hamburger-btn"><span></span><span></span><span></span></button>
+ </div>
+ <div class="nav-mobile" id="nav-mobile">
+ <a href="index.html">Início</a><a href="doar.html">Doar</a><a href="receber.html">Receber</a>
+ <a href="mapa.html">Mapa</a><a href="minhas-doacoes.html">Minhas Doações</a>
+ <a href="minhas-solicitacoes.html">Solicitações</a><a href="perfil.html">Perfil</a>
+ <div class="nav-mobile-auth">
+ <a href="login.html" class="btn btn-outline">Entrar</a>
+ <a href="cadastro.html" class="btn btn-primary">Criar conta</a>
+ </div>
+ </div>
 </nav>
 
 <div class="page-hero">
-  <div class="container">
-    <div class="tag">Disponível agora</div>
-    <h1>Alimentos para você</h1>
-    <p>Encontre alimentos disponíveis perto de você. Todos os itens são doados por pessoas e empresas da sua comunidade.</p>
-  </div>
+ <div class="container">
+ <div class="tag">Disponível agora</div>
+ <h1>Alimentos para você</h1>
+ <p>Encontre alimentos disponíveis perto de você. Todos os itens são doados por pessoas e empresas da sua comunidade.</p>
+ </div>
 </div>
 
 <section class="section">
-  <div class="container">
-    <div id="receive-alert"></div>
+ <div class="container">
+ <div id="receive-alert"></div>
 
-    <!-- FILTROS -->
-    <div class="filters-bar">
-      <div class="filter-item" style="flex:2;min-width:200px">
-        <label>🔍 Buscar</label>
-        <input type="text" id="search-input" class="form-control" placeholder="Nome do alimento...">
-      </div>
-      <div class="filter-item">
-        <label>🏷️ Categoria</label>
-        <select id="filter-category" class="form-control">
-          <option value="">Todas</option>
-          <option value="FRUITS">Frutas e verduras</option>
-          <option value="BREADS">Pães e massas</option>
-          <option value="MEALS">Refeições prontas</option>
-          <option value="CANNED">Enlatados</option>
-          <option value="DAIRY">Laticínios</option>
-          <option value="DRINKS">Bebidas</option>
-          <option value="OTHER">Outros</option>
-        </select>
-      </div>
-      <div class="filter-item">
-        <label>📍 Cidade</label>
-        <input type="text" id="filter-location" class="form-control" placeholder="Cidade...">
-      </div>
-      <div class="filter-item">
-        <label>↕️ Ordenar</label>
-        <select id="sort-by" class="form-control">
-          <option value="newest">Mais recentes</option>
-          <option value="name">Nome A-Z</option>
-        </select>
-      </div>
-    </div>
+ <!-- FILTROS -->
+ <div class="filters-bar">
+ <div class="filter-item" style="flex:2;min-width:200px">
+ <label>Buscar</label>
+ <input type="text" id="search-input" class="form-control" placeholder="Nome do alimento...">
+ </div>
+ <div class="filter-item">
+ <label>Categoria</label>
+ <select id="filter-category" class="form-control">
+ <option value="">Todas</option>
+ <option value="FRUITS">Frutas e verduras</option>
+ <option value="BREADS">Pães e massas</option>
+ <option value="MEALS">Refeições prontas</option>
+ <option value="CANNED">Enlatados</option>
+ <option value="DAIRY">Laticínios</option>
+ <option value="DRINKS">Bebidas</option>
+ <option value="OTHER">Outros</option>
+ </select>
+ </div>
+ <div class="filter-item">
+ <label>Cidade</label>
+ <input type="text" id="filter-location" class="form-control" placeholder="Cidade...">
+ </div>
+ <div class="filter-item">
+ <label>Ordenar</label>
+ <select id="sort-by" class="form-control">
+ <option value="newest">Mais recentes</option>
+ <option value="name">Nome A-Z</option>
+ </select>
+ </div>
+ </div>
 
-    <div class="flex items-center justify-between mb-2" style="flex-wrap:wrap;gap:0.5rem">
-      <span id="results-count" style="font-size:0.88rem;color:var(--grey-mid)"></span>
-      <a href="doar.html" class="btn btn-outline btn-sm">+ Cadastrar doação</a>
-    </div>
+ <div class="flex items-center justify-between mb-2" style="flex-wrap:wrap;gap:0.5rem">
+ <span id="results-count" style="font-size:0.88rem;color:var(--grey-mid)"></span>
+ <a href="doar.html" class="btn btn-outline btn-sm">+ Cadastrar doação</a>
+ </div>
 
-    <div class="cards-grid" id="foods-grid">
-      <!-- Preenchido via JS -->
-    </div>
-  </div>
+ <div class="cards-grid" id="foods-grid">
+ <!-- Preenchido via JS -->
+ </div>
+ </div>
 </section>
 
 <!-- ======== MODAL DE SOLICITAÇÃO ======== -->
 <div class="modal-overlay" id="request-modal">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>📩 Solicitar Alimento</h3>
-      <button class="modal-close" onclick="closeModalR('request-modal')">✕</button>
-    </div>
-    <div class="modal-body">
-      <!-- Info do alimento -->
-      <div style="background:var(--green-pale);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1.5rem">
-        <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--green-dark);margin-bottom:0.5rem" id="req-food-name">—</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem;font-size:0.82rem;color:var(--grey-mid)">
-          <span>📦 Qtd disponível: <strong id="req-food-qty">—</strong></span>
-          <span>👤 Doador: <strong id="req-food-donor">—</strong></span>
-          <span>📍 Local: <strong id="req-food-local">—</strong></span>
-          <span>📅 Limite: <strong id="req-food-expiry">—</strong></span>
-        </div>
-      </div>
+ <div class="modal">
+ <div class="modal-header">
+ <h3>Solicitar Alimento</h3>
+ <button class="modal-close" onclick="closeModalR('request-modal')"></button>
+ </div>
+ <div class="modal-body">
+ <!-- Info do alimento -->
+ <div style="background:var(--green-pale);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1.5rem">
+ <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--green-dark);margin-bottom:0.5rem" id="req-food-name">—</div>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem;font-size:0.82rem;color:var(--grey-mid)">
+ <span>Qtd disponível: <strong id="req-food-qty">—</strong></span>
+ <span>Doador: <strong id="req-food-donor">—</strong></span>
+ <span>Local: <strong id="req-food-local">—</strong></span>
+ <span>Limite: <strong id="req-food-expiry">—</strong></span>
+ </div>
+ </div>
 
-      <div id="req-alert"></div>
+ <div id="req-alert"></div>
 
-      <form id="request-form" novalidate>
-        <div id="req-alert"></div>
-        <div class="form-group">
-          <label for="req-qty">Quantidade desejada <span class="required">*</span></label>
-          <input type="number" id="req-qty" name="req-qty" class="form-control" placeholder="Ex: 2" min="1" value="1" required>
-          <span class="error-msg">Informe uma quantidade.</span>
-        </div>
-        <div class="form-group">
-          <label for="req-message">Mensagem para o doador <em style="font-weight:400;color:var(--grey-mid)">(opcional)</em></label>
-          <textarea id="req-message" name="req-message" class="form-control" placeholder="Conte um pouco sobre você ou deixe um agradecimento..." rows="3"></textarea>
-        </div>
-        <div style="background:var(--orange-pale);border-radius:var(--radius-sm);padding:0.85rem;font-size:0.85rem;color:#92400e">
-          ℹ️ O doador receberá seus dados de contato do perfil. A retirada será combinada diretamente.
-        </div>
-      </form>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModalR('request-modal')">Cancelar</button>
-      <button class="btn btn-secondary" onclick="document.getElementById('request-form').dispatchEvent(new Event('submit', {bubbles:true,cancelable:true}))">📩 Enviar Solicitação</button>
-    </div>
-  </div>
+ <form id="request-form" novalidate>
+ <div id="req-alert"></div>
+ <div class="form-group">
+ <label for="req-qty">Quantidade desejada <span class="required">*</span></label>
+ <input type="number" id="req-qty" name="req-qty" class="form-control" placeholder="Ex: 2" min="1" value="1" required>
+ <span class="error-msg">Informe uma quantidade.</span>
+ </div>
+ <div class="form-group">
+ <label for="req-message">Mensagem para o doador <em style="font-weight:400;color:var(--grey-mid)">(opcional)</em></label>
+ <textarea id="req-message" name="req-message" class="form-control" placeholder="Conte um pouco sobre você ou deixe um agradecimento..." rows="3"></textarea>
+ </div>
+ <div style="background:var(--orange-pale);border-radius:var(--radius-sm);padding:0.85rem;font-size:0.85rem;color:#92400e">
+ O doador receberá seus dados de contato do perfil. A retirada será combinada diretamente.
+ </div>
+ </form>
+ </div>
+ <div class="modal-footer">
+ <button class="btn btn-ghost" onclick="closeModalR('request-modal')">Cancelar</button>
+ <button class="btn btn-secondary" onclick="document.getElementById('request-form').dispatchEvent(new Event('submit', {bubbles:true,cancelable:true}))">Enviar Solicitação</button>
+ </div>
+ </div>
 </div>
 
 <footer class="footer">
-  <div class="container">
-    <div class="footer-bottom">
-      <span>© 2025 Salve Comida — Projeto acadêmico / protótipo funcional</span>
-      <span>Feito com 💚 para a comunidade</span>
-    </div>
-  </div>
+ <div class="container">
+ <div class="footer-bottom">
+ <span>© 2025 Salve Comida — Projeto acadêmico / protótipo funcional</span>
+ <span>Feito com para a comunidade</span>
+ </div>
+ </div>
 </footer>
 
 <script src="js/api.js"></script>
@@ -152,132 +152,132 @@ var _currentDonationId = null;
 var _currentUser = null;
 
 var CAT_LABELS = { FRUITS:'Frutas e verduras', BREADS:'Pães e massas', MEALS:'Refeições prontas',
-  CANNED:'Enlatados', DAIRY:'Laticínios', DRINKS:'Bebidas', OTHER:'Outros' };
-var CAT_EMOJI  = { FRUITS:'🥦', BREADS:'🍞', MEALS:'🍱', CANNED:'🥫', DAIRY:'🥛', DRINKS:'🧃', OTHER:'📦' };
+ CANNED:'Enlatados', DAIRY:'Laticínios', DRINKS:'Bebidas', OTHER:'Outros' };
+var CAT_EMOJI = { FRUITS:'', BREADS:'', MEALS:'', CANNED:'', DAIRY:'', DRINKS:'', OTHER:'' };
 var DEL_LABELS = { PICKUP_ONLY:'Só retirada', CAN_DELIVER:'Pode entregar', TO_AGREE:'A combinar' };
 
 document.addEventListener('DOMContentLoaded', async function() {
-  var ham = document.getElementById('nav-hamburger-btn');
-  var mob = document.getElementById('nav-mobile');
-  if (ham && mob) ham.addEventListener('click', function(){ mob.classList.toggle('open'); ham.classList.toggle('open'); });
+ var ham = document.getElementById('nav-hamburger-btn');
+ var mob = document.getElementById('nav-mobile');
+ if (ham && mob) ham.addEventListener('click', function(){ mob.classList.toggle('open'); ham.classList.toggle('open'); });
 
-  _currentUser = await Auth.fetchCurrentUser();
-  Auth.updateNavAuth();
+ _currentUser = await Auth.fetchCurrentUser();
+ Auth.updateNavAuth();
 
-  await loadDonations();
+ await loadDonations();
 
-  // Filtros
-  var debounce;
-  ['search-input','filter-category','filter-location','sort-by'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.addEventListener('input', function(){ clearTimeout(debounce); debounce = setTimeout(loadDonations, 350); });
-  });
+ // Filtros
+ var debounce;
+ ['search-input','filter-category','filter-location','sort-by'].forEach(function(id) {
+ var el = document.getElementById(id);
+ if (el) el.addEventListener('input', function(){ clearTimeout(debounce); debounce = setTimeout(loadDonations, 350); });
+ });
 
-  // Submissão da solicitação
-  document.getElementById('request-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    await submitRequest();
-  });
+ // Submissão da solicitação
+ document.getElementById('request-form').addEventListener('submit', async function(e) {
+ e.preventDefault();
+ await submitRequest();
+ });
 });
 
 async function loadDonations() {
-  var grid = document.getElementById('foods-grid');
-  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem 0;color:var(--grey-mid)">Carregando doações...</div>';
+ var grid = document.getElementById('foods-grid');
+ grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem 0;color:var(--grey-mid)">Carregando doações...</div>';
 
-  var params = {};
-  var search   = document.getElementById('search-input').value.trim();
-  var category = document.getElementById('filter-category').value;
-  var city     = document.getElementById('filter-location').value.trim();
-  if (search)   params.search   = search;
-  if (category) params.category = category;
-  if (city)     params.city     = city;
+ var params = {};
+ var search = document.getElementById('search-input').value.trim();
+ var category = document.getElementById('filter-category').value;
+ var city = document.getElementById('filter-location').value.trim();
+ if (search) params.search = search;
+ if (category) params.category = category;
+ if (city) params.city = city;
 
-  try {
-    var donations = await Api.donations.list(params);
-    var sortBy = document.getElementById('sort-by').value;
-    if (sortBy === 'name') donations.sort(function(a,b){ return a.title.localeCompare(b.title); });
+ try {
+ var donations = await Api.donations.list(params);
+ var sortBy = document.getElementById('sort-by').value;
+ if (sortBy === 'name') donations.sort(function(a,b){ return a.title.localeCompare(b.title); });
 
-    var count = document.getElementById('results-count');
-    if (count) count.textContent = donations.length + ' doação(ões) encontrada(s)';
+ var count = document.getElementById('results-count');
+ if (count) count.textContent = donations.length + ' doação(ões) encontrada(s)';
 
-    if (donations.length === 0) {
-      grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📦</div><p>Nenhuma doação disponível no momento.</p></div>';
-      return;
-    }
+ if (donations.length === 0) {
+ grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon"></div><p>Nenhuma doação disponível no momento.</p></div>';
+ return;
+ }
 
-    grid.innerHTML = donations.map(function(d) {
-      var pending = d.requests.filter(function(r){ return r.status === 'PENDING'; }).length;
-      return '<div class="food-card fade-in">' +
-        '<div class="food-card-img"><span style="font-size:3rem">' + (CAT_EMOJI[d.category] || '📦') + '</span></div>' +
-        '<div class="food-card-body">' +
-          '<div class="food-card-title">' + escHtml(d.title) + '</div>' +
-          '<div class="food-card-meta">' +
-            '<div class="food-meta-row">📦 ' + d.quantity + ' ' + escHtml(d.unit) + '</div>' +
-            '<div class="food-meta-row">📍 ' + escHtml(d.pickupLocation) + '</div>' +
-            '<div class="food-meta-row">👤 ' + escHtml(d.donor.name) + (d.donor.city ? ' · ' + escHtml(d.donor.city) : '') + '</div>' +
-            (d.expirationDate ? '<div class="food-meta-row">📅 Até ' + fmtDate(d.expirationDate) + '</div>' : '') +
-            '<div class="food-meta-row">🚗 ' + (DEL_LABELS[d.deliveryOption] || d.deliveryOption) + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="food-card-footer">' +
-          '<span class="badge badge-available">' + (CAT_LABELS[d.category] || d.category) + '</span>' +
-          (pending > 0 ? '<span style="font-size:0.75rem;color:var(--orange-main)">' + pending + ' solicitação(ões)</span>' : '') +
-          '<button class="btn btn-secondary btn-sm" onclick="openRequest(\'' + d.id + '\',this)">Solicitar</button>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-  } catch(err) {
-    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">⚠️</div><p>' + (err.message || 'Erro ao carregar doações.') + '</p></div>';
-  }
+ grid.innerHTML = donations.map(function(d) {
+ var pending = d.requests.filter(function(r){ return r.status === 'PENDING'; }).length;
+ return '<div class="food-card fade-in">' +
+ '<div class="food-card-img"><span style="font-size:3rem">' + (CAT_EMOJI[d.category] || '') + '</span></div>' +
+ '<div class="food-card-body">' +
+ '<div class="food-card-title">' + escHtml(d.title) + '</div>' +
+ '<div class="food-card-meta">' +
+ '<div class="food-meta-row">' + d.quantity + ' ' + escHtml(d.unit) + '</div>' +
+ '<div class="food-meta-row">' + escHtml(d.pickupLocation) + '</div>' +
+ '<div class="food-meta-row">' + escHtml(d.donor.name) + (d.donor.city ? ' · ' + escHtml(d.donor.city) : '') + '</div>' +
+ (d.expirationDate ? '<div class="food-meta-row">Até ' + fmtDate(d.expirationDate) + '</div>' : '') +
+ '<div class="food-meta-row">' + (DEL_LABELS[d.deliveryOption] || d.deliveryOption) + '</div>' +
+ '</div>' +
+ '</div>' +
+ '<div class="food-card-footer">' +
+ '<span class="badge badge-available">' + (CAT_LABELS[d.category] || d.category) + '</span>' +
+ (pending >0 ? '<span style="font-size:0.75rem;color:var(--orange-main)">' + pending + ' solicitação(ões)</span>' : '') +
+ '<button class="btn btn-secondary btn-sm" onclick="openRequest(\'' + d.id + '\',this)">Solicitar</button>' +
+ '</div>' +
+ '</div>';
+ }).join('');
+ } catch(err) {
+ grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon"></div><p>' + (err.message || 'Erro ao carregar doações.') + '</p></div>';
+ }
 }
 
 function openRequest(donationId, btn) {
-  if (!_currentUser) {
-    sessionStorage.setItem('sc_after_login', location.href);
-    location.replace('login.html');
-    return;
-  }
-  _currentDonationId = donationId;
-  document.getElementById('req-qty').value = '1';
-  document.getElementById('req-message').value = '';
-  document.getElementById('req-alert').innerHTML = '';
-  document.getElementById('request-modal').classList.add('open');
+ if (!_currentUser) {
+ sessionStorage.setItem('sc_after_login', location.href);
+ location.replace('login.html');
+ return;
+ }
+ _currentDonationId = donationId;
+ document.getElementById('req-qty').value = '1';
+ document.getElementById('req-message').value = '';
+ document.getElementById('req-alert').innerHTML = '';
+ document.getElementById('request-modal').classList.add('open');
 }
 
 function closeModalR(id) {
-  document.getElementById(id).classList.remove('open');
+ document.getElementById(id).classList.remove('open');
 }
 
 async function submitRequest() {
-  if (!_currentUser || !_currentDonationId) return;
-  var qty     = parseInt(document.getElementById('req-qty').value, 10);
-  var message = document.getElementById('req-message').value.trim();
-  var alertEl = document.getElementById('req-alert');
+ if (!_currentUser || !_currentDonationId) return;
+ var qty = parseInt(document.getElementById('req-qty').value, 10);
+ var message = document.getElementById('req-message').value.trim();
+ var alertEl = document.getElementById('req-alert');
 
-  if (!qty || qty < 1) {
-    alertEl.innerHTML = '<div class="alert alert-error">Informe uma quantidade válida.</div>'; return;
-  }
+ if (!qty || qty < 1) {
+ alertEl.innerHTML = '<div class="alert alert-error">Informe uma quantidade válida.</div>'; return;
+ }
 
-  var modalBtn = document.querySelector('#request-modal .modal-footer .btn-secondary');
-  if (modalBtn) { modalBtn.disabled = true; modalBtn.textContent = 'Enviando...'; }
+ var modalBtn = document.querySelector('#request-modal .modal-footer .btn-secondary');
+ if (modalBtn) { modalBtn.disabled = true; modalBtn.textContent = 'Enviando...'; }
 
-  try {
-    await Api.donations.createRequest(_currentDonationId, { quantity: qty, message: message || null });
-    alertEl.innerHTML = '<div class="alert alert-success">✅ Solicitação enviada! Acompanhe em <a href="minhas-solicitacoes.html">Minhas Solicitações</a>.</div>';
-    setTimeout(function(){ closeModalR('request-modal'); loadDonations(); }, 2000);
-  } catch(err) {
-    alertEl.innerHTML = '<div class="alert alert-error">❌ ' + (err.message || 'Erro ao solicitar.') + '</div>';
-    if (modalBtn) { modalBtn.disabled = false; modalBtn.textContent = '📩 Enviar Solicitação'; }
-  }
+ try {
+ await Api.donations.createRequest(_currentDonationId, { quantity: qty, message: message || null });
+ alertEl.innerHTML = '<div class="alert alert-success">Solicitação enviada! Acompanhe em <a href="minhas-solicitacoes.html">Minhas Solicitações</a>.</div>';
+ setTimeout(function(){ closeModalR('request-modal'); loadDonations(); }, 2000);
+ } catch(err) {
+ alertEl.innerHTML = '<div class="alert alert-error">' + (err.message || 'Erro ao solicitar.') + '</div>';
+ if (modalBtn) { modalBtn.disabled = false; modalBtn.textContent = ' Enviar Solicitação'; }
+ }
 }
 
 function escHtml(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function fmtDate(d) {
-  if (!d) return '';
-  var parts = d.split('T')[0].split('-');
-  return parts[2] + '/' + parts[1] + '/' + parts[0];
+ if (!d) return '';
+ var parts = d.split('T')[0].split('-');
+ return parts[2] + '/' + parts[1] + '/' + parts[0];
 }
 </script>
 </body>
