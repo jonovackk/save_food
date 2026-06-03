@@ -131,6 +131,7 @@ async function loadReceived() {
  }
  if (r.status === 'ACCEPTED') {
  actions = '<button class="btn btn-secondary btn-sm" onclick="changeStatus(\'' + r.id + '\',\'COMPLETED\')">Finalizar</button>';
+ if (rx && rx.phone) actions += ' <a href="' + waLink(rx.phone, d.title) + '" target="_blank" rel="noopener" class="btn btn-sm" style="background:#25D366;color:white">WhatsApp receptor</a>';
  }
 
  return '<div class="request-card">' +
@@ -157,6 +158,13 @@ async function loadReceived() {
  } catch(err) {
  list.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><p>' + (err.message||'Erro ao carregar.') + '</p></div>';
  }
+}
+
+function waLink(phone, title) {
+ var n = (phone||'').replace(/\D/g,'');
+ if (n.length <= 11) n = '55' + n;
+ var msg = 'Olá! Sua solicitação de "' + (title||'doação') + '" foi aceita. Podemos combinar a retirada?';
+ return 'https://wa.me/' + n + '?text=' + encodeURIComponent(msg);
 }
 
 async function changeStatus(id, status) {

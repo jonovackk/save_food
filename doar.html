@@ -127,10 +127,19 @@
      <div class="cidade-list" id="input-cidade-list"></div>
    </div>
  </div>
- <div class="form-group">
-   <label for="location">Endereco / ponto de referencia <span class="required">*</span></label>
-   <input type="text" id="location" name="location" class="form-control" placeholder="Ex: Rua das Flores, 45 - Centro" required>
+ <div class="form-group form-full">
+   <label for="location">Rua / Avenida <span class="required">*</span></label>
+   <input type="text" id="location" name="location" class="form-control" placeholder="Ex: Rua das Flores" required>
    <span class="error-msg">Campo obrigatorio.</span>
+ </div>
+ <div class="form-group">
+   <label for="numero">Numero <span class="required">*</span></label>
+   <input type="text" id="numero" name="numero" class="form-control" placeholder="Ex: 45" required>
+   <span class="error-msg">Campo obrigatorio.</span>
+ </div>
+ <div class="form-group">
+   <label for="complemento">Complemento <span style="font-size:0.78rem;font-weight:400;color:var(--grey-mid)">(opcional)</span></label>
+   <input type="text" id="complemento" name="complemento" class="form-control" placeholder="Ex: Apto 12, Bloco B">
  </div>
  <div class="form-group form-full">
    <label for="observations">Observacoes adicionais</label>
@@ -262,14 +271,17 @@ document.addEventListener('DOMContentLoaded', async function() {
     var quantity       = document.getElementById('quantity').value;
     var unit           = document.getElementById('unit').value.trim();
     var maxPerRequest  = document.getElementById('maxPerRequest').value || null;
-    var pickupLocation = document.getElementById('location').value.trim();
+    var rua            = document.getElementById('location').value.trim();
+    var numero         = document.getElementById('numero').value.trim();
+    var complemento    = document.getElementById('complemento').value.trim();
+    var pickupLocation = rua + ', ' + numero + (complemento ? ' - ' + complemento : '');
     var deliveryOption = document.getElementById('deliveryOption').value;
     var expirationDate = document.getElementById('expiryDate').value || null;
     var observations   = document.getElementById('observations').value.trim();
     var state          = document.getElementById('select-estado').value || null;
     var city           = document.getElementById('input-cidade').value.trim() || null;
 
-    if (!title || !description || !category || !quantity || !unit || !pickupLocation || !deliveryOption) {
+    if (!title || !description || !category || !quantity || !unit || !rua || !numero || !deliveryOption) {
       showAlert('Preencha todos os campos obrigatorios.', 'error'); return;
     }
     if (!state || !city) {

@@ -152,12 +152,20 @@ async function loadMyRequests() {
  '<div class="request-card-footer">' +
  '<a href="receber.html" class="btn btn-ghost btn-sm">Ver doação</a>' +
  (r.status === 'PENDING' ? '<button class="btn btn-ghost btn-sm" style="color:#dc2626" onclick="cancelar(\'' + r.id + '\')">Cancelar solicitação</button>' : '') +
+ (r.status === 'ACCEPTED' && d.donor && d.donor.phone ? '<a href="' + waLink(d.donor.phone, d.title) + '" target="_blank" rel="noopener" class="btn btn-sm" style="background:#25D366;color:white">Contatar via WhatsApp</a>' : '') +
  '</div>' +
  '</div>';
  }).join('');
  } catch(err) {
  list.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><p>' + (err.message||'Erro ao carregar.') + '</p></div>';
  }
+}
+
+function waLink(phone, title) {
+ var n = (phone||'').replace(/\D/g,'');
+ if (n.length <= 11) n = '55' + n;
+ var msg = 'Olá! Minha solicitação de "' + (title||'doação') + '" foi aceita. Quando posso fazer a retirada?';
+ return 'https://wa.me/' + n + '?text=' + encodeURIComponent(msg);
 }
 
 async function cancelar(id) {

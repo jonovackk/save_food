@@ -119,8 +119,33 @@
 <script src="js/storage.js"></script>
 <script src="js/app.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/api.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () =>{
+var _geoCache = (function(){ try { return JSON.parse(localStorage.getItem('sc_geocache')||'{}'); } catch(e) { return {}; } })();
+async function _geocodeCity(city, state) {
+ if (!city) return null;
+ var key = ((city||'')+'|'+(state||'')).toLowerCase();
+ if (_geoCache[key]) return _geoCache[key];
+ try {
+ var resp = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent((city||'')+(state?', '+state:'')+', Brasil'));
+ var data = await resp.json();
+ if (data && data[0]) {
+ var c = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+ _geoCache[key] = c;
+ try { localStorage.setItem('sc_geocache', JSON.stringify(_geoCache)); } catch(e) {}
+ return c;
+ }
+ } catch(e) {}
+ return null;
+}
+function _hashOffset(id, axis) {
+ var h = 0;
+ for (var i = 0; i < (id||'').length; i++) h = (h*31 + id.charCodeAt(i))|0;
+ if (axis) h >>= 8;
+ return ((Math.abs(h)%100)-50)/10000;
+}
+
+document.addEventListener('DOMContentLoaded', async () =>{
  Storage.seedIfEmpty();
 
  // Mapa centrado em São Paulo (seed data) 
@@ -144,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () =>{
  const catColors = { fruits:'#4aab72', breads:'#f07b28', meals:'#e84393', canned:'#6366f1', dairy:'#06b6d4', beverages:'#f59e0b', other:'#6b7280' };
  const catEmojis = { fruits:'', breads:'', meals:'', canned:'', dairy:'', beverages:'', other:'' };
 
- function renderMap() {
+ async function renderMap() {
  markers.forEach(m =>map.removeLayer(m));
  markers = [];
 
@@ -152,13 +177,39 @@ document.addEventListener('DOMContentLoaded', () =>{
  const category = document.getElementById('map-category').value;
  const status = document.getElementById('map-status').value;
 
- const foods = Storage.getFoods().filter(f =>{
+ const localFoods = Storage.getFoods().filter(f =>{
  if (!f.lat || !f.lng) return false;
  if (status && f.status !== status) return false;
  if (category && f.category !== category) return false;
  return true;
  });
 
+ let geocodedFoods = [];
+ try {
+ const params = {};
+ if (category) params.category = category;
+ const apiFoods = await Api.donations.list(params);
+ for (const f of apiFoods) {
+ if (!f.city) continue;
+ const coords = await _geocodeCity(f.city, f.state);
+ if (!coords) continue;
+ const fStatus = (f.status||'available').toLowerCase();
+ if (status && fStatus !== status) continue;
+ geocodedFoods.push({
+ id: f.id, foodName: f.title,
+ category: (f.category||'other').toLowerCase(),
+ status: fStatus,
+ location: f.pickupLocation||f.city||'',
+ donorName: f.donor ? f.donor.name : '',
+ quantity: f.quantity+' '+(f.unit||''),
+ expiryDate: f.expirationDate||'',
+ lat: coords.lat+_hashOffset(f.id, 0),
+ lng: coords.lng+_hashOffset(f.id, 1),
+ });
+ }
+ } catch(e) {}
+
+ const foods = [...localFoods, ...geocodedFoods];
  const ongs = Storage.getOngs().filter(o =>o.lat && o.lng && o.status === 'active');
 
  const statsData = {
@@ -289,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () =>{
  });
  });
 
- renderMap();
+ await renderMap();
 });
 </script>
 </body>
