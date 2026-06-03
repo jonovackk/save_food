@@ -10,6 +10,7 @@ const usersRoutes     = require('./routes/users');
 const donationsRoutes = require('./routes/donations');
 const requestsRoutes  = require('./routes/requests');
 const uploadRoutes    = require('./routes/upload');
+const adminRoutes     = require('./routes/admin');
 const prisma          = require('./lib/prisma');
 
 const app  = express();
@@ -56,6 +57,7 @@ app.use('/api/users',     usersRoutes);
 app.use('/api/donations', donationsRoutes);
 app.use('/api/requests',  requestsRoutes);
 app.use('/api/upload',    uploadRoutes);
+app.use('/api/admin',     adminRoutes);
 
 // ── 404 para rotas /api/* desconhecidas
 app.use('/api', (req, res) => {

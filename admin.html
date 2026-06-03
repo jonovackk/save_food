@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Admin — Salve Comida</title>
+ <link rel="stylesheet" href="css/style.css">
+ <link rel="stylesheet" href="css/auth.css">
+ <style>
+ .admin-tabs { display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+ .admin-tab { padding:0.5rem 1.25rem; border-radius:var(--radius-full); border:1.5px solid var(--grey-light); background:white; cursor:pointer; font-size:0.88rem; font-weight:600; color:var(--grey-mid); }
+ .admin-tab.active { background:var(--green-main); color:white; border-color:var(--green-main); }
+ .admin-panel { display:none; }
+ .admin-panel.active { display:block; }
+ .admin-table { width:100%; border-collapse:collapse; font-size:0.88rem; }
+ .admin-table th { background:var(--green-pale); padding:0.6rem 1rem; text-align:left; font-size:0.78rem; text-transform:uppercase; letter-spacing:.05em; color:var(--green-dark); border-bottom:2px solid var(--green-light); }
+ .admin-table td { padding:0.65rem 1rem; border-bottom:1px solid var(--grey-light); vertical-align:middle; }
+ .admin-table tr:hover td { background:var(--grey-pale); }
+ .stat-box { background:white; border:1px solid var(--grey-light); border-radius:var(--radius); padding:1.25rem; text-align:center; }
+ .stat-box-num { font-family:var(--font-display); font-size:2.2rem; font-weight:800; color:var(--green-dark); }
+ .stat-box-label { font-size:0.8rem; color:var(--grey-mid); margin-top:0.25rem; }
+ </style>
+</head>
+<body>
+
+<nav class="navbar">
+ <div class="nav-inner">
+ <a href="index.html" class="nav-logo"><div class="logo-icon">SC</div>Salve Comida <span style="font-size:0.72rem;background:#dc2626;color:white;padding:0.15rem 0.5rem;border-radius:999px;margin-left:0.4rem">ADMIN</span></a>
+ <div class="nav-auth" id="nav-auth"></div>
+ </div>
+</nav>
+
+<div class="page-hero" style="padding:2rem 0">
+ <div class="container">
+ <h1>Painel Administrativo</h1>
+ <p>Gestão de usuários, doações e moderação da plataforma.</p>
+ </div>
+</div>
+
+<section class="section">
+ <div class="container">
+
+ <div id="admin-alert" class="mb-2"></div>
+
+ <!-- Stats -->
+ <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem" id="admin-stats">
+ <div class="stat-box"><div class="stat-box-num" id="s-users">—</div><div class="stat-box-label">Usuários</div></div>
+ <div class="stat-box"><div class="stat-box-num" id="s-donations">—</div><div class="stat-box-label">Doações totais</div></div>
+ <div class="stat-box"><div class="stat-box-num" id="s-requests">—</div><div class="stat-box-label">Solicitações totais</div></div>
+ <div class="stat-box"><div class="stat-box-num" id="s-available">—</div><div class="stat-box-label">Disponíveis agora</div></div>
+ </div>
+
+ <!-- Abas -->
+ <div class="admin-tabs">
+ <button class="admin-tab active" data-panel="panel-users">Usuários</button>
+ <button class="admin-tab" data-panel="panel-donations">Doações</button>
+ </div>
+
+ <!-- Painel: Usuários -->
+ <div class="admin-panel active" id="panel-users">
+ <div style="overflow-x:auto">
+ <table class="admin-table">
+ <thead><tr><th>Nome</th><th>E-mail</th><th>Role</th><th>Cidade</th><th>Cadastro</th><th>Ação</th></tr></thead>
+ <tbody id="users-tbody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--grey-mid)">Carregando...</td></tr></tbody>
+ </table>
+ </div>
+ </div>
+
+ <!-- Painel: Doações -->
+ <div class="admin-panel" id="panel-donations">
+ <div style="overflow-x:auto">
+ <table class="admin-table">
+ <thead><tr><th>Título</th><th>Doador</th><th>Status</th><th>Criada em</th><th>Ações</th></tr></thead>
+ <tbody id="donations-tbody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--grey-mid)">Carregando...</td></tr></tbody>
+ </table>
+ </div>
+ </div>
+
+ </div>
+</section>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+var STATUS_LABELS = { AVAILABLE:'Disponível', RESERVED:'Reservado', COMPLETED:'Concluído', CANCELLED:'Cancelado' };
+var ROLE_LABELS   = { DONOR:'Doador', RECEIVER:'Receptor', BOTH:'Ambos', ADMIN:'Admin', BLOCKED:'Bloqueado' };
+var ROLE_COLORS   = { ADMIN:'#7c3aed', BLOCKED:'#dc2626', DONOR:'#2d7a4f', RECEIVER:'#1e40af', BOTH:'#0369a1' };
+
+// API admin helper
+var AdminApi = {
+ stats:     function(){ return _fetch('/admin/stats'); },
+ users:     function(){ return _fetch('/admin/users'); },
+ setRole:   function(id, role){ return _fetch('/admin/users/'+id, { method:'PATCH', body:{ role:role } }); },
+ donations: function(){ return _fetch('/admin/donations'); },
+ deleteDon: function(id){ return _fetch('/admin/donations/'+id, { method:'DELETE' }); },
+ setStatus: function(id, status){ return _fetch('/admin/donations/'+id+'/status', { method:'PATCH', body:{ status:status } }); },
+};
+
+document.addEventListener('DOMContentLoaded', async function() {
+ var user = await Auth.requireLogin();
+ if (!user) return;
+ if (user.role !== 'ADMIN') {
+ document.querySelector('.container').innerHTML = '<div class="alert alert-error" style="margin-top:2rem">Acesso restrito a administradores.</div>';
+ return;
+ }
+ Auth.updateNavAuth();
+
+ // Tabs
+ document.querySelectorAll('.admin-tab').forEach(function(btn) {
+ btn.addEventListener('click', function() {
+ document.querySelectorAll('.admin-tab').forEach(function(b){ b.classList.remove('active'); });
+ document.querySelectorAll('.admin-panel').forEach(function(p){ p.classList.remove('active'); });
+ btn.classList.add('active');
+ document.getElementById(btn.dataset.panel).classList.add('active');
+ });
+ });
+
+ loadStats();
+ loadUsers();
+ loadDonations();
+});
+
+async function loadStats() {
+ try {
+ var s = await AdminApi.stats();
+ document.getElementById('s-users').textContent     = s.users;
+ document.getElementById('s-donations').textContent = s.donations;
+ document.getElementById('s-requests').textContent  = s.requests;
+ var avail = (s.byStatus.find(function(x){ return x.status === 'AVAILABLE'; }) || {})._count;
+ document.getElementById('s-available').textContent = avail ? avail.id : 0;
+ } catch(e) {}
+}
+
+async function loadUsers() {
+ try {
+ var users = await AdminApi.users();
+ document.getElementById('users-tbody').innerHTML = users.map(function(u) {
+ var roleColor = ROLE_COLORS[u.role] || '#6b7280';
+ var roleLabel = ROLE_LABELS[u.role] || u.role;
+ return '<tr>' +
+ '<td><strong>' + esc(u.name) + '</strong></td>' +
+ '<td style="color:var(--grey-mid)">' + esc(u.email) + '</td>' +
+ '<td><span class="badge" style="background:' + roleColor + '20;color:' + roleColor + '">' + roleLabel + '</span></td>' +
+ '<td>' + esc(u.city || '—') + '</td>' +
+ '<td>' + fmtDate(u.createdAt) + '</td>' +
+ '<td>' +
+ '<select class="form-control" style="font-size:.8rem;padding:.3rem .5rem;width:auto" onchange="changeRole(\'' + u.id + '\',this)">' +
+ ['DONOR','RECEIVER','BOTH','ADMIN','BLOCKED'].map(function(r){
+ return '<option value="'+r+'"'+(u.role===r?' selected':'')+'>'+( ROLE_LABELS[r]||r)+'</option>';
+ }).join('') +
+ '</select>' +
+ '</td>' +
+ '</tr>';
+ }).join('');
+ } catch(e) { showAlert('Erro ao carregar usuários.', 'error'); }
+}
+
+async function loadDonations() {
+ try {
+ var donations = await AdminApi.donations();
+ document.getElementById('donations-tbody').innerHTML = donations.map(function(d) {
+ var sc = { AVAILABLE:'badge-available', RESERVED:'badge-reserved', COMPLETED:'badge-closed', CANCELLED:'badge-closed' };
+ return '<tr>' +
+ '<td><strong>' + esc(d.title) + '</strong><br><small style="color:var(--grey-mid)">' + d.requests.length + ' solicitação(ões)</small></td>' +
+ '<td>' + esc(d.donor ? d.donor.name : '—') + '</td>' +
+ '<td><span class="badge ' + (sc[d.status]||'') + '">' + (STATUS_LABELS[d.status]||d.status) + '</span></td>' +
+ '<td>' + fmtDate(d.createdAt) + '</td>' +
+ '<td style="display:flex;gap:.4rem;flex-wrap:wrap">' +
+ (d.status !== 'CANCELLED' ? '<button class="btn btn-ghost btn-sm" style="color:#dc2626;font-size:.78rem" onclick="cancelDon(\''+d.id+'\')">Cancelar</button>' : '') +
+ '<button class="btn btn-ghost btn-sm" style="color:#dc2626;font-size:.78rem" onclick="deleteDon(\''+d.id+'\')">Remover</button>' +
+ '</td>' +
+ '</tr>';
+ }).join('');
+ } catch(e) { showAlert('Erro ao carregar doações.', 'error'); }
+}
+
+async function changeRole(id, sel) {
+ try {
+ await AdminApi.setRole(id, sel.value);
+ showAlert('Role atualizado.', 'success');
+ } catch(e) { showAlert(e.message || 'Erro.', 'error'); await loadUsers(); }
+}
+
+async function cancelDon(id) {
+ if (!confirm('Cancelar esta doação?')) return;
+ try { await AdminApi.setStatus(id, 'CANCELLED'); showAlert('Doação cancelada.', 'success'); loadDonations(); loadStats(); }
+ catch(e) { showAlert(e.message || 'Erro.', 'error'); }
+}
+
+async function deleteDon(id) {
+ if (!confirm('Remover permanentemente esta doação e suas solicitações?')) return;
+ try { await AdminApi.deleteDon(id); showAlert('Doação removida.', 'success'); loadDonations(); loadStats(); }
+ catch(e) { showAlert(e.message || 'Erro.', 'error'); }
+}
+
+function showAlert(msg, type) {
+ var el = document.getElementById('admin-alert');
+ el.innerHTML = '<div class="alert alert-' + type + '">' + msg + '</div>';
+ setTimeout(function(){ el.innerHTML = ''; }, 4000);
+}
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtDate(d){ if (!d) return '—'; var p=d.split('T')[0].split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
+</script>
+</body>
+</html>
