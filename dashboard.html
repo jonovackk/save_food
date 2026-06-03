@@ -193,6 +193,8 @@ document.addEventListener('DOMContentLoaded', async function() {
  var mob = document.getElementById('nav-mobile');
  if (ham && mob) ham.addEventListener('click', function(){ mob.classList.toggle('open'); ham.classList.toggle('open'); });
 
+ var user = await Auth.requireLogin();
+ if (!user) return;
  Auth.updateNavAuth();
 
  try {

@@ -37,7 +37,7 @@ router.get('/', async (req, res) => {
     const donations = await prisma.donation.findMany({
       where,
       include: {
-        donor: { select: { id: true, name: true, state: true, city: true, region: true } },
+        donor: { select: { id: true, name: true, city: true } },
         requests: { select: { id: true, status: true } },
       },
       orderBy: { createdAt: 'desc' },
@@ -55,7 +55,7 @@ router.get('/:id', async (req, res) => {
     const donation = await prisma.donation.findUnique({
       where: { id: req.params.id },
       include: {
-        donor: { select: { id: true, name: true, city: true, region: true, phone: true } },
+        donor: { select: { id: true, name: true, city: true } },
         requests: { select: { id: true, status: true, quantity: true, receiverId: true } },
       },
     });
