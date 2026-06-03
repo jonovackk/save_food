@@ -178,8 +178,16 @@ async function loadReceived() {
 }
 
 function waLink(phone, title) {
- var n = (phone||'').replace(/\D/g,'');
- if (n.length <= 11) n = '55' + n;
+ var raw = (phone||'').trim();
+ var n;
+ if (raw.startsWith('+')) {
+ n = raw.slice(1).replace(/\D/g,'');
+ } else if (raw.startsWith('00')) {
+ n = raw.slice(2).replace(/\D/g,'');
+ } else {
+ n = raw.replace(/\D/g,'');
+ if (n.length === 10 || n.length === 11) n = '55' + n;
+ }
  var msg = 'Olá! Sua solicitação de "' + (title||'doação') + '" foi aceita. Podemos combinar a retirada?';
  return 'https://wa.me/' + n + '?text=' + encodeURIComponent(msg);
 }
