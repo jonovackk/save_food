@@ -255,6 +255,13 @@ function openRequest(donationId, btn) {
     location.replace('login.html');
     return;
   }
+  if (_currentUser.role === 'DONOR') {
+    var banner = document.getElementById('daily-limit-banner');
+    banner.style.display = 'block';
+    banner.innerHTML = '<div class="alert alert-error">Sua conta é do tipo "Doador". Para solicitar alimentos, altere seu perfil para "Ambos" em <a href="perfil.html">Perfil</a>.</div>';
+    window.scrollTo({ top: banner.offsetTop - 80, behavior: 'smooth' });
+    return;
+  }
   _currentDonationId = donationId;
   _currentDonation   = null;
   document.getElementById('req-qty').value = '1';
