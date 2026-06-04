@@ -93,7 +93,7 @@ var Api = {
  var token = localStorage.getItem('sc_token');
  var form = new FormData();
  form.append('image', file);
- var res = await fetch('/api/upload', {
+ var res = await fetch(API_BASE + '/api/upload', {
  method: 'POST',
  headers: token ? { 'Authorization': 'Bearer ' + token } : {},
  body: form,
