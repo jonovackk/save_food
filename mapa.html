@@ -8,6 +8,8 @@
  <link rel="stylesheet" href="css/auth.css">
  <!-- Leaflet.js — mapa interativo open-source -->
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.min.css">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.min.css">
  <style>
  #map { height: 560px; width: 100%; }
  .leaflet-popup-content { font-family: var(--font-body); font-size: 0.88rem; min-width: 200px; }
@@ -116,6 +118,7 @@
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
 <script src="js/app.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/api.js"></script>
@@ -165,7 +168,8 @@ document.addEventListener('DOMContentLoaded', async () =>{
  maxZoom: 19,
  }).addTo(map);
 
- let markers = [];
+ let clusterGroup = L.markerClusterGroup({ maxClusterRadius: 40, showCoverageOnHover: false });
+ map.addLayer(clusterGroup);
  let userMarker = null;
 
  function coloredIcon(color, emoji) {
@@ -179,8 +183,7 @@ document.addEventListener('DOMContentLoaded', async () =>{
  const catEmojis = { fruits:'', breads:'', meals:'', canned:'', dairy:'', beverages:'', other:'' };
 
  async function renderMap() {
- markers.forEach(m =>map.removeLayer(m));
- markers = [];
+ clusterGroup.clearLayers();
 
  const layer = document.getElementById('map-layer').value;
  const category = document.getElementById('map-category').value;
@@ -251,8 +254,7 @@ document.addEventListener('DOMContentLoaded', async () =>{
  </div>
  <a class="popup-btn" href="receber.html">Ver e solicitar →</a>`);
 
- const m = L.marker([food.lat, food.lng], { icon }).addTo(map).bindPopup(popup);
- markers.push(m);
+ clusterGroup.addLayer(L.marker([food.lat, food.lng], { icon }).bindPopup(popup));
  });
  }
 
@@ -268,8 +270,7 @@ document.addEventListener('DOMContentLoaded', async () =>{
  ${App.escHtml(ong.email)}
  </div>
  <a class="popup-btn" style="background:#6366f1" href="ongs.html">Ver detalhes →</a>`);
- const m = L.marker([ong.lat, ong.lng], { icon }).addTo(map).bindPopup(popup);
- markers.push(m);
+ clusterGroup.addLayer(L.marker([ong.lat, ong.lng], { icon }).bindPopup(popup));
  });
  }
 
