@@ -17,7 +17,10 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 
 // ── Middlewares
-const ALLOWED_ORIGINS = ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:3001'];
+const ALLOWED_ORIGINS = [
+  'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:3001',
+  'https://save-food-alpha.vercel.app',
+];
 if (process.env.RENDER_EXTERNAL_URL) ALLOWED_ORIGINS.push(process.env.RENDER_EXTERNAL_URL);
 if (process.env.ALLOWED_ORIGINS) {
   process.env.ALLOWED_ORIGINS.split(',').forEach(function(o) {
