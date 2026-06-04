@@ -123,7 +123,7 @@ var Auth = (function() {
  };
 })();
 
-document.addEventListener('DOMContentLoaded', function() { initNavbar(); });
+document.addEventListener('DOMContentLoaded', function() { Auth.initNavbar(); });
 
 (function injectStyles() {
  var style = document.createElement('style');
