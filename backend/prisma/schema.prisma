@@ -18,6 +18,7 @@ model User {
   city      String?
   region    String?
   address   String?
+  showAddress      Boolean  @default(false)
   resetToken       String?
   resetTokenExpiry DateTime?
   createdAt        DateTime @default(now())

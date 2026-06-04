@@ -173,24 +173,29 @@ async function loadReceived() {
  }
  if (r.status === 'ACCEPTED') {
  actions = '<button class="btn btn-secondary btn-sm" onclick="changeStatus(\'' + r.id + '\',\'COMPLETED\')">Finalizar</button>';
- if (rx && rx.phone) actions += ' <a href="' + waLink(rx.phone, d.title) + '" target="_blank" rel="noopener" class="btn btn-sm" style="background:#25D366;color:white">WhatsApp receptor</a>';
+ }
+
+ var addressLine = '';
+ if (r.status === 'ACCEPTED' && rx && rx.address) {
+ addressLine = '<div class="request-info-item"><label>Endereço do receptor</label><strong>' + esc(rx.address) + '</strong></div>';
+ } else if (r.status === 'ACCEPTED') {
+ addressLine = '<div class="request-info-item"><label>Endereço do receptor</label><strong style="color:var(--grey-mid)">Não compartilhado</strong></div>';
  }
 
  return '<div class="request-card">' +
  '<div class="request-card-header">' +
  '<div>' +
  '<div style="font-family:var(--font-display);font-size:1.1rem;color:var(--green-dark)">' + esc(d.title) + '</div>' +
- '<div style="font-size:.82rem;color:var(--grey-mid);margin-top:.25rem">Solicitação de: <strong>' + esc(rx.name) + '</strong></div>' +
+ '<div style="font-size:.82rem;color:var(--grey-mid);margin-top:.25rem">Solicitação de: <strong>' + esc(rx ? rx.name : '—') + '</strong></div>' +
  '</div>' +
  '<span class="badge" style="background:' + sBg + ';color:' + sText + '">' + (STATUS_LABELS[r.status]||r.status) + '</span>' +
  '</div>' +
  '<div class="request-card-body">' +
  '<div class="request-info-grid">' +
  '<div class="request-info-item"><label>Quantidade</label><strong>' + r.quantity + ' ' + esc(d.unit||'') + '</strong></div>' +
- '<div class="request-info-item"><label>Telefone receptor</label><strong>' + esc(rx.phone||'—') + '</strong></div>' +
- '<div class="request-info-item"><label>E-mail receptor</label><strong>' + esc(rx.email||'—') + '</strong></div>' +
  '<div class="request-info-item"><label>Data da solicitação</label><strong>' + fmtDate(r.createdAt) + '</strong></div>' +
- '<div class="request-info-item"><label>Cidade receptor</label><strong>' + esc(rx.city||'—') + (rx.region ? ', ' + esc(rx.region) : '') + '</strong></div>' +
+ (rx && rx.city ? '<div class="request-info-item"><label>Cidade</label><strong>' + esc(rx.city) + '</strong></div>' : '') +
+ addressLine +
  '</div>' +
  (r.message ? '<div style="background:var(--grey-pale);border-radius:var(--radius-sm);padding:.75rem;font-size:.85rem;margin-top:.75rem"><em>"' + esc(r.message) + '"</em></div>' : '') +
  '</div>' +

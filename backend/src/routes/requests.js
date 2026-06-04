@@ -31,22 +31,14 @@ router.get('/my', authMiddleware, async (req, res) => {
         donation: {
           select: {
             id: true, title: true, category: true, quantity: true, unit: true,
-            pickupLocation: true, status: true,
-            donor: { select: { id: true, name: true, phone: true, email: true, city: true } },
+            pickupLocation: true, deliveryOption: true, status: true,
+            donor: { select: { id: true, name: true, city: true } },
           },
         },
       },
       orderBy: { createdAt: 'desc' },
     });
-    // Oculta contato do doador enquanto solicitação não for aceita
-    const safe = requests.map(function(r) {
-      if (r.status !== 'ACCEPTED' && r.donation && r.donation.donor) {
-        r.donation.donor.phone = null;
-        r.donation.donor.email = null;
-      }
-      return r;
-    });
-    res.json(safe);
+    res.json(requests);
   } catch (e) {
     res.status(500).json({ error: 'Erro interno.' });
   }
@@ -59,11 +51,24 @@ router.get('/received', authMiddleware, async (req, res) => {
       where: { donation: { donorId: req.userId } },
       include: {
         donation: { select: { id: true, title: true, category: true, unit: true } },
-        receiver: { select: { id: true, name: true, phone: true, email: true, city: true, region: true } },
+        receiver: { select: { id: true, name: true, city: true, showAddress: true, address: true } },
       },
       orderBy: { createdAt: 'desc' },
     });
-    res.json(requests);
+    // Expõe endereço do receptor apenas se ele permitiu e a solicitação foi aceita
+    const safe = requests.map(function(r) {
+      if (r.receiver) {
+        const showAddr = r.status === 'ACCEPTED' && r.receiver.showAddress;
+        r.receiver = {
+          id:      r.receiver.id,
+          name:    r.receiver.name,
+          city:    r.receiver.city,
+          address: showAddr ? r.receiver.address : null,
+        };
+      }
+      return r;
+    });
+    res.json(safe);
   } catch (e) {
     res.status(500).json({ error: 'Erro interno.' });
   }

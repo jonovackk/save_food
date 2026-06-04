@@ -116,6 +116,13 @@
  <small style="color:var(--grey-mid);font-size:0.78rem">Você pode ser doador, receptor ou ambos.</small>
  </div>
  </div>
+ <div class="form-group form-full" style="margin-top:0.5rem">
+ <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer">
+ <input type="checkbox" id="pf-show-address" name="showAddress" style="width:18px;height:18px;cursor:pointer">
+ <span>Compartilhar meu endereço com o doador após a solicitação ser aceita</span>
+ </label>
+ <small style="color:var(--grey-mid);font-size:0.78rem;margin-top:0.25rem;display:block">Se ativado, seu endereço de perfil será visível para o doador somente após o aceite. Telefone e e-mail nunca são compartilhados.</small>
+ </div>
  <div class="form-actions">
  <button type="submit" class="btn btn-primary">Salvar alterações</button>
  </div>
@@ -313,6 +320,7 @@ document.addEventListener('DOMContentLoaded', async function() {
  document.getElementById('pf-email').value = user.email;
  document.getElementById('pf-phone').value = user.phone || '';
  document.getElementById('pf-role').value = user.role || 'BOTH';
+ document.getElementById('pf-show-address').checked = !!user.showAddress;
 
  var verifyEl = document.getElementById('verify-status');
  if (verifyEl) verifyEl.innerHTML = '<div class="verified-badge">Conta ativa</div>';
@@ -343,7 +351,8 @@ document.addEventListener('DOMContentLoaded', async function() {
  btn.disabled = true;
  try {
  var role = document.getElementById('pf-role').value;
- var updated = await Api.users.update({ name: name, phone: phone || null, role: role });
+ var showAddress = document.getElementById('pf-show-address').checked;
+ var updated = await Api.users.update({ name: name, phone: phone || null, role: role, showAddress: showAddress });
  Auth.setCachedUser(updated);
  showAlert('profile-alert','success',' Perfil atualizado com sucesso!');
  } catch(err) {

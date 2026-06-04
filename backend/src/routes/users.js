@@ -16,7 +16,7 @@ router.get('/me', authMiddleware, async (req, res) => {
 // PATCH /api/users/me
 router.patch('/me', authMiddleware, async (req, res) => {
   try {
-    const { name, phone, state, city, region, address, role } = req.body;
+    const { name, phone, state, city, region, address, role, showAddress } = req.body;
     const VALID_ROLES = ['DONOR', 'RECEIVER', 'BOTH'];
     const data = {};
     if (name) data.name = name.trim();
@@ -25,6 +25,7 @@ router.patch('/me', authMiddleware, async (req, res) => {
     if (city !== undefined) data.city = city || null;
     if (region !== undefined) data.region = region || null;
     if (address !== undefined) data.address = address || null;
+    if (showAddress !== undefined) data.showAddress = !!showAddress;
     if (role && VALID_ROLES.includes(role.toUpperCase())) data.role = role.toUpperCase();
 
     const user = await prisma.user.update({ where: { id: req.userId }, data });
@@ -39,7 +40,8 @@ function safeUser(u) {
     id: u.id, name: u.name, email: u.email,
     phone: u.phone, role: u.role,
     state: u.state, city: u.city,
-    region: u.region, address: u.address, createdAt: u.createdAt,
+    region: u.region, address: u.address,
+    showAddress: u.showAddress, createdAt: u.createdAt,
   };
 }
 
