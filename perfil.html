@@ -79,8 +79,12 @@
  </div>
  <div class="form-group">
  <label>Perfil</label>
- <input type="text" id="pf-role" class="form-control" disabled
- style="background:var(--grey-pale);color:var(--grey-mid)">
+ <select id="pf-role" name="role" class="form-control">
+ <option value="DONOR">Doador</option>
+ <option value="RECEIVER">Receptor</option>
+ <option value="BOTH">Doador e Receptor</option>
+ </select>
+ <small style="color:var(--grey-mid);font-size:0.78rem">Você pode ser doador, receptor ou ambos.</small>
  </div>
  </div>
  <div class="form-actions">
@@ -279,7 +283,7 @@ document.addEventListener('DOMContentLoaded', async function() {
  document.getElementById('pf-name').value = user.name;
  document.getElementById('pf-email').value = user.email;
  document.getElementById('pf-phone').value = user.phone || '';
- document.getElementById('pf-role').value = roleLabels[user.role] || user.role;
+ document.getElementById('pf-role').value = user.role || 'BOTH';
 
  var verifyEl = document.getElementById('verify-status');
  if (verifyEl) verifyEl.innerHTML = '<div class="verified-badge">Conta ativa</div>';
@@ -309,7 +313,8 @@ document.addEventListener('DOMContentLoaded', async function() {
  var btn = e.target.querySelector('[type=submit]');
  btn.disabled = true;
  try {
- var updated = await Api.users.update({ name: name, phone: phone || null });
+ var role = document.getElementById('pf-role').value;
+ var updated = await Api.users.update({ name: name, phone: phone || null, role: role });
  Auth.setCachedUser(updated);
  showAlert('profile-alert','success',' Perfil atualizado com sucesso!');
  } catch(err) {

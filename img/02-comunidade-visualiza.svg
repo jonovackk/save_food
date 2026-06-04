@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
+  <title id="title">Comunidade visualiza</title>
+  <desc id="desc">Ícone de comunidade vendo lista de alimentos com filtro de localização.</desc>
+  <g fill="none" stroke="#0F7A3A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 28c8-12 20-18 30-18s22 6 30 18c-8 12-20 18-30 18S26 40 18 28z" fill="#0F7A3A" stroke="none"/>
+    <circle cx="48" cy="28" r="12" fill="#fff" stroke="none"/>
+    <circle cx="48" cy="25" r="4" fill="#0F7A3A" stroke="none"/>
+    <path d="M39 39c1-6 5-9 9-9s8 3 9 9" stroke="#0F7A3A"/>
+    <circle cx="38" cy="31" r="3" fill="#0F7A3A" stroke="none"/>
+    <circle cx="58" cy="31" r="3" fill="#0F7A3A" stroke="none"/>
+    <rect x="18" y="46" width="56" height="34" rx="6"/>
+    <rect x="26" y="53" width="10" height="10" rx="2" fill="#A7D68A" stroke="none"/>
+    <path d="M41 56h22M41 62h14"/>
+    <rect x="26" y="67" width="10" height="10" rx="2" fill="#A7D68A" stroke="none"/>
+    <path d="M41 70h18M41 76h12"/>
+    <path d="M76 60c0 9-10 18-10 18s-10-9-10-18a10 10 0 1 1 20 0z" fill="#0F7A3A" stroke="none"/>
+    <path d="M62 59h8M64 63h4M65 59v7" stroke="#fff" stroke-width="3"/>
+  </g>
+</svg>

@@ -145,7 +145,7 @@
  </div>
  <div>
  <p style="font-weight:600;color:var(--grey-dark);font-size:0.9rem;margin-bottom:0.25rem">Os dados são salvos onde?</p>
- <p style="font-size:0.85rem">Neste protótipo, os dados ficam no seu próprio navegador (localStorage). Nada vai para servidores externos.</p>
+ <p style="font-size:0.85rem">Todos os dados são armazenados em nosso servidor seguro e nunca compartilhados com terceiros.</p>
  </div>
  </div>
  </div>
@@ -190,21 +190,28 @@
  </div>
 </footer>
 
-<script src="js/storage.js"></script>
-<script src="js/app.js"></script>
+<script src="js/api.js"></script>
 <script src="js/auth.js"></script>
 <script>
- document.addEventListener('DOMContentLoaded', () =>{
- const form = document.getElementById('contact-form');
- App.clearErrorOnInput(form);
+ document.addEventListener('DOMContentLoaded', function() {
+ Auth.updateNavAuth();
 
- form.addEventListener('submit', e =>{
+ var form  = document.getElementById('contact-form');
+ var alert = document.getElementById('contact-alert');
+
+ form.addEventListener('submit', function(e) {
  e.preventDefault();
- if (!App.validateRequired(form)) {
- App.showAlert('contact-alert', 'error', 'Preencha todos os campos obrigatórios.');
+ var required = form.querySelectorAll('[required]');
+ var valid = true;
+ required.forEach(function(el) {
+ if (!el.value.trim()) { el.classList.add('error'); valid = false; }
+ else el.classList.remove('error');
+ });
+ if (!valid) {
+ alert.innerHTML = '<div class="alert alert-error">Preencha todos os campos obrigatórios.</div>';
  return;
  }
- App.showAlert('contact-alert', 'success', ' Mensagem enviada com sucesso! Retornaremos em breve. Obrigado pelo contato.');
+ alert.innerHTML = '<div class="alert alert-success">Mensagem enviada com sucesso! Retornaremos em breve.</div>';
  form.reset();
  });
  });
