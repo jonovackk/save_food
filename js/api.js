@@ -3,6 +3,8 @@
  * Todas as páginas importam este arquivo para comunicar com o backend.
  */
 
+var API_BASE = 'https://save-food-9vhv.onrender.com';
+
 const _fetch = async function(path, opts) {
  opts = opts || {};
  const token = localStorage.getItem('sc_token');
@@ -17,7 +19,7 @@ const _fetch = async function(path, opts) {
  fetchOpts.body = JSON.stringify(opts.body);
  }
 
- var res = await fetch('/api' + path, fetchOpts);
+ var res = await fetch(API_BASE + '/api' + path, fetchOpts);
  var data;
  try { data = await res.json(); } catch(e) { data = {}; }
 
