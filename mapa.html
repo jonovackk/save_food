@@ -181,6 +181,8 @@ document.addEventListener('DOMContentLoaded', async () =>{
 
  const catColors = { fruits:'#4aab72', breads:'#f07b28', meals:'#e84393', canned:'#6366f1', dairy:'#06b6d4', beverages:'#f59e0b', other:'#6b7280' };
  const catEmojis = { fruits:'', breads:'', meals:'', canned:'', dairy:'', beverages:'', other:'' };
+ const catImgs   = { FRUITS:'img/fruits.jpg', BREADS:'img/paes_massas.jpg', MEALS:'img/meals.jpg',
+                     CANNED:'img/canned.jpg', DAIRY:'img/dairy.jpg', DRINKS:'img/drinks.jpg' };
 
  async function renderMap() {
  clusterGroup.clearLayers();
@@ -208,6 +210,7 @@ document.addEventListener('DOMContentLoaded', async () =>{
  donorName: f.donor ? f.donor.name : '',
  quantity: f.quantity+' '+(f.unit||''),
  expiryDate: f.expirationDate||'',
+ imageUrl: f.imageUrl || catImgs[f.category] || null,
  lat: coords.lat,
  lng: coords.lng,
  });
@@ -285,6 +288,7 @@ document.addEventListener('DOMContentLoaded', async () =>{
  if (layer !== 'ongs') {
  foods.forEach(f =>items.push({
  type:'food', icon: catEmojis[f.category]||'',
+ imageUrl: f.imageUrl || null,
  title: f.foodName, sub1: f.donorName, sub2: f.location,
  badge: App.foodBadge(f.status), link:'receber.html',
  lat: f.lat, lng: f.lng,
@@ -303,7 +307,9 @@ document.addEventListener('DOMContentLoaded', async () =>{
 
  el.innerHTML = items.map(it =>`
  <div class="food-card fade-in" style="cursor:pointer" onclick="flyTo(${it.lat},${it.lng})">
- <div class="food-card-img"><span style="font-size:2.5rem">${it.icon}</span></div>
+ ${it.imageUrl
+   ? `<div class="food-card-img" style="padding:0"><img src="${it.imageUrl}" alt="${App.escHtml(it.title)}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius) var(--radius) 0 0"></div>`
+   : `<div class="food-card-img"><span style="font-size:2.5rem">${it.icon}</span></div>`}
  <div class="food-card-body">
  <div class="food-card-title">${App.escHtml(it.title)}</div>
  <div style="margin-bottom:0.4rem">${it.badge}</div>
