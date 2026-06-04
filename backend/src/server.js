@@ -72,28 +72,18 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../index.html'));
 });
 
-// ── Job: expira doações vencidas após as 18h do dia de validade
+// ── Job: expira doações cujo dia de validade chegou às 18h
 async function expireOldDonations() {
-  const now   = new Date();
-  const today = now.toISOString().split('T')[0];
-  const hour  = now.getHours();
-
-  // Antes das 18h só expira dias anteriores; a partir das 18h expira o dia atual também
-  const cutoff = hour >= 18 ? today : (() => {
-    const d = new Date(now); d.setDate(d.getDate() - 1); return d.toISOString().split('T')[0];
-  })();
-
+  const today = new Date().toISOString().split('T')[0];
   try {
     const { count } = await prisma.donation.updateMany({
-      where: { status: 'AVAILABLE', expirationDate: { lte: cutoff } },
+      where: { status: 'AVAILABLE', expirationDate: { lte: today } },
       data:  { status: 'CANCELLED' },
     });
     if (count > 0) console.log(`[cron] ${count} doação(ões) expirada(s).`);
   } catch (e) { console.error('[cron] erro ao expirar doações:', e.message); }
 }
-expireOldDonations();
 cron.schedule('0 18 * * *', expireOldDonations); // todo dia às 18h
-cron.schedule('0 0 * * *', expireOldDonations);  // meia-noite como fallback
 
 // ── Inicia servidor
 app.listen(PORT, () => {
