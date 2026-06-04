@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 260" role="img" aria-labelledby="title desc">
+  <title id="title">Salve Comida icon</title>
+  <desc id="desc">Heart, hand and food donation symbol</desc>
+  <g fill="none" stroke="#2E8B57" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M150 226 C92 184 43 148 41 92 C39 45 91 30 124 63 C133 72 142 83 150 96 C158 83 167 72 176 63 C209 30 261 45 259 92 C257 148 208 184 150 226 Z"/>
+  </g>
+  
+      <g fill="#2E8B57">
+        <rect x="106" y="118" width="88" height="34" rx="9"/>
+        <circle cx="130" cy="106" r="13"/>
+        <path d="M154 106c13-23 28-29 39-33-3 18-17 34-36 43z"/>
+      </g>
+  <g fill="#2E8B57">
+    <path d="M55 158c30-24 76-24 110-5 16 9 36 8 56-6l20-14-11 28c-14 31-52 45-98 33-25-7-53-8-82 5z"/>
+    <path d="M63 165c31 2 68 11 101 26 20 9 48 5 75-15-22 31-62 43-103 30-37-12-68-12-98 1z" opacity="0.92"/>
+  </g>
+</svg>
