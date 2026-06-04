@@ -116,24 +116,36 @@
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="js/storage.js"></script>
 <script src="js/app.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/api.js"></script>
 <script>
 var _geoCache = (function(){ try { return JSON.parse(localStorage.getItem('sc_geocache')||'{}'); } catch(e) { return {}; } })();
-async function _geocodeCity(city, state) {
- if (!city) return null;
- var key = ((city||'')+'|'+(state||'')).toLowerCase();
+async function _geocodeAddress(address, city, state) {
+ var query = [address, city, state, 'Brasil'].filter(Boolean).join(', ');
+ var key = query.toLowerCase();
  if (_geoCache[key]) return _geoCache[key];
  try {
- var resp = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent((city||'')+(state?', '+state:'')+', Brasil'));
+ var resp = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(query));
  var data = await resp.json();
  if (data && data[0]) {
  var c = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
  _geoCache[key] = c;
  try { localStorage.setItem('sc_geocache', JSON.stringify(_geoCache)); } catch(e) {}
  return c;
+ }
+ } catch(e) {}
+ // fallback: só cidade
+ var cityKey = ((city||'')+'|'+(state||'')).toLowerCase();
+ if (_geoCache[cityKey]) return _geoCache[cityKey];
+ try {
+ var resp2 = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent((city||'')+(state?', '+state:'')+', Brasil'));
+ var data2 = await resp2.json();
+ if (data2 && data2[0]) {
+ var c2 = { lat: parseFloat(data2[0].lat), lng: parseFloat(data2[0].lon) };
+ _geoCache[cityKey] = c2;
+ try { localStorage.setItem('sc_geocache', JSON.stringify(_geoCache)); } catch(e) {}
+ return c2;
  }
  } catch(e) {}
  return null;
@@ -146,9 +158,6 @@ function _hashOffset(id, axis) {
 }
 
 document.addEventListener('DOMContentLoaded', async () =>{
- Storage.seedIfEmpty();
-
- // Mapa centrado em São Paulo (seed data) 
  const map = L.map('map').setView([-23.555, -46.633], 13);
 
  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -177,25 +186,18 @@ document.addEventListener('DOMContentLoaded', async () =>{
  const category = document.getElementById('map-category').value;
  const status = document.getElementById('map-status').value;
 
- const localFoods = Storage.getFoods().filter(f =>{
- if (!f.lat || !f.lng) return false;
- if (status && f.status !== status) return false;
- if (category && f.category !== category) return false;
- return true;
- });
-
- let geocodedFoods = [];
+ let foods = [];
  try {
  const params = {};
  if (category) params.category = category;
  const apiFoods = await Api.donations.list(params);
  for (const f of apiFoods) {
  if (!f.city) continue;
- const coords = await _geocodeCity(f.city, f.state);
+ const coords = await _geocodeAddress(f.pickupLocation, f.city, f.state);
  if (!coords) continue;
  const fStatus = (f.status||'available').toLowerCase();
  if (status && fStatus !== status) continue;
- geocodedFoods.push({
+ foods.push({
  id: f.id, foodName: f.title,
  category: (f.category||'other').toLowerCase(),
  status: fStatus,
@@ -203,14 +205,13 @@ document.addEventListener('DOMContentLoaded', async () =>{
  donorName: f.donor ? f.donor.name : '',
  quantity: f.quantity+' '+(f.unit||''),
  expiryDate: f.expirationDate||'',
- lat: coords.lat+_hashOffset(f.id, 0),
- lng: coords.lng+_hashOffset(f.id, 1),
+ lat: coords.lat,
+ lng: coords.lng,
  });
  }
  } catch(e) {}
 
- const foods = [...localFoods, ...geocodedFoods];
- const ongs = Storage.getOngs().filter(o =>o.lat && o.lng && o.status === 'active');
+ const ongs = [];
 
  const statsData = {
  totalFoods: foods.length,
