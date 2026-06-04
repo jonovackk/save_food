@@ -75,6 +75,35 @@ var Auth = (function() {
  }
  }
 
+ function initNavbar() {
+ var hamburger = document.getElementById('nav-hamburger-btn');
+ var mobileMenu = document.getElementById('nav-mobile');
+ if (hamburger && mobileMenu) {
+ hamburger.addEventListener('click', function() {
+ var isOpen = mobileMenu.classList.toggle('open');
+ hamburger.classList.toggle('open', isOpen);
+ });
+ }
+ document.querySelectorAll('.nav-dropdown-toggle').forEach(function(btn) {
+ btn.addEventListener('click', function() {
+ var dropdown = btn.closest('.nav-dropdown');
+ var isOpen = dropdown.classList.toggle('open');
+ btn.setAttribute('aria-expanded', isOpen);
+ document.querySelectorAll('.nav-dropdown').forEach(function(d) {
+ if (d !== dropdown) { d.classList.remove('open'); d.querySelector('.nav-dropdown-toggle').setAttribute('aria-expanded', false); }
+ });
+ });
+ });
+ document.addEventListener('click', function(e) {
+ if (!e.target.closest('.nav-dropdown')) {
+ document.querySelectorAll('.nav-dropdown').forEach(function(d) {
+ d.classList.remove('open');
+ d.querySelector('.nav-dropdown-toggle').setAttribute('aria-expanded', false);
+ });
+ }
+ });
+ }
+
  function canDonate(user) { return user && (user.role === 'DONOR' || user.role === 'BOTH'); }
  function canReceive(user) { return user && (user.role === 'RECEIVER' || user.role === 'BOTH'); }
 
@@ -88,10 +117,13 @@ var Auth = (function() {
  requireLogin: requireLogin,
  logout: logout,
  updateNavAuth: updateNavAuth,
+ initNavbar: initNavbar,
  canDonate: canDonate,
  canReceive: canReceive,
  };
 })();
+
+document.addEventListener('DOMContentLoaded', function() { initNavbar(); });
 
 (function injectStyles() {
  var style = document.createElement('style');
