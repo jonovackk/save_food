@@ -310,6 +310,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     var grid   = document.getElementById('home-foods-grid');
     var recent = donations.slice(0, 3);
     var CAT_LABELS = { FRUITS:'Frutas', BREADS:'Paes', MEALS:'Refeicoes', CANNED:'Enlatados', DAIRY:'Laticinios', DRINKS:'Bebidas', OTHER:'Outros' };
+    var CAT_IMG    = { FRUITS:'img/fruits.jpg', BREADS:'img/paes_massas.jpg', MEALS:'img/meals.jpg',
+                       CANNED:'img/canned.jpg', DAIRY:'img/dairy.jpg', DRINKS:'img/drinks.jpg' };
 
     if (recent.length === 0) {
       grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>Nenhuma doacao cadastrada ainda.</p></div>';
@@ -317,7 +319,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     grid.innerHTML = recent.map(function(d) {
       return '<div class="food-card fade-in">' +
-        '<div class="food-card-img"><span style="font-size:1.5rem;color:var(--green-main)">' + (CAT_LABELS[d.category] || d.category) + '</span></div>' +
+        (d.imageUrl || CAT_IMG[d.category]
+          ? '<div class="food-card-img" style="padding:0"><img src="' + (d.imageUrl || CAT_IMG[d.category]) + '" alt="' + esc(d.title) + '" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius) var(--radius) 0 0"></div>'
+          : '<div class="food-card-img"><span style="font-size:1.5rem;color:var(--green-main)">' + (CAT_LABELS[d.category] || d.category) + '</span></div>') +
         '<div class="food-card-body">' +
           '<div class="food-card-title">' + esc(d.title) + '</div>' +
           '<div class="food-card-meta">' +

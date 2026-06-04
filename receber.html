@@ -156,6 +156,8 @@ var _currentUser = null;
 var CAT_LABELS = { FRUITS:'Frutas e verduras', BREADS:'Pães e massas', MEALS:'Refeições prontas',
  CANNED:'Enlatados', DAIRY:'Laticínios', DRINKS:'Bebidas', OTHER:'Outros' };
 var CAT_EMOJI = { FRUITS:'', BREADS:'', MEALS:'', CANNED:'', DAIRY:'', DRINKS:'', OTHER:'' };
+var CAT_IMG   = { FRUITS:'img/fruits.jpg', BREADS:'img/paes_massas.jpg', MEALS:'img/meals.jpg',
+                  CANNED:'img/canned.jpg', DAIRY:'img/dairy.jpg', DRINKS:'img/drinks.jpg' };
 var DEL_LABELS = { PICKUP_ONLY:'Só retirada', CAN_DELIVER:'Pode entregar', TO_AGREE:'A combinar' };
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -224,8 +226,8 @@ async function loadDonations() {
  grid.innerHTML = donations.map(function(d) {
  var pending = d.requests.filter(function(r){ return r.status === 'PENDING'; }).length;
  return '<div class="food-card fade-in">' +
- (d.imageUrl
-   ? '<div class="food-card-img" style="padding:0"><img src="' + d.imageUrl + '" alt="' + escHtml(d.title) + '" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius) var(--radius) 0 0"></div>'
+ (d.imageUrl || CAT_IMG[d.category]
+   ? '<div class="food-card-img" style="padding:0"><img src="' + (d.imageUrl || CAT_IMG[d.category]) + '" alt="' + escHtml(d.title) + '" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius) var(--radius) 0 0"></div>'
    : '<div class="food-card-img"><span style="font-size:3rem">' + (CAT_EMOJI[d.category] || '') + '</span></div>') +
  '<div class="food-card-body">' +
  '<div class="food-card-title">' + escHtml(d.title) + '</div>' +
