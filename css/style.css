@@ -3,7 +3,7 @@
  Design: Organic warmth meets modern clarity
  ============================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=Nunito:wght@700;800;900&display=swap');
 
 /* ---- CSS Variables ---- */
 :root {
@@ -83,9 +83,10 @@ p { color: var(--grey-mid); }
  display: flex;
  align-items: center;
  gap: 0.5rem;
- font-family: var(--font-display);
+ font-family: 'Nunito', sans-serif;
  font-size: 1.25rem;
  font-weight: 800;
+ letter-spacing: -0.01em;
  color: var(--green-dark);
  flex-shrink: 0;
  margin-right: 0.5rem;
