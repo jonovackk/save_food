@@ -302,23 +302,18 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     var fullDescription = description + (observations ? '\n\nObservacoes: ' + observations : '');
     btn.disabled = true;
-    btn.textContent = 'Cadastrando...';
 
     try {
-      // Upload da imagem (se houver) antes de salvar
       var imageUrl = null;
       var fileInput = document.getElementById('food-image');
       if (fileInput && fileInput.files && fileInput.files[0]) {
-        btn.textContent = 'Enviando imagem...';
         try {
           var up = await Api.upload.image(fileInput.files[0]);
           imageUrl = up.url;
         } catch(upErr) {
-          showAlert('Nao foi possivel enviar a imagem: ' + (upErr.message || '') + '. A doacao sera salva sem foto.', 'error');
+          showAlert('Nao foi possivel enviar a imagem. A doacao sera salva sem foto.', 'error');
         }
       }
-
-      btn.textContent = 'Cadastrando...';
       await Api.donations.create({
         title: title, description: fullDescription, category: category,
         quantity: parseInt(quantity, 10), unit: unit,
