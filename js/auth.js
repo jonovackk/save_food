@@ -60,12 +60,15 @@ var Auth = (function() {
  var initials = user.name.split(' ').slice(0,2).map(function(w){ return w[0]; }).join('').toUpperCase();
 
  if (authArea) {
+ var logoutLabel = typeof I18n !== 'undefined' ? I18n.t('nav.logout') : 'Sair';
+ var langLabel   = typeof I18n !== 'undefined' ? I18n.t('nav.langToggle') : 'EN';
  authArea.innerHTML =
+ '<button id="lang-toggle" onclick="I18n.toggle()" style="background:none;border:1.5px solid currentColor;border-radius:6px;padding:0.2rem 0.55rem;font-size:0.8rem;font-weight:700;cursor:pointer;color:inherit;opacity:0.7">' + langLabel + '</button>' +
  '<a href="perfil.html" class="nav-user-btn">' +
  '<div class="nav-avatar">' + initials + '</div>' +
  '<span>' + user.name.split(' ')[0] + '</span>' +
  '</a>' +
- '<button onclick="Auth.logout()" class="btn btn-sm btn-outline" style="color:var(--grey-mid)">Sair</button>';
+ '<button onclick="Auth.logout()" class="btn btn-sm btn-outline" style="color:var(--grey-mid)">' + logoutLabel + '</button>';
  }
  if (mobileMenu) {
  var authDiv = mobileMenu.querySelector('.nav-mobile-auth');
