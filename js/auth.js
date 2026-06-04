@@ -53,6 +53,9 @@ var Auth = (function() {
  var authArea = document.querySelector('.nav-auth');
  var mobileMenu = document.getElementById('nav-mobile');
 
+ // Atualiza texto do toggle de idioma
+ if (typeof I18n !== 'undefined') I18n.apply();
+
  if (user) {
  var initials = user.name.split(' ').slice(0,2).map(function(w){ return w[0]; }).join('').toUpperCase();
 

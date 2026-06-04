@@ -32,48 +32,49 @@
  <img src="img/salve_comida_logo_final/svg/logo-horizontal.svg" alt="Salve Comida" height="46" style="display:block">
  </a>
  <div class="nav-links">
- <a href="index.html">Início</a>
- <a href="doar.html" class="nav-link-cta">Doar</a>
- <a href="receber.html">Receber</a>
- <a href="mapa.html">Mapa</a>
+ <a href="index.html" data-i18n="nav.home">Início</a>
+ <a href="doar.html" class="nav-link-cta" data-i18n="nav.donate">Doar</a>
+ <a href="receber.html" data-i18n="nav.receive">Receber</a>
+ <a href="mapa.html" data-i18n="nav.map">Mapa</a>
  <div class="nav-dropdown">
- <button class="nav-dropdown-toggle" aria-expanded="false">Explorar <span class="nav-chevron"></span></button>
+ <button class="nav-dropdown-toggle" aria-expanded="false"><span data-i18n="nav.explore">Explorar</span> <span class="nav-chevron"></span></button>
  <div class="nav-dropdown-menu">
- <a href="dashboard.html">Impacto</a>
- <a href="ongs.html">ONGs</a>
- <a href="sobre.html">Sobre</a>
- <a href="contato.html">Contato</a>
+ <a href="dashboard.html" data-i18n="nav.impact">Impacto</a>
+ <a href="ongs.html" data-i18n="nav.ongs">ONGs</a>
+ <a href="sobre.html" data-i18n="nav.about">Sobre</a>
+ <a href="contato.html" data-i18n="nav.contact">Contato</a>
  </div>
  </div>
  <div class="nav-dropdown">
- <button class="nav-dropdown-toggle" aria-expanded="false">Minha Conta <span class="nav-chevron"></span></button>
+ <button class="nav-dropdown-toggle" aria-expanded="false"><span data-i18n="nav.myAccount">Minha Conta</span> <span class="nav-chevron"></span></button>
  <div class="nav-dropdown-menu">
- <a href="minhas-doacoes.html">Minhas Doações</a>
- <a href="minhas-solicitacoes.html">Solicitações</a>
- <a href="perfil.html">Perfil</a>
+ <a href="minhas-doacoes.html" data-i18n="nav.myDonations">Minhas Doações</a>
+ <a href="minhas-solicitacoes.html" data-i18n="nav.requests">Solicitações</a>
+ <a href="perfil.html" data-i18n="nav.profile">Perfil</a>
  </div>
  </div>
  </div>
  <div class="nav-auth">
- <a href="login.html" class="btn btn-sm btn-outline">Entrar</a>
- <a href="cadastro.html" class="btn btn-sm btn-primary">Criar conta</a>
+ <button id="lang-toggle" onclick="I18n.toggle()" style="background:none;border:1.5px solid currentColor;border-radius:6px;padding:0.2rem 0.55rem;font-size:0.8rem;font-weight:700;cursor:pointer;color:inherit;opacity:0.7">EN</button>
+ <a href="login.html" class="btn btn-sm btn-outline" data-i18n="nav.login">Entrar</a>
+ <a href="cadastro.html" class="btn btn-sm btn-primary" data-i18n="nav.register">Criar conta</a>
  </div>
  <button class="nav-hamburger" aria-label="Menu" id="nav-hamburger-btn"><span></span><span></span><span></span></button>
  </div>
  <div class="nav-mobile" id="nav-mobile">
- <a href="index.html">Início</a>
- <a href="doar.html">Doar</a>
- <a href="receber.html">Receber</a>
- <a href="mapa.html">Mapa</a>
- <a href="dashboard.html">Impacto</a>
- <a href="ongs.html">ONGs</a>
- <a href="minhas-doacoes.html">Minhas Doações</a>
- <a href="minhas-solicitacoes.html">Solicitações</a>
- <a href="sobre.html">Sobre</a>
- <a href="contato.html">Contato</a>
+ <a href="index.html" data-i18n="nav.home">Início</a>
+ <a href="doar.html" data-i18n="nav.donate">Doar</a>
+ <a href="receber.html" data-i18n="nav.receive">Receber</a>
+ <a href="mapa.html" data-i18n="nav.map">Mapa</a>
+ <a href="dashboard.html" data-i18n="nav.impact">Impacto</a>
+ <a href="ongs.html" data-i18n="nav.ongs">ONGs</a>
+ <a href="minhas-doacoes.html" data-i18n="nav.myDonations">Minhas Doações</a>
+ <a href="minhas-solicitacoes.html" data-i18n="nav.requests">Solicitações</a>
+ <a href="sobre.html" data-i18n="nav.about">Sobre</a>
+ <a href="contato.html" data-i18n="nav.contact">Contato</a>
  <div class="nav-mobile-auth">
- <a href="login.html" class="btn btn-outline">Entrar</a>
- <a href="cadastro.html" class="btn btn-primary">Criar conta</a>
+ <a href="login.html" class="btn btn-outline" data-i18n="nav.login">Entrar</a>
+ <a href="cadastro.html" class="btn btn-primary" data-i18n="nav.register">Criar conta</a>
  </div>
  </div>
 </nav>
@@ -81,7 +82,7 @@
 <div class="page-hero">
  <div class="container">
  <div class="tag">Rede solidária</div>
- <h1>ONGs Parceiras</h1>
+ <h1 data-i18n="ongs.title">ONGs Parceiras</h1>
  <p>Organizações que fazem parte da rede Salve Comida, distribuindo alimentos a quem mais precisa.</p>
  </div>
 </div>
@@ -209,6 +210,7 @@
 
 <script src="js/storage.js"></script>
 <script src="js/app.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
 <script>
@@ -393,5 +395,6 @@ document.getElementById('ong-detail-modal').addEventListener('click', e =>{
  if (e.target === e.currentTarget) closeOngModal();
 });
 </script>
+<script>document.addEventListener("DOMContentLoaded",function(){I18n.apply();});</script>
 </body>
 </html>
