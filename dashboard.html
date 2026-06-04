@@ -217,9 +217,7 @@ var STATUS_LABELS = { AVAILABLE:'Disponível', RESERVED:'Reservado', COMPLETED:'
 var STATUS_COLORS = { AVAILABLE:'#4aab72', RESERVED:'#f07b28', COMPLETED:'#6366f1', CANCELLED:'#9ca3af' };
 
 document.addEventListener('DOMContentLoaded', async function() {
- var ham = document.getElementById('nav-hamburger-btn');
- var mob = document.getElementById('nav-mobile');
- if (ham && mob) ham.addEventListener('click', function(){ mob.classList.toggle('open'); ham.classList.toggle('open'); });
+ );
 
  var user = await Auth.requireLogin();
  if (!user) return;

@@ -118,9 +118,6 @@ var STATUS_COLORS = { PENDING:'#dbeafe', ACCEPTED:'var(--green-pale)', REJECTED:
 var STATUS_TEXT = { PENDING:'#1e40af', ACCEPTED:'var(--green-dark)', REJECTED:'#991b1b', CANCELLED:'var(--grey-mid)', COMPLETED:'#5b21b6' };
 
 document.addEventListener('DOMContentLoaded', async function() {
- var ham = document.getElementById('nav-hamburger-btn');
- var mob = document.getElementById('nav-mobile');
- if (ham && mob) ham.addEventListener('click', function(){ mob.classList.toggle('open'); ham.classList.toggle('open'); });
 
  var user = await Auth.requireLogin();
  if (!user) return;

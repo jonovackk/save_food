@@ -199,9 +199,7 @@ var CAT_LABELS = { FRUITS:'Frutas/Verduras', BREADS:'Pães/Massas', MEALS:'Refei
 var STATUS_LABELS = { AVAILABLE:'Disponível', RESERVED:'Reservado', COMPLETED:'Concluído', CANCELLED:'Cancelado' };
 
 document.addEventListener('DOMContentLoaded', async function() {
- var ham = document.getElementById('nav-hamburger-btn');
- var mob = document.getElementById('nav-mobile');
- if (ham && mob) ham.addEventListener('click', function(){ mob.classList.toggle('open'); ham.classList.toggle('open'); });
+ );
 
  var user = await Auth.requireLogin();
  if (!user) return;

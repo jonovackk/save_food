@@ -247,9 +247,7 @@
 var MAX_PER_CAT = { MEALS: 2, CANNED: 3, BREADS: 5, FRUITS: 3, DAIRY: 2, DRINKS: 3, OTHER: 3 };
 
 document.addEventListener('DOMContentLoaded', async function() {
-  var ham = document.getElementById('nav-hamburger-btn');
-  var mob = document.getElementById('nav-mobile');
-  if (ham && mob) ham.addEventListener('click', function() { mob.classList.toggle('open'); ham.classList.toggle('open'); });
+  );
 
   var tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
   var expiryInput = document.getElementById('expiryDate');

@@ -1319,7 +1319,7 @@ textarea.form-control {
 @media (max-width: 480px) {
  .cards-grid { grid-template-columns: 1fr; }
  .steps-grid { grid-template-columns: 1fr; }
- .hero { min-height: auto; padding: 4rem 0; }
+ .hero { min-height: auto; padding: 4rem 0 7rem; }
  .cta-banner { padding: 2rem 1.25rem; }
  .form-card { padding: 1.25rem; }
  .filters-bar { flex-direction: column; }
