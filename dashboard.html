@@ -217,7 +217,6 @@ var STATUS_LABELS = { AVAILABLE:'Disponível', RESERVED:'Reservado', COMPLETED:'
 var STATUS_COLORS = { AVAILABLE:'#4aab72', RESERVED:'#f07b28', COMPLETED:'#6366f1', CANCELLED:'#9ca3af' };
 
 document.addEventListener('DOMContentLoaded', async function() {
- );
 
  var user = await Auth.requireLogin();
  if (!user) return;

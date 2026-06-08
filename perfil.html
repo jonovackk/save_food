@@ -283,7 +283,6 @@
 var _currentUser = null;
 
 document.addEventListener('DOMContentLoaded', async function() {
- );
 
  _currentUser = await Auth.requireLogin('login.html');
  if (!_currentUser) return;
